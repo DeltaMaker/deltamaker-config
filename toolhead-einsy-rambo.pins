@@ -1,0 +1,49 @@
+#
+# Date: 2/24/2023
+#
+# DeltaMaker Toolhead Pin Definitions file: toolhead-einsy-rambo.pins
+#
+# Controller board specific: DeltaMaker MCU pin definitions for Ultimaker Einsy Rambo.
+#
+# SKR Pico Toolhead Objects
+# Extruder, Fan, Probe
+#
+# SKR Pico support for 14-pin Toolhead Wire Harness
+#
+
+##### EXTRUDER MOTOR/HEATER/SENSOR #####
+[extruder]
+step_pin: PC3
+dir_pin: !PL6
+enable_pin: !PA4
+heater_pin: PE5
+sensor_pin: PF0
+
+[tmc2130 extruder]
+cs_pin: PK4
+sense_resistor: 0.220
+diag1_pin: !PK3
+run_current: .5
+
+##### EXTRUDER FAN #####
+[heater_fan extruder_fan]
+pin: PG5
+#pin: PH3
+
+##### PART COOLING FAN #####
+#[fan]
+#pin: PH5
+
+##### FILAMENT-OUT SWITCH #####
+#[filament_switch_sensor runout_sensor]
+#switch_pin: # TBD
+
+##### DELTAMAKER TOUCH PROBE #####
+[probe]
+pin: PE6		# PROBE
+
+##### PROBE 5V POWER #####
+[output_pin probe_power_pin]
+pin: PH5		# FAN2
+value: 0
+shutdown_value: 0

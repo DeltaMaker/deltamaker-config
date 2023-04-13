@@ -1,0 +1,30 @@
+0403
+[include /home/pi/deltamaker-config/motion-system-skr-pico.pins]
+[include /home/pi/deltamaker-config/toolhead-skr-pico.pins]
+[include /home/pi/deltamaker-config/printer-deltamaker-1812.cfg]
+	[include /home/pi/deltamaker-config/toolhead-direct-drive.cfg]
+	[include /home/pi/deltamaker-config/probe-nozzle.cfg]
+	[include /home/pi/deltamaker-config/deltamaker-skybox.cfg]
+		[include /home/pi/deltamaker-config/deltamaker-skylight-macros.cfg]
+	[include /home/pi/deltamaker-config/deltamaker-command-macros.cfg]
+
+
+0382
+[include /home/pi/deltamaker-config/motion-system-skr-pico.pins]
+[include /home/pi/deltamaker-config/toolhead-skr-pico.pins]
+[include /home/pi/deltamaker-config/printer-deltamaker-910.cfg]
+	[include /home/pi/deltamaker-config/toolhead-bowden.cfg]
+	[include /home/pi/deltamaker-config/probe-classic.cfg]
+	[include /home/pi/deltamaker-config/deltamaker-skybox.cfg]
+		[include /home/pi/deltamaker-config/deltamaker-skylight-macros.cfg]
+	[include /home/pi/deltamaker-config/deltamaker-command-macros.cfg]
+	
+0393
+[include /home/pi/deltamaker-config/motion-system-einsy-rambo.pins]
+[include /home/pi/deltamaker-config/toolhead-einsy-rambo.pins]
+[include /home/pi/deltamaker-config/printer-deltamaker-910.cfg]
+	[include /home/pi/deltamaker-config/toolhead-bowden.cfg]
+	[include /home/pi/deltamaker-config/probe-classic.cfg]
+	[include /home/pi/deltamaker-config/deltamaker-skybox.cfg]
+		[include /home/pi/deltamaker-config/deltamaker-skylight-macros.cfg]
+	[include /home/pi/deltamaker-config/deltamaker-command-macros.cfg]
