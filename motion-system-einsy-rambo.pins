@@ -1,0 +1,59 @@
+#
+# Date: 2/24/2023
+#
+# DeltaMaker Motion System Pin Definitions file: motion-system-einsy-rambo.pins
+#
+# Controller board specific: DeltaMaker MCU pin definitions for Ultimaker Einsy Rambo board.
+#
+# DeltaMaker Motion System and Skybox
+
+##### SKYBOX ENCLOSURE FAN #####
+[temperature_fan rpi_fan]
+pin: PH3
+
+##### SKYLIGHT STATUS NEOPIXELS #####
+[neopixel status_leds]
+pin: PB4
+
+##### STEPPER MOTOR A #####
+[stepper_a]
+step_pin: PC0
+dir_pin: PL0
+enable_pin: !PA7
+endstop_pin: ^PB6
+#endstop_pin: tmc2130_stepper_a:virtual_endstop
+
+[tmc2130 stepper_a]
+cs_pin: PG0
+sense_resistor: 0.220
+diag1_pin: !PK2
+run_current: 0.58
+
+##### STEPPER MOTOR B #####
+[stepper_b]
+step_pin: PC1
+dir_pin: PL1
+enable_pin: !PA6
+endstop_pin: ^PB5
+#endstop_pin: tmc2130_stepper_b:virtual_endstop
+
+[tmc2130 stepper_b]
+cs_pin: PG2
+sense_resistor: 0.220
+diag1_pin: !PK7
+run_current: 0.58
+
+##### STEPPER MOTOR C #####
+[stepper_c]
+step_pin: PC2
+dir_pin: PL2
+enable_pin: !PA5
+endstop_pin: ^PF2
+#endstop_pin: tmc2130_stepper_c:virtual_endstop
+
+[tmc2130 stepper_c]
+cs_pin: PK5
+sense_resistor: 0.220
+diag1_pin: !PK6
+run_current: 0.58
+
