@@ -1,0 +1,114 @@
+#
+# Date: 10/12/2022
+#
+# Filename: printer-deltamaker-mini-e3-v2.pins
+# Description: DeltaMaker MCU pin definitions for BTT SKR Mini E3 v2.0 board
+#
+#
+# This file contains common pin mappings for the BIGTREETECH SKR mini
+# E3 v2.0. To use this config, the firmware should be compiled for the
+# STM32F103 with a "28KiB bootloader" and USB communication. Also,
+# select "Enable extra low-level configuration options" and configure
+# "GPIO pins to set at micro-controller startup" to "!PA14".
+
+# The "make flash" command does not work on the SKR mini E3. Instead,
+# after running "make", copy the generated "out/klipper.bin" file to a
+# file named "firmware.bin" on an SD card and then restart the SKR
+# mini E3 with that SD card.
+
+# See docs/Config_Reference.md for a description of parameters.
+
+##### RASPBERRY PI COOLING FAN #####
+[temperature_fan rpi_fan]
+pin: PC9
+
+##### SKYLIGHT NEOPIXEL LED STRIP #####
+[neopixel status_leds]
+pin: PA8
+
+##### STEPPER MOTOR A #####
+[stepper_a]
+step_pin: PB13
+dir_pin: !PB12
+enable_pin: !PB14
+endstop_pin: ^PC0
+
+[tmc2209 stepper_a]
+uart_pin: PC11
+tx_pin: PC10
+uart_address: 0
+
+##### STEPPER MOTOR B #####
+[stepper_b]
+step_pin: PB10
+dir_pin: !PB2
+enable_pin: !PB11
+endstop_pin: ^PC1
+
+[tmc2209 stepper_b]
+uart_pin: PC11
+tx_pin: PC10
+uart_address: 2
+
+##### STEPPER MOTOR C #####
+[stepper_c]
+step_pin: PB0
+dir_pin: !PC5
+enable_pin: !PB1
+endstop_pin: ^PC2
+
+[tmc2209 stepper_c]
+uart_pin: PC11
+tx_pin: PC10
+uart_address: 1
+
+##### EXTRUDER MOTOR/HEATER/SENSOR #####
+[extruder]
+step_pin: PB3
+dir_pin: !PB4
+enable_pin: !PD2
+heater_pin: PC8
+sensor_pin: PA0
+
+[tmc2209 extruder]
+uart_pin: PC11
+tx_pin: PC10
+uart_address: 3
+
+##### EXTRUDER FAN #####
+[heater_fan extruder_fan]
+pin: PC6
+
+##### PART COOLING FAN #####
+#[fan]
+#pin: PC7
+#pin: PC6
+#pin: PC9  # bed heater
+
+##### PROBE 5V POWER #####
+[output_pin probe_power_pin]
+pin: PC7
+value: 0
+shutdown_value: 0
+
+##### TOUCH PROBE #####
+[probe]
+pin: PC15 	# E0 stop (3-pin connector)
+#pin: PC14 	# Z probe (5-pin connector)
+
+##### BOARD SPECIFIC #####
+[static_digital_output usb_pullup_enable]
+pins: !PA14
+
+[board_pins]
+aliases:
+    # EXP1 header
+    EXP1_1=PB5,  EXP1_3=PA9,   EXP1_5=PA10, EXP1_7=PB8,  EXP1_9=<GND>,
+    EXP1_2=PA15, EXP1_4=<RST>, EXP1_6=PB9,  EXP1_8=PB15, EXP1_10=<5V>
+
+##### EXTRA AND UNUSED #####
+#[heater_bed]
+#heater_pin: PC9
+#sensor_pin: PC3
+
+# See the sample-lcd.cfg file for definitions of common LCD displays.
