@@ -1,5 +1,5 @@
 #
-# Date: 2/24/2023
+# Date: 4/14/2023
 #
 # DeltaMaker Motion System Pin Definitions file: motion-system-skr-pico.pins
 #
@@ -26,7 +26,7 @@ endstop_pin: ^gpio4
 uart_pin: gpio9
 tx_pin: gpio8
 uart_address: 0
-run_current: 0.580
+run_current: 0.68
 
 ##### STEPPER MOTOR B #####
 [stepper_b]
@@ -39,7 +39,7 @@ endstop_pin: ^gpio3
 uart_pin: gpio9
 tx_pin: gpio8
 uart_address: 2
-run_current: 0.580
+run_current: 0.68
 
 ##### STEPPER MOTOR C #####
 [stepper_c]
@@ -52,4 +52,4 @@ endstop_pin: ^gpio25
 uart_pin: gpio9
 tx_pin: gpio8
 uart_address: 1
-run_current: 0.580
+run_current: 0.68

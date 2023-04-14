@@ -1,5 +1,5 @@
 #
-# Date: 2/24/2023
+# Date: 4/14/2023
 #
 # DeltaMaker Toolhead Pin Definitions file: toolhead-einsy-rambo.pins
 #
@@ -21,9 +21,9 @@ sensor_pin: PF0
 
 [tmc2130 extruder]
 cs_pin: PK4
-sense_resistor: 0.220
+sense_resistor: 0.22
 diag1_pin: !PK3
-run_current: .5
+run_current: 0.5
 
 ##### EXTRUDER FAN #####
 [heater_fan extruder_fan]
