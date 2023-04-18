@@ -118,6 +118,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
+    upnpUuid: 08f0e90d-75db-4e39-9e82-71a8aaa70989
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -133,6 +134,7 @@ plugins:
   klipper:
     _config_version: 4
     configuration:
+      confirm_reload: false
       shortStatus_sidebar: false
     connection:
       hide_editor_button: true
@@ -278,10 +280,6 @@ temperature:
     extruder: 230
     name: DM-PLA
   - bed: 0
-    chamber: null
-    extruder: 250
-    name: DM-PETG
-  - bed: 0
     chamber: 0
     extruder: 100
     name: UNLOAD
@@ -291,10 +289,8 @@ webcam:
   stream: /webcam/?action=stream
   timelapse:
     fps: 25
-    options:
-      minDelay: 5.0
-      retractionZHop: 0.5
+    options: {}
     postRoll: 0
-    type: zchange
+    type: 'off'
   watermark: false
   webcamEnabled: false
