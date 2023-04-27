@@ -37,13 +37,11 @@ pin: gpio21		# HB
 
 ##### FILAMENT-OUT SWITCH #####
 #[filament_switch_sensor runout_sensor]
-##switch_pin: ^gpio16 	# E0-STOP
-#switch_pin: ^gpio22	# use PROBE pin (configurable for input or output)
+#switch_pin: ^gpio22	# PROBE on skr-pico board (configurable for in/out)
 
 ##### DELTAMAKER TOUCH PROBE #####
 [probe]
-#pin: ^gpio22 		# PROBE  (switch to E0-STOP)
-pin: ^gpio16		# E0-STOP
+pin: ^gpio16		# E0-STOP on skr-pico board
 
 ##### PROBE 5V POWER #####
 [output_pin probe_power_pin]
