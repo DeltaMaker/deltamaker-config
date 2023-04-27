@@ -1,5 +1,5 @@
 #
-# Date: 4/14/2023
+# Date: 4/27/2023
 #
 # DeltaMaker Toolhead Pin Definitions file: toolhead-skr-pico.pins
 #
@@ -37,11 +37,13 @@ pin: gpio21		# HB
 
 ##### FILAMENT-OUT SWITCH #####
 #[filament_switch_sensor runout_sensor]
-#switch_pin: ^gpio16 	# E0-STOP
+##switch_pin: ^gpio16 	# E0-STOP
+#switch_pin: ^gpio22	# use PROBE pin (configurable for input or output)
 
 ##### DELTAMAKER TOUCH PROBE #####
 [probe]
-pin: ^gpio22 		# PROBE
+#pin: ^gpio22 		# PROBE  (switch to E0-STOP)
+pin: ^gpio16		# E0-STOP
 
 ##### PROBE 5V POWER #####
 [output_pin probe_power_pin]
