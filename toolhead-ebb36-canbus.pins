@@ -1,0 +1,85 @@
+#
+# Date: 5/2/2023
+#
+# DeltaMaker Toolhead Pin Definitions file: toolhead-ebb36-canbus.pins
+#
+# Controller board specific: DeltaMaker MCU pin definitions for BTT EBB36_G0B1_v1.2 board.
+#
+# CanBus Toolhead Objects:
+# mcu: ebb36
+#   extruder
+#   adxl345
+#   extruder_fan
+#   probe
+#
+# Canbus support for 4-pin Toolhead Wire Harness
+#
+
+##### EBB36 toolhead mcu #####
+[mcu ebb36]
+
+##### EXTRUDER MOTOR/HEATER/SENSOR #####
+[extruder]
+step_pin: ebb36:EXT_STEP
+dir_pin: ebb36:EXT_DIR
+enable_pin: !ebb36:EXT_EN
+heater_pin: ebb36:HE0
+sensor_pin: ebb36:TH0
+
+[tmc2209 extruder]
+uart_pin: ebb36:EXT_UART
+stealthchop_threshold: 0
+run_current: 0.30
+
+##### ADXL345 ######
+[adxl345]
+cs_pin: ebb36:ADXL_CS
+spi_software_sclk_pin: ebb36:ADXL_SCLK
+spi_software_mosi_pin: ebb36:ADXL_MOSI
+spi_software_miso_pin: ebb36:ADXL_MISO
+axes_map: x,y,z
+
+##### EXTRUDER FAN #####
+[heater_fan extruder_fan]
+pin: ebb36:FAN0
+
+##### PART COOLING FAN #####
+#[fan]
+#pin: ebb36:FAN0
+
+##### FILAMENT-OUT SWITCH #####
+#[filament_switch_sensor runout_sensor]
+#switch_pin: ^gpio22	# PROBE on skr-pico board (configurable for in/out)
+
+##### DELTAMAKER TOUCH PROBE #####
+[probe]
+pin: ^ebb36:PROBE_2
+
+##### PROBE 5V POWER #####
+[output_pin probe_power_pin]
+pin: ebb36:FAN1
+value: 0
+shutdown_value: 0
+
+##### BOARD PINS #####
+[board_pins EBB36_G0B1_v1.2] 
+mcu: ebb36
+aliases:
+aliases_step:
+    EXT_EN=PD2,EXT_STEP=PD0,EXT_DIR=PD1,EXT_UART=PA15
+aliases_limitsw: # these are preferred for endstops (including klicky)
+    LIMIT_1=PB7,LIMIT_2=PB5,LIMIT_3=PB6
+aliases_bltouch: # these are the dupont connectors for bltouch
+    PROBE_1=PB9,PROBE_2=PB8
+aliases_fans:
+    FAN0=PA1,FAN1=PA0
+aliases_thermistors:
+    TH0=PA3,PT100_CS=PA4,PT100_SCLK=PA5,PT100_MISO=PA6,PT100_MOSI=PA7
+aliases_heaters:
+    HE0=PB13
+aliases_rgb:
+    RGBLED=PD3
+aliases_adxl:
+    ADXL_CS=PB12,ADXL_SCLK=PB10,ADXL_MISO=PB2,ADXL_MOSI=PB11
+aliases_i2c:
+    AUX0=PB3,AUX1=PB4
