@@ -30,6 +30,7 @@ run_current: 0.48
 ##### EXTRUDER FAN #####
 [heater_fan extruder_fan]
 pin: gpio17 		# FAN1
+heater: extruder
 
 ##### PART COOLING FAN #####
 [fan]

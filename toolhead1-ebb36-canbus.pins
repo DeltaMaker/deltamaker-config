@@ -1,16 +1,15 @@
 #
 # Date: 5/2/2023
 #
-# DeltaMaker Toolhead Pin Definitions file: toolhead-ebb36-canbus.pins
+# DeltaMaker Toolhead Pin Definitions file: toolhead1-ebb36-canbus.pins
 #
 # Controller board specific: DeltaMaker MCU pin definitions for BTT EBB36_G0B1_v1.2 board.
 #
-# CanBus Toolhead Objects:
+# CanBus Toolhead1 Objects:
 # mcu: ebb36
-#   extruder
+#   extruder1
 #   adxl345
-#   extruder_fan
-#   probe
+#   extruder1_fan
 #
 # Canbus support for 4-pin Toolhead Wire Harness
 #
@@ -18,15 +17,15 @@
 ##### EBB36 toolhead mcu #####
 [mcu ebb36]
 
-##### EXTRUDER MOTOR/HEATER/SENSOR #####
-[extruder]
+##### EXTRUDER1 MOTOR/HEATER/SENSOR #####
+[extruder1]
 step_pin: ebb36:EXT_STEP
 dir_pin: ebb36:EXT_DIR
 enable_pin: !ebb36:EXT_EN
 heater_pin: ebb36:HE0
 sensor_pin: ebb36:TH0
 
-[tmc2209 extruder]
+[tmc2209 extruder1]
 uart_pin: ebb36:EXT_UART
 stealthchop_threshold: 0
 run_current: 0.30
@@ -39,10 +38,10 @@ spi_software_mosi_pin: ebb36:ADXL_MOSI
 spi_software_miso_pin: ebb36:ADXL_MISO
 axes_map: x,y,z
 
-##### EXTRUDER FAN #####
-[heater_fan extruder_fan]
+##### EXTRUDER1 FAN #####
+[heater_fan extruder1_fan]
 pin: ebb36:FAN0
-heater: extruder
+heater: extruder1
 
 ##### PART COOLING FAN #####
 #[fan]
@@ -50,17 +49,17 @@ heater: extruder
 
 ##### FILAMENT-OUT SWITCH #####
 #[filament_switch_sensor runout_sensor]
-#switch_pin: ^gpio22	# PROBE on skr-pico board (configurable for in/out)
+#switch_pin: 
 
 ##### DELTAMAKER TOUCH PROBE #####
-[probe]
-pin: ^ebb36:PROBE_2
+#[probe]
+#pin: ^ebb36:PROBE_2
 
 ##### PROBE 5V POWER #####
-[output_pin probe_power_pin]
-pin: ebb36:FAN1
-value: 0
-shutdown_value: 0
+#[output_pin probe_power_pin]
+#pin: ebb36:FAN1
+#value: 0
+#shutdown_value: 0
 
 ##### BOARD PINS #####
 [board_pins EBB36_G0B1_v1.2] 
