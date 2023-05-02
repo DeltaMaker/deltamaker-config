@@ -292,10 +292,8 @@ webcam:
   stream: /webcam/?action=stream
   timelapse:
     fps: 25
-    options:
-      minDelay: 5.0
-      retractionZHop: 0.5
+    options: {}
     postRoll: 0
-    type: zchange
+    type: 'off'
   watermark: false
   webcamEnabled: false
