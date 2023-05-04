@@ -6,7 +6,7 @@
 # Controller board specific: DeltaMaker MCU pin definitions for BTT EBB36_G0B1_v1.2 board.
 #
 # CanBus Toolhead1 Objects:
-# mcu: ebb36
+# mcu: ebb36_1
 #   extruder1
 #   adxl345
 #   extruder1_fan
@@ -15,37 +15,37 @@
 #
 
 ##### EBB36 toolhead mcu #####
-[mcu ebb36]
+[mcu ebb36_1]
 
 ##### EXTRUDER1 MOTOR/HEATER/SENSOR #####
 [extruder1]
-step_pin: ebb36:EXT_STEP
-dir_pin: ebb36:EXT_DIR
-enable_pin: !ebb36:EXT_EN
-heater_pin: ebb36:HE0
-sensor_pin: ebb36:TH0
+step_pin: ebb36_1:EXT_STEP
+dir_pin: ebb36_1:EXT_DIR
+enable_pin: !ebb36_1:EXT_EN
+heater_pin: ebb36_1:HE0
+sensor_pin: ebb36_1:TH0
 
 [tmc2209 extruder1]
-uart_pin: ebb36:EXT_UART
+uart_pin: ebb36_1:EXT_UART
 stealthchop_threshold: 0
-run_current: 0.30
+run_current: 0.50
 
 ##### ADXL345 ######
 [adxl345]
-cs_pin: ebb36:ADXL_CS
-spi_software_sclk_pin: ebb36:ADXL_SCLK
-spi_software_mosi_pin: ebb36:ADXL_MOSI
-spi_software_miso_pin: ebb36:ADXL_MISO
+cs_pin: ebb36_1:ADXL_CS
+spi_software_sclk_pin: ebb36_1:ADXL_SCLK
+spi_software_mosi_pin: ebb36_1:ADXL_MOSI
+spi_software_miso_pin: ebb36_1:ADXL_MISO
 axes_map: x,y,z
 
 ##### EXTRUDER1 FAN #####
 [heater_fan extruder1_fan]
-pin: ebb36:FAN1
+pin: ebb36_1:FAN1
 heater: extruder1
 
 ##### PART COOLING FAN #####
 #[fan]
-#pin: ebb36:FAN1
+#pin: ebb36_1:FAN1
 
 ##### FILAMENT-OUT SWITCH #####
 #[filament_switch_sensor runout_sensor]
@@ -53,17 +53,17 @@ heater: extruder1
 
 ##### DELTAMAKER TOUCH PROBE #####
 #[probe]
-#pin: ^ebb36:PROBE_2
+#pin: ^ebb36_1:PROBE_2
 
 ##### PROBE 5V POWER #####
 #[output_pin probe_power_pin]
-#pin: ebb36:FAN0
+#pin: ebb36_1:FAN0
 #value: 0
 #shutdown_value: 0
 
 ##### BOARD PINS #####
 [board_pins EBB36_G0B1_v1.2] 
-mcu: ebb36
+mcu: ebb36_1
 aliases:
 aliases_step:
     EXT_EN=PD2,EXT_STEP=PD0,EXT_DIR=PD1,EXT_UART=PA15
