@@ -1,5 +1,5 @@
 #
-# Date: 4/14/2023
+# Date: 4/27/2023
 #
 # DeltaMaker Toolhead Pin Definitions file: toolhead-skr-pico.pins
 #
@@ -30,6 +30,7 @@ run_current: 0.48
 ##### EXTRUDER FAN #####
 [heater_fan extruder_fan]
 pin: gpio17 		# FAN1
+heater: extruder
 
 ##### PART COOLING FAN #####
 [fan]
@@ -37,11 +38,11 @@ pin: gpio21		# HB
 
 ##### FILAMENT-OUT SWITCH #####
 #[filament_switch_sensor runout_sensor]
-#switch_pin: ^gpio16 	# E0-STOP
+#switch_pin: ^gpio22	# PROBE on skr-pico board (configurable for in/out)
 
 ##### DELTAMAKER TOUCH PROBE #####
 [probe]
-pin: ^gpio22 		# PROBE
+pin: ^gpio16		# E0-STOP on skr-pico board
 
 ##### PROBE 5V POWER #####
 [output_pin probe_power_pin]

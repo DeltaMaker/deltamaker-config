@@ -1,9 +1,9 @@
 #
 # DeltaMaker config file: /boot/deltamaker.txt
-# 2023-04-20
-# Example config 18x12
+# 2023-03-07
+# DeltaMaker Workstation 
 
-serialnumber=0000
+serialnumber=0404
 
 /home/pi/deltamaker-config/scripts/set_serial_number.sh $serialnumber
 /home/pi/deltamaker-config/scripts/rm_uuid.sh
