@@ -57,9 +57,7 @@ $ sudo make flash FLASH_DEVICE=2e8a:0003
 This will flash the firmware image we compiled earlier onto the SKR-Pico.
 This take a minute or so.
 When the /mnt unmounts remove the boot jumper.
-Reboot and continue to the next phase..
-
-$ sudo reboot
+Press reset and continue to the next phase...
 
 ####
 
@@ -75,10 +73,10 @@ Settings
 
 MCU Raspberry Pi RP2040
 bootloader offset 16Kib Bootloader
-Com interface USB to CAN bus
+Com interface USB to CAN bus bridge
 CAN RX GPIO 1
 CAN Tx GPIO 0
-CAN bus speed 500000     (Select 250000,500000, or 1000000)
+CAN bus speed 500000     (Select 250000, 500000, or 1000000)
 
 $ make -j 4
 
@@ -100,6 +98,8 @@ Getting the Canbus UUID
 $ python3 ~/CanBoot/scripts/flash_can.py -q
 	-or-
 $ ~/klippy-env/bin/python ~/klipper/scripts/canbus_query.py can0
+	-or-
+$ grep canbus_uuid ~/printer.cfg
 
 Run the canboot flash by UUID to enable CanBoot on USB firmware.
 $ python3 ~/CanBoot/scripts/flash_can.py -i can0 -f ~/klipper/out/klipper.bin -u {your uuid}
@@ -116,6 +116,26 @@ Reboot
 $ sudo reboot
 
 #########################################
+
+Check the status of the canbus network
+$ ifconfig can0 
+
+If not found, startup the canbus network
+$ sudo ip link set up can0 type can bitrate 500000
+$ sudo ip link set can0 txqueuelen 1024
+
+
+$ sudo rm /etc/network/interfaces.d/can0
+
+$ cat <<EOF | sudo tee /etc/network/interfaces.d/can0
+allow-hotplug can0
+iface can0 can static
+    bitrate 500000
+    up ifconfig $IFACE txqueuelen 1024
+EOF
+
+#########################################
+
 
 EBB36 Toolhead Board Setup
 
