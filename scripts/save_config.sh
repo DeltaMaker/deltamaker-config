@@ -5,12 +5,20 @@
 #  and octoprint config.yaml file to ./deltamaker-config/octoprint
 #
 dmtxt="/boot/deltamaker.txt"
-if [ ! -f $dmtxt ]; then
-    echo "Error: $dmtxt not found"
+if [ -f $dmtxt ]; then
+    serialnumber=`awk -F= '$1=="serialnumber"{print $2}' $dmtxt`
+    echo "deltamaker-$serialnumber"
+fi
+# override serial number if it is specified on the command line
+if [ $1 ]; then
+    serialnumber=$1
+fi
+if [ ! $serialnumber ]; then
+    echo "Error: $dmtxt not found. Must specify 4-digit serial number"
+    echo "Example usage: $0 0000"
     exit -1
 fi
 
-serialnumber=`awk -F= '$1=="serialnumber"{print $2}' $dmtxt`
 cd "$( dirname "${BASH_SOURCE[0]}" )" ; cd ../
 dir=`pwd`
 
