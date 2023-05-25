@@ -1,0 +1,37 @@
+
+modified from: 
+https://github.com/matthew-humphrey/3DP-Build-Log/blob/main/RP2040-USB-Bug/README.md#resetting-the-picobilical-before-klipper-starts
+
+
+Resetting the SKR Pico board before Klipper starts
+
+To automate the reset of the SKR Pico board, we will create a script to perform
+the task, and a systemd service to run this script after boot before the Klipper
+service is started. 
+
+To create the script, ssh into your Raspberry Pi and run these four commands:
+
+$ cat <<EOF | sudo tee /usr/local/sbin/restart-skr-pico.sh
+#!/bin/bash
+raspi-gpio set 26 op
+raspi-gpio set 26 dl
+raspi-gpio set 26 ip
+sleep 1
+EOF
+
+$ sudo chmod +x /usr/local/sbin/restart-skr-pico.sh
+
+$ cat <<EOF | sudo tee /etc/systemd/system/restart-skr-pico.service
+[Unit]
+Description=Toggle GPIO26 to reset the SKR Pico board
+RequiredBy=klipper.service
+
+[Service]
+ExecStart=/usr/local/sbin/restart-skr-pico.sh
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+$ sudo systemctl enable --now restart-skr-pico.service
+

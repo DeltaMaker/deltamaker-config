@@ -1,10 +1,16 @@
 #!/bin/bash
-# 2/10/2022
+# 5/26/2023
 #
 # This script copies the active printer.cfg files to ./deltamaker-config/example and
 #  and octoprint config.yaml file to ./deltamaker-config/octoprint
 #
-serialnumber=`awk -F= '$1=="serialnumber"{print $2}' /boot/deltamaker.txt`
+dmtxt="/boot/deltamaker.txt"
+if [ ! -f $dmtxt ]; then
+    echo "Error: $dmtxt not found"
+    exit -1
+fi
+
+serialnumber=`awk -F= '$1=="serialnumber"{print $2}' $dmtxt`
 cd "$( dirname "${BASH_SOURCE[0]}" )" ; cd ../
 dir=`pwd`
 

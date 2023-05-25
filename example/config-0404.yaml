@@ -12,7 +12,7 @@ appearance:
       - connection
       - state
       - files
-  name: DeltaMaker 0000
+  name: DeltaMaker 0404
 controls:
 - children:
   - command: 'SKYLIGHT ENABLE=1 LEVEL=%(level)s '
@@ -91,7 +91,6 @@ plugins:
   - tracking
   - automaticshutdown
   - gridspace
-  - softwareupdate
   action_command_notification:
     enable: false
   actioncommands:
@@ -119,7 +118,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 1f823f86-1f4f-4f26-8e36-6cd4f4a3d362
+    upnpUuid: 85fb140d-4860-4d71-8066-4ef42debd302
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
