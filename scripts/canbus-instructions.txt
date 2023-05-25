@@ -1,4 +1,4 @@
-5/2/2023
+5/25/2023
 
 General procedure for configuring Klipper with CanBoot for the SKR Pico controller board as USB to Canbus Bridge.
 
@@ -89,18 +89,24 @@ $ python3 ~/CanBoot/scripts/flash_can.py -f ~/klipper/out/klipper.bin -d /dev/se
 Reboot and your Pico should come up in USB to can bridge mode.
 $ sudo reboot
 
-Once it comes back up, make sure the SKR-Pico is powered on and bring up the CAN network by running 
-the following command:  (Select 250000, 500000, or 1000000)
+Once it comes back up, make sure the SKR-Pico is powered on and check the status of the canbus network
+$ ifconfig can0 
+
+If not found, startup the canbus network
 $ sudo ip link set up can0 type can bitrate 500000
-
-$ sudo vi /etc/network/interfaces.d/can0
-
-	allow-hotplug can0
-	iface can0 can static
-	    bitrate 500000
-	    up ifconfig $IFACE txqueuelen 1024
+$ sudo ip link set can0 txqueuelen 1024
 
 
+$ sudo rm /etc/network/interfaces.d/can0
+
+$ cat <<EOF | sudo tee /etc/network/interfaces.d/can0
+allow-hotplug can0
+iface can0 can static
+    bitrate 500000
+    up ifconfig $IFACE txqueuelen 1024
+EOF
+
+#########################################
 
 FUTURE KLIPPER UPDATES
 
@@ -129,29 +135,9 @@ $ sudo reboot
 
 #########################################
 
-Check the status of the canbus network
-$ ifconfig can0 
-
-If not found, startup the canbus network
-$ sudo ip link set up can0 type can bitrate 500000
-$ sudo ip link set can0 txqueuelen 1024
-
-
-$ sudo rm /etc/network/interfaces.d/can0
-
-$ cat <<EOF | sudo tee /etc/network/interfaces.d/can0
-allow-hotplug can0
-iface can0 can static
-    bitrate 500000
-    up ifconfig $IFACE txqueuelen 1024
-EOF
-
-#########################################
-
-
 EBB36 Toolhead Board Setup
 
-$ cd CanBoot
+$ cd ~/CanBoot
 $ make menuconfig
 
 Configure your makefile for the EBB 36 / 42 v1.1/v1.2 with STM32G0B1
