@@ -56,7 +56,7 @@ $ sudo make flash FLASH_DEVICE=2e8a:0003
 
 This will flash the firmware image we compiled earlier onto the SKR-Pico.
 This take a minute or so.
-When the /mnt unmounts remove the boot jumper.
+Then remove the boot jumper.
 Press reset and continue to the next phase...
 
 ####
@@ -88,6 +88,18 @@ $ python3 ~/CanBoot/scripts/flash_can.py -f ~/klipper/out/klipper.bin -d /dev/se
 
 Reboot and your Pico should come up in USB to can bridge mode.
 $ sudo reboot
+
+Once it comes back up, make sure the SKR-Pico is powered on and bring up the CAN network by running 
+the following command:  (Select 250000, 500000, or 1000000)
+$ sudo ip link set up can0 type can bitrate 500000
+
+$ sudo vi /etc/network/interfaces.d/can0
+
+	allow-hotplug can0
+	iface can0 can static
+	    bitrate 500000
+	    up ifconfig $IFACE txqueuelen 1024
+
 
 
 FUTURE KLIPPER UPDATES
