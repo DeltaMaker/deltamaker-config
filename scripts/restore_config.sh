@@ -1,10 +1,22 @@
 #!/bin/bash
-# 2/1/2022
+# 5/26/2023
 #
 # This script restores the active printer.cfg files from ./deltamaker-config/example and
 #  and octoprint config.yaml file from ./deltamaker-config/octoprint
 #
-serialnumber=`awk -F= '$1=="serialnumber"{print $2}' /boot/deltamaker.txt`
+dmtxt="/boot/deltamaker.txt"
+if [ -f $dmtxt ]; then
+    serialnumber=`awk -F= '$1=="serialnumber"{print $2}' $dmtxt`
+    echo "deltamaker-$serialnumber"
+fi
+# require serial number to be included on the command line
+serialnumber=$1
+if [ ! $serialnumber ]; then
+    echo "Serial Number missing. Must be 4-digit number"
+    echo "Example usage: $0 0000"
+    exit -1
+fi
+
 cd "$( dirname "${BASH_SOURCE[0]}" )" ; cd ../
 dir=`pwd`
 
