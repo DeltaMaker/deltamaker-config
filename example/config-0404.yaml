@@ -114,13 +114,11 @@ plugins:
         read_until: 1611052200
     enabled_channels:
     - _important
-  arc_welder:
-    enabled: false
   cura:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 6bfaaa01-6f61-4197-a3f8-0487d1b5f057
+    upnpUuid: 85fb140d-4860-4d71-8066-4ef42debd302
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -136,9 +134,6 @@ plugins:
   klipper:
     _config_version: 4
     configuration:
-      config_path: ~/printer_data/config
-      confirm_reload: false
-      logpath: ~/printer_data/logs/klippy.log
       shortStatus_sidebar: false
     connection:
       hide_editor_button: true
