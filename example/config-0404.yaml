@@ -118,7 +118,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 85fb140d-4860-4d71-8066-4ef42debd302
+    upnpUuid: a9fa0f53-245f-4a1c-a0b6-98f968513b00
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -224,6 +224,8 @@ plugins:
     progress_from_time: true
   navbartemp:
     soc_name: RPi
+  pi_support:
+    ignore_undervoltage_on_printstart: true
   preheat:
     enable_bed: false
     enable_chamber: false
