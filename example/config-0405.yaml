@@ -229,6 +229,12 @@ plugins:
     enable_bed: false
     enable_chamber: false
     fallback_tool: '100'
+  prusaslicerthumbnails:
+    inline_thumbnail: true
+    inline_thumbnail_position_left: true
+    inline_thumbnail_scale_value: '40'
+    scale_inline_thumbnail: true
+    state_panel_thumbnail: false
   softwareupdate:
     _config_version: 9
   tracking:
