@@ -23,12 +23,12 @@ extruder:
 heatedBed: false
 heatedChamber: false
 id: _default
-model: DeltaMaker Pro
+model: DeltaMaker 2XT
 name: Default
 volume:
   custom_box: false
-  depth: 480.0
+  depth: 240.0
   formFactor: circular
-  height: 320.0
+  height: 560.0
   origin: center
-  width: 480.0
+  width: 240.0

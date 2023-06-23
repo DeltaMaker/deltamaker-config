@@ -15,24 +15,6 @@ appearance:
   name: DeltaMaker 0380
 controls:
 - children:
-  - command: 'SKYLIGHT ENABLE=1 LEVEL=%(level)s '
-    confirm: null
-    input:
-    - default: 4
-      name: Brightness (1-10)
-      parameter: level
-      slider:
-        max: 10
-        min: 1
-        step: 1
-    name: Set/On
-  - command: SKYLIGHT ENABLE=0
-    confirm: null
-    name: 'Off'
-  collapsed: true
-  layout: horizontal
-  name: Skylight
-- children:
   - command: AUTO_BED_MAPPING
     confirm: null
     name: Auto Bed Mapping
@@ -91,6 +73,7 @@ plugins:
   - tracking
   - automaticshutdown
   - gridspace
+  - webcamSB
   action_command_notification:
     enable: false
   actioncommands:
