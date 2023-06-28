@@ -54,7 +54,8 @@ heater: extruder
 
 ##### DELTAMAKER TOUCH PROBE #####
 [probe]
-pin: ^ebb36:PROBE_2
+#pin: ^ebb36:PROBE_2
+pin: ^gpio29           # SERVO on skr-pico board (configurable for in/out)
 
 ##### PROBE 5V POWER #####
 [output_pin probe_power_pin]
