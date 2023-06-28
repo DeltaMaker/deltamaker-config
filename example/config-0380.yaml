@@ -12,26 +12,8 @@ appearance:
       - connection
       - state
       - files
-  name: DeltaMaker 0405
+  name: DeltaMaker 0380
 controls:
-- children:
-  - command: 'SKYLIGHT ENABLE=1 LEVEL=%(level)s '
-    confirm: null
-    input:
-    - default: 4
-      name: Brightness (1-10)
-      parameter: level
-      slider:
-        max: 10
-        min: 1
-        step: 1
-    name: Set/On
-  - command: SKYLIGHT ENABLE=0
-    confirm: null
-    name: 'Off'
-  collapsed: true
-  layout: horizontal
-  name: Skylight
 - children:
   - command: AUTO_BED_MAPPING
     confirm: null
@@ -91,6 +73,7 @@ plugins:
   - tracking
   - automaticshutdown
   - gridspace
+  - webcamSB
   action_command_notification:
     enable: false
   actioncommands:
@@ -118,7 +101,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 08f0e90d-75db-4e39-9e82-71a8aaa70989
+    upnpUuid: 58f0e2d5-a9ed-4f38-9008-73f27cbe9cc7
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:

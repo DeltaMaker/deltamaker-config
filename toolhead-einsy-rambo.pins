@@ -23,7 +23,7 @@ sensor_pin: PF0
 cs_pin: PK4
 sense_resistor: 0.22
 diag1_pin: !PK3
-run_current: 0.5
+run_current: 0.55
 
 ##### EXTRUDER FAN #####
 [heater_fan extruder_fan]
