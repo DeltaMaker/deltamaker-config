@@ -27,7 +27,7 @@ endstop_pin: ^PB6
 cs_pin: PG0
 sense_resistor: 0.220
 diag1_pin: !PK2
-run_current: 0.65
+run_current: 0.60
 
 ##### STEPPER MOTOR B #####
 [stepper_b]
@@ -41,7 +41,7 @@ endstop_pin: ^PB5
 cs_pin: PG2
 sense_resistor: 0.220
 diag1_pin: !PK7
-run_current: 0.65
+run_current: 0.60
 
 ##### STEPPER MOTOR C #####
 [stepper_c]
@@ -55,5 +55,5 @@ endstop_pin: ^PF2
 cs_pin: PK5
 sense_resistor: 0.220
 diag1_pin: !PK6
-run_current: 0.65
+run_current: 0.60
 
