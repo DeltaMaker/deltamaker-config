@@ -31,7 +31,8 @@ pin: PG5
 #pin: PH3
 
 ##### PART COOLING FAN #####
-#[fan]
+[fan]
+pin: PH2
 #pin: PH5
 
 ##### FILAMENT-OUT SWITCH #####
