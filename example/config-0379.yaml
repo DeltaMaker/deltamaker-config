@@ -102,7 +102,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 84bb782c-3d61-478a-90f3-4187ff96c727
+    upnpUuid: abbeb79c-4c04-47ed-86ee-3a54a86d5b43
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -216,9 +216,8 @@ plugins:
   prusaslicerthumbnails:
     inline_thumbnail: true
     inline_thumbnail_position_left: true
-    inline_thumbnail_scale_value: '40'
+    inline_thumbnail_scale_value: '15'
     scale_inline_thumbnail: true
-    state_panel_thumbnail: false
   softwareupdate:
     _config_version: 9
   tracking:
