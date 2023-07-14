@@ -1,0 +1,54 @@
+#
+# Date: 7/14/2023 
+#
+# DeltaMaker Toolhead Pin Definitions file: toolhead-EC-skr-pico.pins
+#
+# Controller board specific: DeltaMaker MCU pin definitions for BTT SKR Pico v1.0 board.
+#
+# SKR Pico Toolhead Objects
+# Extruder, Fan, Probe
+#
+# SKR Pico support for 14-pin Toolhead Wire Harness
+#
+
+##### EXTRUDER MOTOR on Stepper C connector #####
+[extruder]
+step_pin: gpio19
+dir_pin: !gpio28
+enable_pin: !gpio2
+
+##### EXTRUDER HEATER/SENSOR #####
+heater_pin: gpio23 	# HE
+sensor_pin: gpio27 	# TH0
+
+[tmc2209 extruder]
+uart_pin: gpio9
+tx_pin: gpio8
+uart_address: 1 	# Stepper C
+run_current: 0.68
+#stealthchop_threshold: 999999
+
+
+##### EXTRUDER FAN #####
+[heater_fan extruder_fan]
+pin: gpio17 		# FAN1
+heater: extruder
+
+##### PART COOLING FAN #####
+[fan]
+pin: gpio21		# HB
+
+##### FILAMENT-OUT SWITCH #####
+#[filament_switch_sensor runout_sensor]
+#switch_pin: ^gpio22	# PROBE on skr-pico board (configurable for in/out)
+
+##### DELTAMAKER TOUCH PROBE #####
+[probe]
+#pin: ^gpio16		# E0-STOP on skr-pico board
+pin: ^gpio29		# SERVO on skr-pico board (configurable for in/out)
+
+##### PROBE 5V POWER #####
+[output_pin probe_power_pin]
+pin: gpio18		# FAN2
+value: 0
+shutdown_value: 0
