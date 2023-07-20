@@ -92,6 +92,7 @@ plugins:
   - automaticshutdown
   - gridspace
   - softwareupdate
+  - webcamSB
   action_command_notification:
     enable: false
   actioncommands:
