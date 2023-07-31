@@ -121,6 +121,8 @@ plugins:
   discovery:
     publicPort: 80
     upnpUuid: 2436b503-3715-458b-9955-3d978b0e4aa3
+  draggable_files:
+    scrolled_expanded_height: '603'
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -230,6 +232,13 @@ plugins:
     enable_bed: false
     enable_chamber: false
     fallback_tool: '100'
+  prusaslicerthumbnails:
+    filelist_height: '603'
+    inline_thumbnail: true
+    inline_thumbnail_position_left: true
+    inline_thumbnail_scale_value: '15'
+    resize_filelist: true
+    scale_inline_thumbnail: true
   softwareupdate:
     _config_version: 9
   tracking:
@@ -256,6 +265,8 @@ serial:
   autoconnect: true
   baudrate: 250000
   disconnectOnErrors: false
+  ignoredCommands:
+  - M140
   port: /tmp/printer
 server:
   allowFraming: true
