@@ -29,7 +29,6 @@ controls:
   - command: SKYLIGHT ENABLE=0
     confirm: null
     name: 'Off'
-  collapsed: true
   layout: horizontal
   name: Skylight
 - children:
@@ -91,8 +90,8 @@ plugins:
   - tracking
   - automaticshutdown
   - gridspace
-  - softwareupdate
   - webcamSB
+  - softwareupdate
   action_command_notification:
     enable: false
   actioncommands:
@@ -116,13 +115,17 @@ plugins:
         read_until: 1611052200
     enabled_channels:
     - _important
+  classicwebcam:
+    _config_version: 1
+    snapshot: http://127.0.0.1:8080/?action=snapshot
+    stream: /webcam/?action=stream
   cura:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 2436b503-3715-458b-9955-3d978b0e4aa3
+    upnpUuid: 093b70c6-d590-402e-bbc3-8d496e77e7a9
   draggable_files:
-    scrolled_expanded_height: '603'
+    scrolled_expanded_height: '403'
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -162,25 +165,20 @@ plugins:
       name: Abort Calibrate
       sidebar: false
       tab: true
-    - macro: 'G28
-
+    - macro: |-
+        G28
         G1 Z20 F4000
-
         PROBE_POWER_ON
-
         PROBE_CALIBRATE
-
-        TESTZ Z=-4'
+        TESTZ Z=-4
       name: Probe Calibrate
       sidebar: false
       tab: true
-    - macro: 'G28
-
+    - macro: |-
+        G28
         G1 Z20 F4000
-
         DELTA_CALIBRATE method=manual
-
-        TESTZ Z=-4'
+        TESTZ Z=-4
       name: Delta Calibrate
       sidebar: false
       tab: true
@@ -208,9 +206,9 @@ plugins:
       name: TESTZ Z=+0.01
       sidebar: false
       tab: true
-    - macro: 'ACCEPT
-
-        TESTZ Z=-4'
+    - macro: |-
+        ACCEPT
+        TESTZ Z=-4
       name: Next Point
       sidebar: false
       tab: true
@@ -233,7 +231,7 @@ plugins:
     enable_chamber: false
     fallback_tool: '100'
   prusaslicerthumbnails:
-    filelist_height: '603'
+    filelist_height: '403'
     inline_thumbnail: true
     inline_thumbnail_position_left: true
     inline_thumbnail_scale_value: '15'
@@ -301,8 +299,6 @@ temperature:
     name: UNLOAD
 webcam:
   ffmpeg: /usr/bin/ffmpeg
-  snapshot: http://127.0.0.1:8080/?action=snapshot
-  stream: /webcam/?action=stream
   timelapse:
     fps: 25
     options: {}
