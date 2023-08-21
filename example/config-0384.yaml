@@ -122,7 +122,7 @@ plugins:
     publicPort: 80
     upnpUuid: 6465f838-db45-4d2e-8451-a684b3ccb05a
   draggable_files:
-    scrolled_expanded_height: '603'
+    scrolled_expanded_height: '403'
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -233,11 +233,10 @@ plugins:
     enable_chamber: false
     fallback_tool: '100'
   prusaslicerthumbnails:
-    filelist_height: '603'
+    filelist_height: '403'
     inline_thumbnail: true
     inline_thumbnail_position_left: true
     inline_thumbnail_scale_value: '15'
-    resize_filelist: true
     scale_inline_thumbnail: true
   softwareupdate:
     _config_version: 9
@@ -289,10 +288,6 @@ temperature:
     chamber: null
     extruder: 230
     name: DM-PLA
-  - bed: 0
-    chamber: null
-    extruder: 250
-    name: DM-PETG
   - bed: 0
     chamber: 0
     extruder: 100
