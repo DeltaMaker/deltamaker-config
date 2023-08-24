@@ -26,7 +26,7 @@ endstop_pin: ^gpio4
 uart_pin: gpio9
 tx_pin: gpio8
 uart_address: 0
-run_current: 0.8        # was 0.68
+run_current: 0.68
 hold_current: 0.58
 
 ##### STEPPER MOTOR B #####
@@ -40,7 +40,7 @@ endstop_pin: ^gpio3
 uart_pin: gpio9
 tx_pin: gpio8
 uart_address: 2
-run_current: 0.8        # was 0.68
+run_current: 0.68
 hold_current: 0.58
 
 ##### STEPPER MOTOR C on Extruder connector #####
@@ -54,5 +54,5 @@ endstop_pin: ^gpio25	 # Z-STOP
 uart_pin: gpio9
 tx_pin: gpio8
 uart_address: 3
-run_current: 0.8        # was 0.68
+run_current: 0.68
 hold_current: 0.58
