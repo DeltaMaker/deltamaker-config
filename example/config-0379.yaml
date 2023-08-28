@@ -71,7 +71,6 @@ plugins:
   - automaticshutdown
   - gridspace
   - webcamSB
-  - softwareupdate
   action_command_notification:
     enable: false
   actioncommands:
@@ -215,7 +214,6 @@ plugins:
     inline_thumbnail: true
     inline_thumbnail_position_left: true
     inline_thumbnail_scale_value: '15'
-    resize_filelist: true
     scale_inline_thumbnail: true
   softwareupdate:
     _config_version: 9
