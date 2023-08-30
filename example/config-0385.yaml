@@ -56,26 +56,6 @@ controls:
   layout: vertical
   name: Bed Leveling & Nozzle Height
   type: section
-- children:
-  - command: PROBE_BIAS_CALIBRATE
-    confirm: null
-    name: Probe Bias Calibration
-  - command: TOO_LOW STEP=0.025
-    confirm: null
-    name: Too Low
-  - command: TOO_HIGH STEP=0.025
-    confirm: null
-    name: Too High
-  - command: NEXT
-    name: Next Location
-  - commands:
-    - SAVE
-    - SAVE_CONFIG
-    confirm: null
-    name: Save Config
-  collapsed: true
-  layout: vertical
-  name: Advanced Calibration
 feature:
   keyboardControl: false
   modelSizeDetection: false
@@ -237,7 +217,6 @@ plugins:
     inline_thumbnail: true
     inline_thumbnail_position_left: true
     inline_thumbnail_scale_value: '15'
-    resize_filelist: true
     scale_inline_thumbnail: true
   softwareupdate:
     _config_version: 9
