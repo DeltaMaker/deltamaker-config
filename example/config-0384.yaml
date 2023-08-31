@@ -56,26 +56,6 @@ controls:
   layout: vertical
   name: Bed Leveling & Nozzle Height
   type: section
-- children:
-  - command: PROBE_BIAS_CALIBRATE
-    confirm: null
-    name: Probe Bias Calibration
-  - command: TOO_LOW STEP=0.025
-    confirm: null
-    name: Too Low
-  - command: TOO_HIGH STEP=0.025
-    confirm: null
-    name: Too High
-  - command: NEXT
-    name: Next Location
-  - commands:
-    - SAVE
-    - SAVE_CONFIG
-    confirm: null
-    name: Save Config
-  collapsed: true
-  layout: vertical
-  name: Advanced Calibration
 feature:
   keyboardControl: false
   modelSizeDetection: false
@@ -91,8 +71,8 @@ plugins:
   - tracking
   - automaticshutdown
   - gridspace
-  - softwareupdate
   - webcamSB
+  - softwareupdate
   action_command_notification:
     enable: false
   actioncommands:
@@ -116,11 +96,15 @@ plugins:
         read_until: 1611052200
     enabled_channels:
     - _important
+  classicwebcam:
+    _config_version: 1
+    snapshot: http://127.0.0.1:8080/?action=snapshot
+    stream: /webcam/?action=stream
   cura:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 6465f838-db45-4d2e-8451-a684b3ccb05a
+    upnpUuid: c2bbaf90-855c-4cee-b5e0-5459b9e79b53
   draggable_files:
     scrolled_expanded_height: '403'
   errortracking:
@@ -132,12 +116,14 @@ plugins:
     - _name: Default
   gcodeviewer:
     _config_version: 1
+    alwaysCompress: true
   gridspace:
     guid: abb481a2-83c9-4df1-80b2-6ffed05f3fa8
     show_help: false
   klipper:
     _config_version: 4
     configuration:
+      confirm_reload: false
       shortStatus_sidebar: false
     connection:
       hide_editor_button: true
@@ -162,25 +148,20 @@ plugins:
       name: Abort Calibrate
       sidebar: false
       tab: true
-    - macro: 'G28
-
+    - macro: |-
+        G28
         G1 Z20 F4000
-
         PROBE_POWER_ON
-
         PROBE_CALIBRATE
-
-        TESTZ Z=-4'
+        TESTZ Z=-4
       name: Probe Calibrate
       sidebar: false
       tab: true
-    - macro: 'G28
-
+    - macro: |-
+        G28
         G1 Z20 F4000
-
         DELTA_CALIBRATE method=manual
-
-        TESTZ Z=-4'
+        TESTZ Z=-4
       name: Delta Calibrate
       sidebar: false
       tab: true
@@ -208,9 +189,9 @@ plugins:
       name: TESTZ Z=+0.01
       sidebar: false
       tab: true
-    - macro: 'ACCEPT
-
-        TESTZ Z=-4'
+    - macro: |-
+        ACCEPT
+        TESTZ Z=-4
       name: Next Point
       sidebar: false
       tab: true
@@ -264,6 +245,8 @@ serial:
   autoconnect: true
   baudrate: 250000
   disconnectOnErrors: false
+  ignoredCommands:
+  - M140
   port: /tmp/printer
 server:
   allowFraming: true
@@ -294,8 +277,6 @@ temperature:
     name: UNLOAD
 webcam:
   ffmpeg: /usr/bin/ffmpeg
-  snapshot: http://127.0.0.1:8080/?action=snapshot
-  stream: /webcam/?action=stream
   timelapse:
     fps: 25
     options: {}
