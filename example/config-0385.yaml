@@ -271,10 +271,6 @@ temperature:
     extruder: 230
     name: DM-PLA
   - bed: 0
-    chamber: null
-    extruder: 250
-    name: DM-PETG
-  - bed: 0
     chamber: 0
     extruder: 100
     name: UNLOAD
