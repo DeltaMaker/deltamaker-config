@@ -15,7 +15,7 @@ color: default
 extruder:
   count: 1
   defaultExtrusionLength: 5
-  nozzleDiameter: 0.5
+  nozzleDiameter: 0.35
   offsets:
   - - 0.0
     - 0.0
@@ -23,12 +23,12 @@ extruder:
 heatedBed: false
 heatedChamber: false
 id: _default
-model: DeltaMaker Pro
+model: DeltaMaker 3D Printer
 name: Default
 volume:
   custom_box: false
-  depth: 470.0
+  depth: 240.0
   formFactor: circular
-  height: 340.0
+  height: 320.0
   origin: center
-  width: 470.0
+  width: 240.0
