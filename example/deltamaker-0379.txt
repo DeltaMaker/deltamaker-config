@@ -1,8 +1,7 @@
 #
 # DeltaMaker config file: /boot/deltamaker.txt
-# 2023-07-06 
-# Deltamaker 2XT  (a.k.a 9x22)
-# UCF Library
+# 2023-08-22
+# DeltaMaker 2XT
 
 serialnumber=0379
 

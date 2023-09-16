@@ -12,7 +12,7 @@ appearance:
       - connection
       - state
       - files
-  name: DeltaMaker 0383
+  name: DeltaMaker 0384
 controls:
 - children:
   - command: 'SKYLIGHT ENABLE=1 LEVEL=%(level)s '
@@ -29,6 +29,7 @@ controls:
   - command: SKYLIGHT ENABLE=0
     confirm: null
     name: 'Off'
+  collapsed: true
   layout: horizontal
   name: Skylight
 - children:
@@ -103,7 +104,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 093b70c6-d590-402e-bbc3-8d496e77e7a9
+    upnpUuid: c2bbaf90-855c-4cee-b5e0-5459b9e79b53
   draggable_files:
     scrolled_expanded_height: '403'
   errortracking:
@@ -115,12 +116,14 @@ plugins:
     - _name: Default
   gcodeviewer:
     _config_version: 1
+    alwaysCompress: true
   gridspace:
     guid: abb481a2-83c9-4df1-80b2-6ffed05f3fa8
     show_help: false
   klipper:
     _config_version: 4
     configuration:
+      confirm_reload: false
       shortStatus_sidebar: false
     connection:
       hide_editor_button: true
@@ -215,7 +218,6 @@ plugins:
     inline_thumbnail: true
     inline_thumbnail_position_left: true
     inline_thumbnail_scale_value: '15'
-    resize_filelist: true
     scale_inline_thumbnail: true
   softwareupdate:
     _config_version: 9
@@ -269,10 +271,6 @@ temperature:
     chamber: null
     extruder: 230
     name: DM-PLA
-  - bed: 0
-    chamber: null
-    extruder: 250
-    name: DM-PETG
   - bed: 0
     chamber: 0
     extruder: 100

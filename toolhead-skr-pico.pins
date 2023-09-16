@@ -24,7 +24,8 @@ sensor_pin: gpio27 	# TH0
 uart_pin: gpio9
 tx_pin: gpio8
 uart_address: 3
-run_current: 0.6
+run_current: 0.68
+hold_current: 0.58
 #stealthchop_threshold: 999999
 
 ##### EXTRUDER FAN #####

@@ -26,6 +26,7 @@ uart_pin: gpio9
 tx_pin: gpio8
 uart_address: 1 	# Stepper C
 run_current: 0.68
+hold_current: 0.58
 #stealthchop_threshold: 999999
 
 
@@ -35,8 +36,8 @@ pin: gpio17 		# FAN1
 heater: extruder
 
 ##### PART COOLING FAN #####
-[fan]
-pin: gpio21		# HB
+#[fan]
+#pin: gpio21		# HB
 
 ##### FILAMENT-OUT SWITCH #####
 #[filament_switch_sensor runout_sensor]

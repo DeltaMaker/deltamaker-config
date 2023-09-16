@@ -27,8 +27,8 @@ model: DeltaMaker Pro
 name: Default
 volume:
   custom_box: false
-  depth: 470.0
+  depth: 240.0
   formFactor: circular
-  height: 340.0
+  height: 320.0
   origin: center
-  width: 470.0
+  width: 240.0
