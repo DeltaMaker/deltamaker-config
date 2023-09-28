@@ -24,7 +24,8 @@ sensor_pin: gpio27 	# TH0
 uart_pin: gpio9
 tx_pin: gpio8
 uart_address: 3
-run_current: 0.48
+run_current: 0.68
+hold_current: 0.58
 #stealthchop_threshold: 999999
 
 ##### EXTRUDER FAN #####
@@ -43,6 +44,7 @@ pin: gpio21		# HB
 ##### DELTAMAKER TOUCH PROBE #####
 [probe]
 pin: ^gpio16		# E0-STOP on skr-pico board
+#pin: ^gpio29		# SERVO on skr-pico board (configurable for in/out)
 
 ##### PROBE 5V POWER #####
 [output_pin probe_power_pin]
