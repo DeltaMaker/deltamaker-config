@@ -1,4 +1,4 @@
-#
+
 # Date: 7/14/2023 
 #
 # DeltaMaker Toolhead Pin Definitions file: toolhead-EC-skr-pico.pins
@@ -18,7 +18,8 @@ dir_pin: !gpio28
 enable_pin: !gpio2
 
 ##### EXTRUDER HEATER/SENSOR #####
-heater_pin: gpio23 	# HE
+#heater_pin: gpio23 	# HE
+heater_pin: gpio21      # HB (rev_c 9/28/2023)
 sensor_pin: gpio27 	# TH0
 
 [tmc2209 extruder]
@@ -38,14 +39,17 @@ heater: extruder
 ##### PART COOLING FAN #####
 #[fan]
 #pin: gpio21		# HB
+#pin: gpio23		# HE (rev_c 9/28/2023)
 
 ##### FILAMENT-OUT SWITCH #####
 #[filament_switch_sensor runout_sensor]
 #switch_pin: ^gpio22	# PROBE on skr-pico board (configurable for in/out)
+#pin: ^gpio16            # E0-STOP on skr-pico board (rev_c 9/28/2023)
 
 ##### DELTAMAKER TOUCH PROBE #####
 [probe]
-pin: ^gpio16		# E0-STOP on skr-pico board
+#pin: ^gpio16		# E0-STOP on skr-pico board
+pin: ^gpio22 		# PROBE on skr-pico board (rev_c 9/28/2023)
 #pin: ^gpio29		# SERVO on skr-pico board (configurable for in/out)
 
 ##### PROBE 5V POWER #####
