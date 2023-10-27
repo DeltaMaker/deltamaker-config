@@ -29,7 +29,7 @@ sensor_pin: ebb36:TH0
 [tmc2209 extruder]
 uart_pin: ebb36:EXT_UART
 stealthchop_threshold: 0
-run_current: 0.50
+run_current: 0.68
 
 ##### ADXL345 ######
 [adxl345]
