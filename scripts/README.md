@@ -8,3 +8,12 @@ Install a service to Reset the SKR Pico when the RPi boots.
 	sudo cp ./scripts/reset-skr-pico.service /etc/systemd/system/
 	sudo systemctl enable --now reset-skr-pico.service
 
+
+
+KlipperScreen Fix
+
+	sudo systemctl disable ModemManager.service
+
+Next, reboot the pi.
+Apparently, there are conflicts with klipperScreen.
+
