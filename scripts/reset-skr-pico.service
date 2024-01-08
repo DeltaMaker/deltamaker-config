@@ -1,0 +1,10 @@
+[Unit]
+Description=Toggle GPIO26 to reset the SKR Pico board
+RequiredBy=klipper.service
+
+[Service]
+ExecStart=/usr/local/bin/reset-skr-pico.sh
+
+[Install]
+WantedBy=multi-user.target
+
