@@ -102,7 +102,7 @@ $ sudo rm /etc/network/interfaces.d/can0
 $ cat <<EOF | sudo tee /etc/network/interfaces.d/can0
 allow-hotplug can0
 iface can0 can static
-    bitrate 500000
+    bitrate 1000000
     up ifconfig $IFACE txqueuelen 1024
 EOF
 
@@ -209,6 +209,11 @@ $ make clean
 $ make
 
 $ ~/CanBoot/scripts/flash_can.py -i can0 -q
+<<<<<<< Local Changes
+	
+
+=======
+>>>>>>> External Changes
 Detected UUID: 667e25519d16, Application: CanBoot
 
 You can now flash the board
