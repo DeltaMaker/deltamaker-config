@@ -12,6 +12,9 @@
 #
 
 ##### EXTRUDER MOTOR on Stepper C connector #####
+[multi_pin dual_heater]
+pins: gpio21, gpio23
+
 [extruder]
 step_pin: gpio19
 dir_pin: !gpio28
@@ -19,7 +22,8 @@ enable_pin: !gpio2
 
 ##### EXTRUDER HEATER/SENSOR #####
 #heater_pin: gpio23 	# HE
-heater_pin: gpio21      # HB (rev_c 9/28/2023)
+#heater_pin: gpio21      # HB (rev_c 9/28/2023)
+heater_pin: multi_pin:dual_heater
 sensor_pin: gpio27 	# TH0
 
 [tmc2209 extruder]
