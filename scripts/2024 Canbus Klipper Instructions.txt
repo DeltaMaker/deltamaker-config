@@ -157,7 +157,15 @@ Verification Complete: SHA = D771B5C8752C24DE8E6D86789E863FC9B4E4C285
 Flash Success
 pi@deltamaker-0000:~/klipper $ 
 
-sudo reboot
+~/katapult/scripts/flashtool.py -q -v
 
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+Detected UUID: 694b65e65927, Application: Klipper
+Query Complete
+
+
+sudo reboot
+	
 Connection to deltamaker-0000.local closed by remote host.
 Connection to deltamaker-0000.local closed.
