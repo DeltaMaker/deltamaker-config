@@ -1,171 +1,246 @@
-##### INSTALL KATAPULT #####
+5/25/2023
 
-Building and flashing Katapult (formerly known as Canboot)
+General procedure for configuring Klipper with CanBoot for the SKR Pico controller board as USB to Canbus Bridge.
+
+UPDATE
+
+If necessary, update and install dependencies.
+$ sudo apt update
+$ sudo apt upgrade
+$ sudo apt install python3 python3-pip python3-can
+$ pip3 install pyserial
+
+
+GET CANBOOT
+
+$ cd ~/
+$ git clone https://github.com/Arksine/CanBoot
+
+
+Optionally, add Canboot to the moonraker update manager by adding the following lines to your moonraker.cof file.
+
+[update_manager CanBoot]
+type: git_repo
+path: ~/CanBoot
+origin: https://github.com/Arksine/CanBoot.git
+is_system_service: False
+
+
+CONFIGURE/FLASH CANBOOT
+
+This will install Canboot for SKR Pico in USB to can bridge mode
+
+Update to the latest Canboot and Klipper codabase as of 11-8-2022:
+Canboot v0.0.1-20-g600967e or newer
+Klipper v0.10.0-623-g5b1a6676 or newer
+SSH to your Klipper host
 
 Configure CanBoot for the SKR Pico
-
-	cd ~/katapult/
-	make clean
-	make menuconfig
+$ cd ~/CanBoot/
+$ make clean
+$ make menuconfig
 
 Settings:
+MCU Raspberry Pi RP2040
+Build CanBoot deployment 16Kib Bootloader
+Com interface USB
+Canboot in USB mode
 
-    Micro-controller Architecture (Raspberry Pi RP2040)  --->
-    Flash chip (W25Q080 with CLKDIV 2)  --->
-    Build Katapult deployment application (Do not build)  --->
-    Communication interface (USB)  --->
-    USB ids  --->
-()  GPIO pins to set on bootloader entry
-[*] Support bootloader entry on rapid double click of reset button
-[ ] Enable bootloader entry on button (or gpio) state
-[ ] Enable Status LED
-
-	make -j4
+$ make -j 4
 
 Connect the Pico by USB to the Klipper Host
 Install boot jumper on the SKR Pico and press the reset button
 
-	lsusb
-Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 001 Device 003: ID 2e8a:0003 Raspberry Pi RP2 Boot
-Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
-Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-
 Flash the SKR Pico firmware
-
-	sudo make flash FLASH_DEVICE=2e8a:0003
+$ sudo make flash FLASH_DEVICE=2e8a:0003
 
 This will flash the firmware image we compiled earlier onto the SKR-Pico.
 This take a minute or so.
 Then remove the boot jumper.
 Press reset and continue to the next phase...
 
-	lsusb
-Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 001 Device 004: ID 1d50:6177 OpenMoko, Inc. rp2040
-Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
-Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+####
 
+Flashing Klpper via USB the first time
 
-##### BUILDING KLIPPER FOR USB TO CANBUS BRIDGE #####
+SSH into the Klipper host and CD to klipper
 
-Building Klipper for use with Katapult
+$ cd ~/klipper/
+$ make clean
+$ make menuconfig
 
-See also: https://klipper.discourse.group/t/can-bus-katapult-and-klipper-on-a-voron-0/9829
+Settings
 
-SKR-PICO https://support.biqu3d.com/hc/en-us/articles/6339966579865-SKR-PICO-V1-0-FAQs
+MCU Raspberry Pi RP2040
+bootloader offset 16Kib Bootloader
+Com interface USB to CAN bus bridge
+CAN RX GPIO 1
+CAN Tx GPIO 0
+CAN bus speed 500000     (Select 250000, 500000, or 1000000)
 
-The SKR-Pico has two heater MOSFETs, HB and HE, which are both wired to the D-SUB printhead connector, 
-to support dual hotends (HE0 and HE1). The HB (gpio21) is wired to D-SUB pin 9 for HE0, and HE (gpio23) is 
-wired to D-SUB pin 11 for HE1.
-Note: For CANBUS toolheads, D-SUB pin 11 is redefined as CANBUS power, and gpio23 is set high at MCU startup.
-	
-	cd ~/klipper
-	make menuconfig
-	
-[*] Enable extra low-level configuration options
-    Micro-controller Architecture (Raspberry Pi RP2040)  --->
-    Bootloader offset (16KiB bootloader)  --->
-    Communication interface (USB to CAN bus bridge)  --->
-(1) CAN RX gpio number
-(0) CAN TX gpio number
-    USB ids  --->
-(1000000) CAN bus speed
-(gpio23) GPIO pins to set at micro-controller startup
-
-	make clean
-	make -j4
-	
-[snip]
-Version: v0.5.0-4354-g01ed8096-dirty-20231023_213743-deltamaker-0406
-  Linking out/klipper.elf
-  Creating bin file out/klipper.bin
-
-##### INITIAL KLIPPER INSTALL #####
-
-First-time Flashing Klipper
+$ make -j 4
 
 Get your serial ID
-	ls /dev/serial/by-id
-
-example: usb-katapult_rp2040_45503571290F1AD8-if00
+$ ls /dev/serial/by-id
 
 Flash the klipper.bin file to the SKR Pico
-	~/katapult/scripts/flashtool.py -f ~/klipper/out/klipper.bin -d /dev/serial/by-id/{your serial id}
-	
-example:
-	~/katapult/scripts/flashtool.py -f ~/klipper/out/klipper.bin \ 
-		-d /dev/serial/by-id/usb-katapult_rp2040_45503571290F1AD8-if00
-
-[snip]
-Verification Complete: SHA = E4456799264A04F699CCD104B66D0A74A301615E
-Flash Success
+$ python3 ~/CanBoot/scripts/flash_can.py -f ~/klipper/out/klipper.bin -d /dev/serial/by-id/{your serial id}
 
 Reboot and your Pico should come up in USB to can bridge mode.
-	sudo reboot
+$ sudo reboot
 
 Once it comes back up, make sure the SKR-Pico is powered on and check the status of the canbus network
-	ifconfig can0 
+$ ifconfig can0 
 
 If not found, startup the canbus network
-	sudo ip link set up can0 type can bitrate 1000000
-	sudo ip link set can0 txqueuelen 1024
+$ sudo ip link set up can0 type can bitrate 500000
+$ sudo ip link set can0 txqueuelen 1024
 
-	sudo rm /etc/network/interfaces.d/can0
 
-	cat <<EOF | sudo tee /etc/network/interfaces.d/can0
+$ sudo rm /etc/network/interfaces.d/can0
+
+$ cat <<EOF | sudo tee /etc/network/interfaces.d/can0
 allow-hotplug can0
 iface can0 can static
     bitrate 1000000
-    up ifconfig can0 txqueuelen 1024
+    up ifconfig $IFACE txqueuelen 1024
 EOF
 
-##### FUTURE KLIPPER UPDATES #####
+#########################################
 
-Reflashing Klipper in USB to canbus bridge mode
+FUTURE KLIPPER UPDATES
 
-1. Make sure the klipper service stopped.
+Flashing after Canboot is installed (this is only for Klipper in USB to can bridge mode)
 
-	sudo service klipper stop
+Getting the Canbus UUID 
+$ python3 ~/CanBoot/scripts/flash_can.py -q
+	-or-
+$ ~/klippy-env/bin/python ~/klipper/scripts/canbus_query.py can0
+	-or-
+$ grep canbus_uuid ~/printer.cfg
 
-2. Get uuid for the skr-pico mcu
+Run the canboot flash by UUID to enable CanBoot on USB firmware.
+$ python3 ~/CanBoot/scripts/flash_can.py -i can0 -f ~/klipper/out/klipper.bin -u {your uuid}
 
-	~/katapult/scripts/flashtool.py -q -v
-		-or-
-	~/klippy-env/bin/python ~/klipper/scripts/canbus_query.py can0
-		-or-
-	grep canbus_uuid ~/printer_data/config/printer.cfg
+Canboot will throw an error but will now appear as a USB device, Get the Canboot serial ID
+$ ls /dev/serial/by-id
 
-example: 
-Detected UUID: 3f4e2f47e455, Application: Klipper
+Build klipper as before (see above)
 
-3. Attempt to flash using can0 which will cause an error.
+Flash your new klipper bin via Canbus by serial ID
+$ python3 ~/CanBoot/scripts/flash_can.py -f ~/klipper/out/klipper.bin -d /dev/serial/by-id/{your serial id}
 
-	~/katapult/scripts/flashtool.py -i can0 -f ~/klipper/out/klipper.bin -u {your uuid} 
+Reboot
+$ sudo reboot
 
-example:
-	~/katapult/scripts/flashtool.py -i can0 -f ~/klipper/out/klipper.bin -u 3f4e2f47e455
+#########################################
 
-Checking for Katapult nodes...
-ERROR:root:Flash Error
-FlashCanError: Unable to find node matching UUID: 3f4e2f47e455
+EBB36 Toolhead Board Setup
 
-However, the skr-pico board should now be in DFU mode.
+$ cd ~/CanBoot
+$ make menuconfig
 
-	ls /dev/serial/by-id
+Configure your makefile for the EBB 36 / 42 v1.1/v1.2 with STM32G0B1
+
+	Micro-controller Architecture (STMicroelectronics STM32)
+	Processor model (STM32G0B1)
+	clock Reference (8 MHz crystal)
+	Communication interface (CAN bus (on PB0/PB1))
+	Application start offset (8KiB offset)
+	(500000) CAN bus speed
+
+$ make clean
+$ make
+
+Hook up the Board for flashing
+Connect your device to your PI via USB
+
+Hold both the RESET button and BOOT, then
+	1. Release Reset
+	2. Release Boot
 	
-usb-katapult_rp2040_45503571291433A8-if00
+Verify the device is in bootloader mode:
+$ lsusb
 
-4. This time, flash using the device identifier which should complete without error.
+   Bus 001 Device 005: ID 0483:df11 STMicroelectronics STM Device in DFU Mode
+   
+Flash the canboot bootloader to the board YOUR DeviceID (0483:df11) may be different CHECK IT!
 
-	~/katapult/scripts/flashtool.py -f ~/klipper/out/klipper.bin -d /dev/serial/by-id/usb-katapult_rp2040_45503571291433A8-if00
+ERASE AND FLASH THE CANBOOT FIRMWARE
 
-5. Restart the klipper service.
+$ sudo dfu-util -a 0 -D ~/CanBoot/out/canboot.bin --dfuse-address 0x08000000:force:mass-erase:leave -d 0483:df11
 
-	sudo service klipper start
+Opening DFU capable USB device...
+ID 0483:df11
+Run-time device DFU version 011a
+Claiming USB DFU Interface...
+Setting Alternate Setting #0 ...
+Determining device status: state = dfuIDLE, status = 0
+dfuIDLE, continuing
+DFU mode device DFU version 011a
+Device returned transfer size 1024
+DfuSe interface name: "Internal Flash   "
+Performing mass erase, this can take a moment
+Downloading to address = 0x08000000, size = 4148
+Download	[=========================] 100%         4148 bytes
+Download done.
+File downloaded successfully
+dfu-util: Error during download get_status
+
+NOTE: If you see an error, don’t worry its fine, provided you have the “File Downloaded Sucessfully”
+
+Power off the Board, and insert the CANBUS cable
+
+KLIPPER
+
+$ cd ~/klipper
+$ make menuconfig
+
+[*]	Enable extra low-level configuration options
+	Micro-controller Architecture (STMicroelectronics STM32)
+	Processor model (STM32G0B1)
+	Bootloader offset (8KiB bootloader)
+	Clock Reference (8 MHz crystal)
+	Communication interface (CAN bus (on PB0/PB1))
+	(500000) CAN bus speed
+	() GPIO pins to set at micro-controller startup
+
+$ make clean
+$ make
+
+$ ~/CanBoot/scripts/flash_can.py -i can0 -q
+<<<<<<< Local Changes
 	
 
+=======
+>>>>>>> External Changes
+Detected UUID: 667e25519d16, Application: CanBoot
+
+You can now flash the board
+
+$ python3 ~/CanBoot/scripts/flash_can.py -i can0 -f ~/klipper/out/klipper.bin -u {your uuid}
+
+Sending bootloader jump command...
+Resetting all bootloader node IDs...
+Checking for canboot nodes...
+Detected UUID: 667e25519d16, Application: CanBoot
+Attempting to connect to bootloader
+CanBoot Connected
+Protocol Version: 1.0.0
+Block Size: 64 bytes
+Application Start: 0x8002000
+MCU type: stm32g0b1xx
+Verifying canbus connection
+Flashing '/home/pi/klipper/out/klipper.bin'...
+
+[##################################################]
+
+Write complete: 14 pages
+Verifying (block count = 417)...
+
+[##################################################]
+
+Verification Complete: SHA = DB89BB3ABFA3D0E789E6AADFC5E4DE28A75DABC4
+CAN Flash Success
 
 
---------------------------------------------------------------
---------------------------------------------------------------

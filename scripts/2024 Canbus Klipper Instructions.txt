@@ -1,0 +1,171 @@
+#
+# Example setup 
+#
+
+pi@deltamaker-0000:~ $ 
+
+cd ~/katapult/
+
+pi@deltamaker-0000:~/katapult $ 
+
+make menuconfig
+
+Loaded configuration '/home/pi/katapult/.config'
+No changes to save (for '/home/pi/katapult/.config')
+pi@deltamaker-0000:~/katapult $ make clean
+pi@deltamaker-0000:~/katapult $ 
+
+make -j4
+
+  Creating symbolic link out/board
+  Building out/autoconf.h
+  Building out/lib/rp2040/elf2uf2/elf2uf2
+  Compiling out/src/sched.o
+  Compiling out/src/bootentry.o
+  Compiling out/src/command.o
+  Compiling out/src/flashcmd.o
+  Compiling out/src/initial_pins.o
+  Compiling out/src/rp2040/armcm_canboot.o
+  Compiling out/src/rp2040/main.o
+  Compiling out/src/rp2040/gpio.o
+  Compiling out/src/rp2040/timer.o
+  Compiling out/src/rp2040/flash.o
+  Compiling out/src/../lib/rp2040/pico/flash/hw_flash.o
+  Compiling out/src/generic/armcm_irq.o
+  Compiling out/src/generic/crc16_ccitt.o
+  Compiling out/src/rp2040/usbserial.o
+  Compiling out/src/generic/usb_cdc.o
+  Compiling out/src/rp2040/chipid.o
+  Building rp2040 stage2 out/stage2.o
+  Preprocessing out/src/rp2040/rp2040_link.ld
+  Building out/compile_time_request.o
+  Linking out/katapult.elf
+  Creating bin file out/katapult.bin
+  Creating uf2 file out/katapult.uf2
+  Creating legacy uf2 file out/canboot.uf2
+  Creating legacy binary out/canboot.bin
+pi@deltamaker-0000:~/katapult $ 
+
+~/deltamaker-config/scripts/boot-skr-pico.sh
+
+lsusb
+
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 008: ID 2e8a:0003 Raspberry Pi RP2 Boot
+Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+make flash FLASH_DEVICE=2e8a:0003
+
+  Flashing out/katapult.uf2 
+Loaded UF2 image with 21 pages
+Found rp2040 device on USB bus 1 address 8
+Flashing...
+Resetting interface
+Locking
+Exiting XIP mode
+Erasing
+Flashing
+Rebooting device
+pi@deltamaker-0000:~/katapult $ lsusb
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 009: ID 1d50:6177 OpenMoko, Inc. rp2040
+Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+pi@deltamaker-0000:~/katapult $ cd ~/klipper
+pi@deltamaker-0000:~/klipper $ ls /dev/serial/by-id/
+usb-katapult_rp2040_45503571270B9CB8-if00
+pi@deltamaker-0000:~/klipper $ make menuconfig
+Loaded configuration '/home/pi/klipper/.config'
+No changes to save (for '/home/pi/klipper/.config')
+pi@deltamaker-0000:~/klipper $ make clean
+pi@deltamaker-0000:~/klipper $ make -j4
+  Creating symbolic link out/board
+  Building out/autoconf.h
+  Compiling out/src/sched.o
+  Compiling out/src/command.o
+  Compiling out/src/basecmd.o
+  Compiling out/src/debugcmds.o
+  Compiling out/src/initial_pins.o
+  Compiling out/src/gpiocmds.o
+  Compiling out/src/stepper.o
+  Compiling out/src/endstop.o
+  Compiling out/src/trsync.o
+  Compiling out/src/adccmds.o
+  Compiling out/src/spicmds.o
+  Compiling out/src/i2ccmds.o
+  Compiling out/src/pwmcmds.o
+  Compiling out/src/buttons.o
+  Compiling out/src/tmcuart.o
+  Compiling out/src/neopixel.o
+  Compiling out/src/pulse_counter.o
+  Compiling out/src/lcd_st7920.o
+  Compiling out/src/lcd_hd44780.o
+  Compiling out/src/spi_software.o
+  Compiling out/src/i2c_software.o
+  Compiling out/src/sensor_lis2dw.o
+  Compiling out/src/thermocouple.o
+  Compiling out/src/sensor_adxl345.o
+  Compiling out/src/sensor_angle.o
+  Compiling out/src/sensor_mpu9250.o
+  Compiling out/src/rp2040/main.o
+  Compiling out/src/rp2040/watchdog.o
+  Compiling out/src/rp2040/gpio.o
+  Compiling out/src/rp2040/adc.o
+  Compiling out/src/rp2040/timer.o
+  Compiling out/src/rp2040/bootrom.o
+  Compiling out/src/generic/armcm_boot.o
+  Compiling out/src/generic/armcm_irq.o
+  Compiling out/src/generic/armcm_reset.o
+  Compiling out/src/generic/timer_irq.o
+  Compiling out/src/generic/crc16_ccitt.o
+  Compiling out/src/rp2040/can.o
+  Compiling out/src/rp2040/chipid.o
+  Compiling out/src/../lib/can2040/can2040.o
+  Compiling out/src/generic/canserial.o
+  Compiling out/src/generic/usb_canbus.o
+  Compiling out/src/../lib/fast-hash/fasthash.o
+  Compiling out/src/rp2040/usbserial.o
+  Compiling out/src/rp2040/hard_pwm.o
+  Compiling out/src/rp2040/spi.o
+  Compiling out/src/rp2040/i2c.o
+  Preprocessing out/src/generic/armcm_link.ld
+  Building out/compile_time_request.o
+Version: v0.12.0-61-gb50d6669
+  Linking out/klipper.elf
+  Creating bin file out/klipper.bin
+pi@deltamaker-0000:~/klipper $ 
+
+~/katapult/scripts/flashtool.py -f ~/klipper/out/klipper.bin -d /dev/serial/by-id/usb-katapult_rp2040_45503571270B9CB8-if00
+
+Attempting to connect to bootloader
+Katapult Connected
+Protocol Version: 1.0.0
+Block Size: 64 bytes
+Application Start: 0x10004000
+MCU type: rp2040
+Flashing '/home/pi/klipper/out/klipper.bin'...
+
+[##################################################]
+
+Write complete: 133 pages
+Verifying (block count = 529)...
+
+[##################################################]
+
+Verification Complete: SHA = D771B5C8752C24DE8E6D86789E863FC9B4E4C285
+Flash Success
+pi@deltamaker-0000:~/klipper $ 
+
+~/katapult/scripts/flashtool.py -q -v
+
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+Detected UUID: 694b65e65927, Application: Klipper
+Query Complete
+
+
+sudo reboot
+	
+Connection to deltamaker-0000.local closed by remote host.
+Connection to deltamaker-0000.local closed.
