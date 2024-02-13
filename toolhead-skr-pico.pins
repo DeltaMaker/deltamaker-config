@@ -17,7 +17,8 @@ step_pin: gpio14
 dir_pin: !gpio13
 #dir_pin: gpio13
 enable_pin: !gpio15
-heater_pin: gpio23 	# HE
+#heater_pin: gpio23 	# HE1,  HE
+heater_pin: gpio21	# HE0,  HB
 sensor_pin: gpio27 	# TH0
 
 [tmc2209 extruder]
@@ -34,16 +35,18 @@ pin: gpio17 		# FAN1
 heater: extruder
 
 ##### PART COOLING FAN #####
-[fan]
-pin: gpio21		# HB
+#[fan]
+#pin: gpio21		# HB
 
 ##### FILAMENT-OUT SWITCH #####
 #[filament_switch_sensor runout_sensor]
+#switch_pin: ^gpio16    # E0-STOP on skr-pico board
 #switch_pin: ^gpio22	# PROBE on skr-pico board (configurable for in/out)
 
 ##### DELTAMAKER TOUCH PROBE #####
 [probe]
-pin: ^gpio16		# E0-STOP on skr-pico board
+#pin: ^gpio16		# E0-STOP on skr-pico board
+pin: ^gpio22 		# PROBE on skr-pico board (rev_c 9/28
 #pin: ^gpio29		# SERVO on skr-pico board (configurable for in/out)
 
 ##### PROBE 5V POWER #####
