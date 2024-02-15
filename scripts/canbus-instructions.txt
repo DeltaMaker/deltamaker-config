@@ -1,4 +1,4 @@
-5/2/2023
+5/25/2023
 
 General procedure for configuring Klipper with CanBoot for the SKR Pico controller board as USB to Canbus Bridge.
 
@@ -56,7 +56,7 @@ $ sudo make flash FLASH_DEVICE=2e8a:0003
 
 This will flash the firmware image we compiled earlier onto the SKR-Pico.
 This take a minute or so.
-When the /mnt unmounts remove the boot jumper.
+Then remove the boot jumper.
 Press reset and continue to the next phase...
 
 ####
@@ -89,6 +89,24 @@ $ python3 ~/CanBoot/scripts/flash_can.py -f ~/klipper/out/klipper.bin -d /dev/se
 Reboot and your Pico should come up in USB to can bridge mode.
 $ sudo reboot
 
+Once it comes back up, make sure the SKR-Pico is powered on and check the status of the canbus network
+$ ifconfig can0 
+
+If not found, startup the canbus network
+$ sudo ip link set up can0 type can bitrate 1000000
+$ sudo ip link set can0 txqueuelen 1024
+
+
+$ sudo rm /etc/network/interfaces.d/can0
+
+$ cat <<EOF | sudo tee /etc/network/interfaces.d/can0
+allow-hotplug can0
+iface can0 can static
+    bitrate 1000000
+    up ifconfig can0 txqueuelen 1024
+EOF
+
+#########################################
 
 FUTURE KLIPPER UPDATES
 
@@ -117,29 +135,9 @@ $ sudo reboot
 
 #########################################
 
-Check the status of the canbus network
-$ ifconfig can0 
-
-If not found, startup the canbus network
-$ sudo ip link set up can0 type can bitrate 500000
-$ sudo ip link set can0 txqueuelen 1024
-
-
-$ sudo rm /etc/network/interfaces.d/can0
-
-$ cat <<EOF | sudo tee /etc/network/interfaces.d/can0
-allow-hotplug can0
-iface can0 can static
-    bitrate 500000
-    up ifconfig $IFACE txqueuelen 1024
-EOF
-
-#########################################
-
-
 EBB36 Toolhead Board Setup
 
-$ cd CanBoot
+$ cd ~/CanBoot
 $ make menuconfig
 
 Configure your makefile for the EBB 36 / 42 v1.1/v1.2 with STM32G0B1
@@ -211,6 +209,11 @@ $ make clean
 $ make
 
 $ ~/CanBoot/scripts/flash_can.py -i can0 -q
+<<<<<<< Local Changes
+	
+
+=======
+>>>>>>> External Changes
 Detected UUID: 667e25519d16, Application: CanBoot
 
 You can now flash the board
@@ -241,3 +244,330 @@ Verification Complete: SHA = DB89BB3ABFA3D0E789E6AADFC5E4DE28A75DABC4
 CAN Flash Success
 
 
+
+====================================================
+
+
+-----------------------------------------------------------------
+
+
+##### KATAPULT #####
+
+cd ~/katapult/
+make menuconfig
+
+Loaded configuration '/home/pi/katapult/.config'
+No changes to save (for '/home/pi/katapult/.config')
+
+make clean
+make -j4
+
+  Creating symbolic link out/board
+  Building out/autoconf.h
+  Building out/lib/rp2040/elf2uf2/elf2uf2
+  Compiling out/src/sched.o
+  Compiling out/src/bootentry.o
+  Compiling out/src/command.o
+  Compiling out/src/flashcmd.o
+  Compiling out/src/initial_pins.o
+  Compiling out/src/rp2040/armcm_canboot.o
+  Compiling out/src/rp2040/main.o
+  Compiling out/src/rp2040/gpio.o
+  Compiling out/src/rp2040/timer.o
+  Compiling out/src/rp2040/flash.o
+  Compiling out/src/../lib/rp2040/pico/flash/hw_flash.o
+  Compiling out/src/generic/armcm_irq.o
+  Compiling out/src/generic/crc16_ccitt.o
+  Compiling out/src/rp2040/usbserial.o
+  Compiling out/src/generic/usb_cdc.o
+  Compiling out/src/rp2040/chipid.o
+  Building rp2040 stage2 out/stage2.o
+  Preprocessing out/src/rp2040/rp2040_link.ld
+  Building out/compile_time_request.o
+  Linking out/katapult.elf
+  Creating bin file out/katapult.bin
+  Creating uf2 file out/katapult.uf2
+  Creating legacy uf2 file out/canboot.uf2
+  Creating legacy binary out/canboot.bin
+
+## script replaces boot jumper
+~/deltamaker-config/scripts/boot-skr-pico.sh
+
+lsusb
+
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 008: ID 2e8a:0003 Raspberry Pi RP2 Boot
+Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+make flash FLASH_DEVICE=2e8a:0003
+
+Flashing out/katapult.uf2 
+Loaded UF2 image with 21 pages
+Found rp2040 device on USB bus 1 address 8
+Flashing...
+Resetting interface
+Locking
+Exiting XIP mode
+Erasing
+Flashing
+Rebooting device
+
+	lsusb
+	
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 009: ID 1d50:6177 OpenMoko, Inc. rp2040
+Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+##### KLIPPER #####
+
+cd ~/klipper
+
+ls /dev/serial/by-id/
+usb-katapult_rp2040_45503571270B9CB8-if00
+
+make menuconfig
+Loaded configuration '/home/pi/klipper/.config'
+No changes to save (for '/home/pi/klipper/.config')
+
+make clean
+
+make -j4
+  Creating symbolic link out/board
+  Building out/autoconf.h
+  Compiling out/src/sched.o
+  Compiling out/src/command.o
+  Compiling out/src/basecmd.o
+  Compiling out/src/debugcmds.o
+  Compiling out/src/initial_pins.o
+  Compiling out/src/gpiocmds.o
+  Compiling out/src/stepper.o
+  Compiling out/src/endstop.o
+  Compiling out/src/trsync.o
+  Compiling out/src/adccmds.o
+  Compiling out/src/spicmds.o
+  Compiling out/src/i2ccmds.o
+  Compiling out/src/pwmcmds.o
+  Compiling out/src/buttons.o
+  Compiling out/src/tmcuart.o
+  Compiling out/src/neopixel.o
+  Compiling out/src/pulse_counter.o
+  Compiling out/src/lcd_st7920.o
+  Compiling out/src/lcd_hd44780.o
+  Compiling out/src/spi_software.o
+  Compiling out/src/i2c_software.o
+  Compiling out/src/sensor_lis2dw.o
+  Compiling out/src/thermocouple.o
+  Compiling out/src/sensor_adxl345.o
+  Compiling out/src/sensor_angle.o
+  Compiling out/src/sensor_mpu9250.o
+  Compiling out/src/rp2040/main.o
+  Compiling out/src/rp2040/watchdog.o
+  Compiling out/src/rp2040/gpio.o
+  Compiling out/src/rp2040/adc.o
+  Compiling out/src/rp2040/timer.o
+  Compiling out/src/rp2040/bootrom.o
+  Compiling out/src/generic/armcm_boot.o
+  Compiling out/src/generic/armcm_irq.o
+  Compiling out/src/generic/armcm_reset.o
+  Compiling out/src/generic/timer_irq.o
+  Compiling out/src/generic/crc16_ccitt.o
+  Compiling out/src/rp2040/can.o
+  Compiling out/src/rp2040/chipid.o
+  Compiling out/src/../lib/can2040/can2040.o
+  Compiling out/src/generic/canserial.o
+  Compiling out/src/generic/usb_canbus.o
+  Compiling out/src/../lib/fast-hash/fasthash.o
+  Compiling out/src/rp2040/usbserial.o
+  Compiling out/src/rp2040/hard_pwm.o
+  Compiling out/src/rp2040/spi.o
+  Compiling out/src/rp2040/i2c.o
+  Preprocessing out/src/generic/armcm_link.ld
+  Building out/compile_time_request.o
+Version: v0.12.0-61-gb50d6669
+  Linking out/klipper.elf
+  Creating bin file out/klipper.bin
+  
+
+~/katapult/scripts/flashtool.py -f ~/klipper/out/klipper.bin -d /dev/serial/by-id/usb-katapult_rp2040_45503571270B9CB8-if00
+
+Attempting to connect to bootloader
+Katapult Connected
+Protocol Version: 1.0.0
+Block Size: 64 bytes
+Application Start: 0x10004000
+MCU type: rp2040
+Flashing '/home/pi/klipper/out/klipper.bin'...
+
+[##################################################]
+
+Write complete: 133 pages
+Verifying (block count = 529)...
+
+[##################################################]
+
+Verification Complete: SHA = D771B5C8752C24DE8E6D86789E863FC9B4E4C285
+Flash Success
+
+~/katapult/scripts/flashtool.py -q -v
+
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+Detected UUID: 694b65e65927, Application: Klipper
+Query Complete
+
+
+sudo reboot
+	
+Connection to deltamaker-0000.local closed by remote host.
+Connection to deltamaker-0000.local closed.
+
+
+#########################################
+#########################################
+
+EBB36 Toolhead Board Setup
+
+cd ~/katapult/
+
+make menuconfig
+
+Configure your makefile for the EBB 36 / 42 v1.1/v1.2 with STM32G0B1
+
+	Micro-controller Architecture (STMicroelectronics STM32)
+	Processor model (STM32G0B1)
+	clock Reference (8 MHz crystal)
+	Communication interface (CAN bus (on PB0/PB1))
+	Application start offset (8KiB offset)
+	(1000000) CAN bus speed
+
+make clean
+make -j4
+
+Hook up the Board for flashing
+Connect your device to your PI via USB
+
+Hold both the RESET button and BOOT, then
+	1. Release Reset
+	2. Release Boot
+	
+Verify the device is in bootloader mode:
+lsusb
+
+   Bus 001 Device 005: ID 0483:df11 STMicroelectronics STM Device in DFU Mode
+   
+Flash the canboot bootloader to the board YOUR DeviceID (0483:df11) may be different CHECK IT!
+
+ERASE AND FLASH THE CANBOOT FIRMWARE
+
+sudo dfu-util -a 0 -D ~/katapult/out/katapult.bin --dfuse-address 0x08000000:force:mass-erase:leave -d 0483:df11
+
+dfu-util 0.9
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2016 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to http://sourceforge.net/p/dfu-util/tickets/
+
+dfu-util: Invalid DFU suffix signature
+dfu-util: A valid DFU suffix will be required in a future dfu-util release!!!
+Opening DFU capable USB device...
+ID 0483:df11
+Run-time device DFU version 011a
+Claiming USB DFU Interface...
+Setting Alternate Setting #0 ...
+Determining device status: state = dfuIDLE, status = 0
+dfuIDLE, continuing
+DFU mode device DFU version 011a
+Device returned transfer size 1024
+DfuSe interface name: "Internal Flash   "
+Performing mass erase, this can take a moment
+Downloading to address = 0x08000000, size = 4200
+Download	[=========================] 100%         4200 bytes
+Download done.
+File downloaded successfully
+dfu-util: Error during download get_status
+
+NOTE: If you see an error, don’t worry its fine, provided you have the “File Downloaded Sucessfully”
+
+Power off the Board, and insert the CANBUS cable
+
+##### KLIPPER #####
+
+cd ~/klipper
+make menuconfig
+
+[*]	Enable extra low-level configuration options
+	Micro-controller Architecture (STMicroelectronics STM32)
+	Processor model (STM32G0B1)
+	Bootloader offset (8KiB bootloader)
+	Clock Reference (8 MHz crystal)
+	Communication interface (CAN bus (on PB0/PB1))
+	(1000000) CAN bus speed
+	() GPIO pins to set at micro-controller startup
+
+make clean
+make -j4
+
+
+
+##### KLIPPER USB #####
+
+[*]	Enable extra low-level configuration options
+    Micro-controller Architecture (STMicroelectronics STM32)  --->
+    Processor model (STM32G0B1)  --->
+    Bootloader offset (8KiB bootloader)  --->
+    Clock Reference (8 MHz crystal)  --->
+    Communication interface (USB (on PA11/PA12))  --->
+    USB ids  --->
+()  GPIO pins to set at micro-controller startup
+
+make clean
+make -j4
+
+
+lsusb
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 010: ID 1d50:6177 OpenMoko, Inc. stm32g0b1xx
+Bus 001 Device 007: ID 1d50:606f OpenMoko, Inc. Geschwister Schneider CAN adapter
+Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+
+ls /dev/serial/by-id/
+usb-katapult_stm32g0b1xx_040035001350425539393020-if00
+
+~/katapult/scripts/flashtool.py -f ~/klipper/out/klipper.bin -d /dev/serial/by-id/usb-katapult_stm32g0b1xx_040035001350425539393020-if00
+
+Attempting to connect to bootloader
+Katapult Connected
+Protocol Version: 1.0.0
+Block Size: 64 bytes
+Application Start: 0x8002000
+MCU type: stm32g0b1xx
+Flashing '/home/pi/klipper/out/klipper.bin'...
+
+[##################################################]
+
+Write complete: 14 pages
+Verifying (block count = 439)...
+
+[##################################################]
+
+Verification Complete: SHA = 253F0988778AE5E96B90E4088464D222AD499AAD
+Flash Success
+
+ 
+##### EBB36 CANBUS ID #####
+ 
+~/katapult/scripts/flashtool.py -q -v
+
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+Detected UUID: 3f4e2f47e455, Application: Klipper
+Query Complete
+
+
+~/katapult/scripts/flashtool.py -i can0 -f ~/klipper/out/klipper.bin -u {your uuid} 
+
+For example: ~/katapult/scripts/flashtool.py -i can0 -f ~/klipper/out/klipper.bin -u 3f4e2f47e455

@@ -29,7 +29,14 @@ sensor_pin: ebb36:TH0
 [tmc2209 extruder]
 uart_pin: ebb36:EXT_UART
 stealthchop_threshold: 0
-run_current: 0.50
+run_current: 0.68
+
+##### RESONANCE_TESTER #####
+[resonance_tester]
+accel_chip: adxl345
+probe_points:
+    0,0,50
+    0,-100,80
 
 ##### ADXL345 ######
 [adxl345]
@@ -54,7 +61,9 @@ heater: extruder
 
 ##### DELTAMAKER TOUCH PROBE #####
 [probe]
-pin: ^ebb36:PROBE_2
+pin: ^ebb36:PROBE_1
+#pin: ^ebb36:AUX0
+#pin: ^gpio29           # SERVO on skr-pico board (configurable for in/out)
 
 ##### PROBE 5V POWER #####
 [output_pin probe_power_pin]
