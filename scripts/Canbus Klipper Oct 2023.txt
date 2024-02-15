@@ -1,0 +1,102 @@
+##### CANBUS UUIDs #####
+
+~/katapult/scripts/flashtool.py -q -v
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+Detected UUID: 96b9bda17ccf, Application: Klipper SKR PICO, Canbus Bridge
+Detected UUID: d830623ef195, Application: Klipper EBB36 Toolhead
+Detected UUID: 667e25519d16, Application: Klipper EBB36 Toolhead
+Query Complete
+
+##### KATAPULT #####
+
+pi@deltamaker-0406:~/katapult $ make menuconfig 
+Loaded configuration '/home/pi/katapult/.config'
+No changes to save (for '/home/pi/katapult/.config')
+pi@deltamaker-0406:~/katapult $ make clean
+pi@deltamaker-0406:~/katapult $ make -j4
+[snip]
+ 
+pi@deltamaker-0406:~/katapult $ sudo service klipper stop
+
+pi@deltamaker-0406:~/katapult $ sudo mount /dev/sda1 /mnt
+[sudo] password for pi: 
+pi@deltamaker-0406:~/katapult $ sudo cp out/katapult.uf2 /mnt
+pi@deltamaker-0406:~/katapult $ ls /mnt
+INDEX.HTM  INFO_UF2.TXT  katapult.uf2
+pi@deltamaker-0406:~/katapult $ sudo umount /mnt
+
+pi@deltamaker-0406:~/katapult $ ls -l /dev/serial/by-id/
+total 0
+lrwxrwxrwx 1 root root 13 Oct 25 22:58 usb-katapult_rp2040_45503571291433A8-if00 -> ../../ttyACM0
+
+
+pi@deltamaker-0406:~/katapult $ ~/katapult/scripts/flashtool.py -q -v
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+Detected UUID: 96b9bda17ccf, Application: Klipper
+Detected UUID: d830623ef195, Application: Katapult
+Query Complete
+
+
+##### KLIPPER #####
+
+pi@deltamaker-0406:~/katapult $ cd ~/klipper
+pi@deltamaker-0406:~/klipper $ git pull
+
+pi@deltamaker-0406:~/klipper $ make menuconfig
+Loaded configuration '/home/pi/klipper/.config'
+No changes to save (for '/home/pi/klipper/.config')
+pi@deltamaker-0406:~/klipper $ make clean
+pi@deltamaker-0406:~/klipper $ make -j4
+
+Version: v0.5.0-4354-g01ed8096-dirty-20231025_230155-deltamaker-0406
+  Linking out/klipper.elf
+  Creating bin file out/klipper.bin
+pi@deltamaker-0406:~/klipper $ ~/katapult/scripts/flashtool.py -d /dev/serial/by-id/usb-katapult_rp2040_45503571291433A8-if00 -f ~/klipper/out/klipper.bin
+Attempting to connect to bootloader
+Katapult Connected
+Protocol Version: 1.0.0
+Block Size: 64 bytes
+Application Start: 0x10004000
+MCU type: rp2040
+Flashing '/home/pi/klipper/out/klipper.bin'...
+
+
+
+Flashing Klipper again
+
+pi@deltamaker-0406:~/klipper $ ~/katapult/scripts/flashtool.py -q -v
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+Detected UUID: 96b9bda17ccf, Application: Klipper
+Detected UUID: d830623ef195, Application: Katapult
+Query Complete
+pi@deltamaker-0406:~/klipper $ ~/katapult/scripts/flashtool.py -i can0 -u 96b9bda17ccf -f ~/klipper/out/klipper.bin
+Sending bootloader jump command...
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+ERROR:root:Flash Error
+Traceback (most recent call last):
+  File "/home/pi/katapult/scripts/flashtool.py", line 628, in main
+    loop.run_until_complete(sock.run(intf, uuid, fpath, req_only))
+  File "/usr/lib/python3.7/asyncio/base_events.py", line 584, in run_until_complete
+    return future.result()
+  File "/home/pi/katapult/scripts/flashtool.py", line 475, in run
+    f"Unable to find node matching UUID: {uuid:012x}"
+FlashCanError: Unable to find node matching UUID: 96b9bda17ccf
+
+
+pi@deltamaker-0406:~/klipper $ ls /dev/serial/by-id/
+usb-katapult_rp2040_45503571291433A8-if00
+
+pi@deltamaker-0406:~/klipper $ ~/katapult/scripts/flashtool.py -d /dev/serial/by-id/usb-katapult_rp2040_45503571291433A8-if00 -f ~/klipper/out/klipper.bin
+Attempting to connect to bootloader
+Katapult Connected
+Protocol Version: 1.0.0
+Block Size: 64 bytes
+Application Start: 0x10004000
+MCU type: rp2040
+Flashing '/home/pi/klipper/out/klipper.bin'...
+
+

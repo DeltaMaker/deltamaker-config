@@ -1,0 +1,304 @@
+accessControl:
+  salt: hD6dKaZg9Fisalhvy6JxFZvSYIwlaZMd
+api:
+  key: B7FA75B96C024183BAADC176438A91DE
+appearance:
+  color: blue
+  components:
+    order:
+      sidebar:
+      - plugin_webcamSB
+      - plugin_firmware_check
+      - connection
+      - state
+      - files
+  name: DeltaMaker 0406
+controls:
+- children:
+  - command: 'SKYLIGHT ENABLE=1 LEVEL=%(level)s '
+    confirm: null
+    input:
+    - default: 4
+      name: Brightness (1-10)
+      parameter: level
+      slider:
+        max: 10
+        min: 1
+        step: 1
+    name: Set/On
+  - command: SKYLIGHT ENABLE=0
+    confirm: null
+    name: 'Off'
+  collapsed: true
+  layout: horizontal
+  name: Skylight
+- children:
+  - command: AUTO_BED_MAPPING
+    confirm: null
+    name: Auto Bed Mapping
+    type: command
+  - command: MOVE_NOZZLE_TO_BED
+    confirm: null
+    name: Move Nozzle to Bed
+    type: command
+  - command: TOO_LOW
+    name: Too Low
+    type: command
+  - command: TOO_HIGH
+    name: Too High
+    type: command
+  - commands:
+    - SAVE_AND_HOME
+    - ''
+    confirm: null
+    name: Save & Home
+    type: command
+  layout: vertical
+  name: Bed Leveling & Nozzle Height
+  type: section
+- children:
+  - command: PROBE_BIAS_CALIBRATE
+    confirm: null
+    name: Probe Bias Calibration
+  - command: TOO_LOW STEP=0.025
+    confirm: null
+    name: Too Low
+  - command: TOO_HIGH STEP=0.025
+    confirm: null
+    name: Too High
+  - command: NEXT
+    name: Next Location
+  - commands:
+    - SAVE
+    - SAVE_CONFIG
+    confirm: null
+    name: Save Config
+  collapsed: true
+  layout: vertical
+  name: Advanced Calibration
+feature:
+  keyboardControl: false
+  modelSizeDetection: false
+  sdSupport: false
+plugins:
+  _disabled:
+  - file_check
+  - announcements
+  - ipOnConnect
+  - firmwareupdater
+  - firmware_check
+  - action_command_notification
+  - tracking
+  - automaticshutdown
+  - gridspace
+  - softwareupdate
+  action_command_notification:
+    enable: false
+  actioncommands:
+    command_definitions:
+    - action: poweroffnow
+      command: sudo shutdown -h now
+      enabled: true
+      type: system
+  announcements:
+    _config_version: 1
+    channels:
+      _blog:
+        read_until: 1612178700
+      _important:
+        read_until: 1521111600
+      _octopi:
+        read_until: 1611568800
+      _plugins:
+        read_until: 1614146400
+      _releases:
+        read_until: 1611052200
+    enabled_channels:
+    - _important
+  classicwebcam:
+    _config_version: 1
+    snapshot: http://127.0.0.1:8080/?action=snapshot
+    stream: /webcam/?action=stream
+  cura:
+    cura_engine: null
+  discovery:
+    publicPort: 80
+    upnpUuid: a990509a-db1b-4908-85cb-b5ebc5c411f2
+  errortracking:
+    unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
+  firmwareupdater:
+    _config_version: 2
+    _selected_profile: 0
+    profiles:
+    - _name: Default
+  gcodeviewer:
+    _config_version: 1
+  gridspace:
+    guid: abb481a2-83c9-4df1-80b2-6ffed05f3fa8
+    show_help: false
+  klipper:
+    _config_version: 4
+    configuration:
+      shortStatus_sidebar: false
+    connection:
+      hide_editor_button: true
+    macros:
+    - macro: M112
+      name: E-Stop
+      sidebar: true
+      tab: false
+    - macro: UNLOAD_FILAMENT
+      name: Unload Filament
+      sidebar: true
+      tab: false
+    - macro: AUTO_BED_MAPPING
+      name: Auto Bed Mapping
+      sidebar: false
+      tab: false
+    - macro: MOVE_NOZZLE_TO_BED
+      name: Move Nozzle to Bed
+      sidebar: false
+      tab: false
+    - macro: ABORT
+      name: Abort Calibrate
+      sidebar: false
+      tab: true
+    - macro: |-
+        G28
+        G1 Z20 F4000
+        PROBE_POWER_ON
+        PROBE_CALIBRATE
+        TESTZ Z=-4
+      name: Probe Calibrate
+      sidebar: false
+      tab: true
+    - macro: |-
+        G28
+        G1 Z20 F4000
+        DELTA_CALIBRATE method=manual
+        TESTZ Z=-4
+      name: Delta Calibrate
+      sidebar: false
+      tab: true
+    - macro: TOO_HIGH
+      name: Too High
+      sidebar: false
+      tab: false
+    - macro: TESTZ Z=-0.01
+      name: TESTZ Z=-0.01
+      sidebar: false
+      tab: true
+    - macro: TESTZ Z=-
+      name: TESTZ Z=-
+      sidebar: false
+      tab: true
+    - macro: TOO_LOW
+      name: Too Low
+      sidebar: false
+      tab: false
+    - macro: TESTZ Z=+
+      name: TESTZ Z=+
+      sidebar: false
+      tab: true
+    - macro: TESTZ Z=+0.01
+      name: TESTZ Z=+0.01
+      sidebar: false
+      tab: true
+    - macro: |-
+        ACCEPT
+        TESTZ Z=-4
+      name: Next Point
+      sidebar: false
+      tab: true
+    - macro: SAVE_AND_HOME
+      name: Save and Home
+      sidebar: false
+      tab: false
+    - macro: SAVE_CONFIG
+      name: Save Config
+      sidebar: false
+      tab: true
+    probe:
+      points: []
+  m73progress:
+    progress_from_time: true
+  navbartemp:
+    soc_name: RPi
+  preheat:
+    enable_bed: false
+    enable_chamber: false
+    fallback_tool: '100'
+  prusaslicerthumbnails:
+    align_inline_thumbnail: true
+    inline_thumbnail: true
+    inline_thumbnail_position_left: true
+    scale_inline_thumbnail: true
+  softwareupdate:
+    _config_version: 9
+  tracking:
+    enabled: false
+    unique_id: 1010ad5b-a2d9-4683-bf99-d6e8a46ac366
+  virtual_printer:
+    _config_version: 1
+  webcamSB:
+    asp1: '1'
+    asp2: '1'
+    defaultCam: '1'
+    expand: '1'
+    f1x: '0'
+    f1z: '0'
+    f2z: '0'
+    rot1: '0'
+    rot2: '0'
+printerProfiles:
+  default: _default
+serial:
+  abortHeatupOnCancel: false
+  additionalPorts:
+  - /tmp/printer
+  autoconnect: true
+  baudrate: 250000
+  disconnectOnErrors: false
+  port: /tmp/printer
+server:
+  allowFraming: true
+  commands:
+    serverRestartCommand: sudo service klipper restart && sudo service octoprint restart
+    systemRestartCommand: sudo shutdown -r now
+    systemShutdownCommand: sudo shutdown -h now
+  firstRun: false
+  onlineCheck:
+    enabled: true
+  pluginBlacklist:
+    enabled: true
+  secretKey: nFzsnQ3Yjik6z2cmy2S3R07BAmnYg5zM
+  seenWizards:
+    backup: null
+    corewizard: 4
+    tracking: null
+system: {}
+temperature:
+  profiles:
+  - bed: 0
+    chamber: null
+    extruder: 230
+    name: DM-PLA
+  - bed: 0
+    chamber: null
+    extruder: 250
+    name: DM-PETG
+  - bed: 0
+    chamber: 0
+    extruder: 100
+    name: UNLOAD
+webcam:
+  ffmpeg: /usr/bin/ffmpeg
+  timelapse:
+    fps: 25
+    options:
+      minDelay: 5.0
+      retractionZHop: 0.0
+    postRoll: 0
+    type: zchange
+  watermark: false
+  webcamEnabled: false
