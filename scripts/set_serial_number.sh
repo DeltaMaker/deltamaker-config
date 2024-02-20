@@ -16,9 +16,9 @@ country_code="US"
 # set WiFi access point name and pass phrase
 conf_file="/etc/hostapd/hostapd.conf"
 
-sed -i -e "/^ssid=/c\ssid=$wifi_name" $conf_file
-sed -i -e "/^wpa_passphrase=/c\wpa_passphrase=$pass_phrase" $conf_file
-sed -i -e "/^country_code=/c\country_code=$country_code" $conf_file
+sudo sed -i -e "/^ssid=/c\ssid=$wifi_name" $conf_file
+sudo sed -i -e "/^wpa_passphrase=/c\wpa_passphrase=$pass_phrase" $conf_file
+sudo sed -i -e "/^country_code=/c\country_code=$country_code" $conf_file
 
 #match="ssid="
 #replace="ssid=$wifi_name"
