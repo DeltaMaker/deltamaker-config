@@ -2,6 +2,23 @@
 #
 # 02/08/2024
 #
+# 
+# If necessary, update and install dependencies.
+sudo apt update
+sudo apt upgrade
+sudo apt install git
+sudo apt install python3 python3-pip python3-can
+pip3 install pyserial
+cd ~ && git clone https://github.com/dw-0/kiauh.git
+cd ~ && git clone https://github.com/Arksine/katapult.git
+cd ~ && git clone https://github.com/Klipper3d/klipper.git
+
+##### OTHER DELTAMAKER STUFF #####
+
+cd ~ && git clone https://github.com/DeltaMaker/AutoHotspot-Installer.git
+cd ~ && git clone https://github.com/DeltaMaker/deltamaker-config.git
+cd ~ && git clone https://github.com/DeltaMaker/skybox.git
+
 ##### KLIPPER #####
 
 ##### UPDATE KLIPPER AND KATAPULT FROM GITHUB #####
