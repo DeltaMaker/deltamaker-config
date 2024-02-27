@@ -29,6 +29,6 @@ volume:
   custom_box: false
   depth: 240.0
   formFactor: circular
-  height: 560.0
+  height: 320.0
   origin: center
   width: 240.0
