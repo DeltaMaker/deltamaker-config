@@ -247,7 +247,14 @@ serial:
   disconnectOnErrors: false
   ignoredCommands:
   - M140
+  maxCommunicationTimeouts:
+    idle: 3
   port: /tmp/printer
+  timeout:
+    communication: 45.0
+    communicationBusy: 5.0
+    connection: 15.0
+    positionLogWait: 15.0
 server:
   allowFraming: true
   commands:
@@ -271,10 +278,6 @@ temperature:
     chamber: null
     extruder: 230
     name: DM-PLA
-  - bed: 0
-    chamber: null
-    extruder: 250
-    name: DM-PETG
   - bed: 0
     chamber: 0
     extruder: 100
