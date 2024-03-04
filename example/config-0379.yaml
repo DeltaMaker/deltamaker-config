@@ -19,7 +19,10 @@ controls:
     confirm: null
     name: Auto Bed Mapping
     type: command
-  - command: MOVE_NOZZLE_TO_BED
+  - commands:
+    - PROBE_POWER_ON
+    - MOVE_NOZZLE_TO_BED
+    - PROBE_POWER_OFF
     confirm: null
     name: Move Nozzle to Bed
     type: command
