@@ -11,7 +11,7 @@ service is started.
 
 To create the script, ssh into your Raspberry Pi and run these four commands:
 
-$ cat <<EOF | sudo tee /usr/local/sbin/restart-skr-pico.sh
+$ cat <<EOF | sudo tee /usr/local/sbin/reset-skr-pico.sh
 #!/bin/bash
 raspi-gpio set 26 op
 raspi-gpio set 26 dl
@@ -19,19 +19,19 @@ raspi-gpio set 26 ip
 sleep 1
 EOF
 
-$ sudo chmod +x /usr/local/sbin/restart-skr-pico.sh
+$ sudo chmod +x /usr/local/sbin/reset-skr-pico.sh
 
-$ cat <<EOF | sudo tee /etc/systemd/system/restart-skr-pico.service
+$ cat <<EOF | sudo tee /etc/systemd/system/reset-skr-pico.service
 [Unit]
 Description=Toggle GPIO26 to reset the SKR Pico board
 RequiredBy=klipper.service
 
 [Service]
-ExecStart=/usr/local/sbin/restart-skr-pico.sh
+ExecStart=/usr/local/sbin/reset-skr-pico.sh
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-$ sudo systemctl enable --now restart-skr-pico.service
+$ sudo systemctl enable --now reset-skr-pico.service
 
