@@ -1,6 +1,6 @@
 #
 # DeltaMaker config file: /boot/deltamaker.txt
-# 2022-01-20
+# 2024-01-20
 # DeltaMaker 2
 
 serialnumber=0386

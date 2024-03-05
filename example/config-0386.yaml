@@ -104,7 +104,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: d81e3a1a-c7e8-4396-b898-ecc74fa9ef7e
+    upnpUuid: 04fb284f-1fe4-4bec-b7e1-76f5a4c28431
   draggable_files:
     scrolled_expanded_height: '403'
   errortracking:
