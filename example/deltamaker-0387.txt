@@ -1,0 +1,9 @@
+#
+# DeltaMaker config file: /boot/deltamaker.txt
+# 2024-03-6
+# DeltaMaker 2
+
+serialnumber=0387
+
+/home/pi/deltamaker-config/scripts/set_serial_number.sh $serialnumber
+/home/pi/deltamaker-config/scripts/rm_uuid.sh
