@@ -139,6 +139,7 @@ plugins:
   klipper:
     _config_version: 4
     configuration:
+      confirm_reload: false
       shortStatus_sidebar: false
     connection:
       hide_editor_button: true
