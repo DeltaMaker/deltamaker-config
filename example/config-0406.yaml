@@ -123,7 +123,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: a990509a-db1b-4908-85cb-b5ebc5c411f2
+    upnpUuid: fdaa31e8-419f-4665-a831-de7dfc972b46
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
