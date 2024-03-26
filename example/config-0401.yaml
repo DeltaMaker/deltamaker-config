@@ -12,7 +12,7 @@ appearance:
       - connection
       - state
       - files
-  name: DeltaMaker 0406
+  name: DeltaMaker 0401
 controls:
 - children:
   - command: 'SKYLIGHT ENABLE=1 LEVEL=%(level)s '
@@ -123,7 +123,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: fdaa31e8-419f-4665-a831-de7dfc972b46
+    upnpUuid: 9da1927e-c563-4bf4-853f-44b062adfa57
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -139,6 +139,7 @@ plugins:
   klipper:
     _config_version: 4
     configuration:
+      confirm_reload: false
       shortStatus_sidebar: false
     connection:
       hide_editor_button: true
@@ -283,10 +284,6 @@ temperature:
     chamber: null
     extruder: 230
     name: DM-PLA
-  - bed: 0
-    chamber: null
-    extruder: 250
-    name: DM-PETG
   - bed: 0
     chamber: 0
     extruder: 100

@@ -1,9 +1,10 @@
 #
 # DeltaMaker config file: /boot/deltamaker.txt
-# 2023-05-31
+# 2024-02-14
 # DeltaMaker Pro, 18x12 config
+# Belleview High School
 
-serialnumber=0407
+serialnumber=0401
 
 /home/pi/deltamaker-config/scripts/set_serial_number.sh $serialnumber
 /home/pi/deltamaker-config/scripts/rm_uuid.sh
