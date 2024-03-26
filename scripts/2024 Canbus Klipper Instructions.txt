@@ -83,6 +83,7 @@ Bus 001 Device 005: ID 2e8a:0003 Raspberry Pi RP2 Boot
 
 ##### FLASH KLIPPER ON SKR-PICO #####
 
+make -j4
 sudo make flash FLASH_DEVICE=2e8a:0003
 
 Flashing out/klipper.uf2 to 2e8a:0003
