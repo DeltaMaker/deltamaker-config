@@ -1,9 +1,12 @@
-##### Skybox setup #####
+##################################################
 #
-# 02/08/2024
+##### SKYBOX SETUP #####
 #
-# 
-# If necessary, update and install dependencies.
+# 03/26/2024
+#
+##################################################
+ 
+##### If necessary, update and install dependencies.
 sudo apt update
 sudo apt upgrade
 sudo apt install git
@@ -19,16 +22,19 @@ cd ~ && git clone https://github.com/DeltaMaker/AutoHotspot-Installer.git
 cd ~ && git clone https://github.com/DeltaMaker/deltamaker-config.git
 cd ~ && git clone https://github.com/DeltaMaker/skybox.git
 
-##### KLIPPER #####
-
+#####
 ##### UPDATE KLIPPER AND KATAPULT FROM GITHUB #####
+#####
+
 cd ~/klipper/
 git pull
 
 cd ~/katapult/
 git pull
 
-##### LINUX MCU ON RPI #####
+#####
+##### INSTALL KLIPPER LINUX MCU ON RPI #####
+#####
 
 cd ~/klipper/
 sudo cp ./scripts/klipper-mcu.service /etc/systemd/system/
@@ -46,9 +52,16 @@ make flash
 sudo service klipper start
 
 #####
-##### KLIPPER USB TO CANBUS BRIDGE #####
+
+
+
+
+
 #####
-# SKR-PICO MCU
+##### INSTALL KLIPPER USB TO CANBUS BRIDGE #####
+#####
+
+##### SKR-PICO MCU
 
 # The SKR-Pico has two heater MOSFETs, HB and HE, which are both wired to the D-SUB printhead connector, 
 # to support dual hotends (HE0 and HE1). The HB (gpio21) is wired to D-SUB pin 9 for HE0, and HE (gpio23) is 
@@ -93,15 +106,18 @@ Found rp2040 device on USB bus 1 address 5
 Flashing...
 [snip]
 
-If the boot jumper was used, remove it and press reset buttton.
+##### If the boot jumper was used, remove it and press reset buttton.
 
 lsusb
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
 Bus 001 Device 008: ID 1d50:606f OpenMoko, Inc. Geschwister Schneider CAN adapter
 [snip]
 
+
+
 #####
-Get the Canbus UUID to include in the printer.cfg file
+##### Get the Canbus UUID to include in the printer.cfg file
+#####
 
 ~/katapult/scripts/flashtool.py -q -v
 Resetting all bootloader node IDs...
@@ -118,17 +134,17 @@ Total 1 uuids found
 #####
 ##### REBOOT RPI #####
 #####
-# Reboot and your Pico should come up in USB to can bridge mode.
+##### Reboot and your Pico should come up in USB to can bridge mode.
 sudo reboot
 
-# Once it comes back up, make sure the SKR-Pico is powered on and check the status of the canbus network
+##### Once it comes back up, make sure the SKR-Pico is powered on and check the status of the canbus network
 ifconfig can0 
 
-# If not found, startup the canbus network:
+##### If not found, startup the canbus network:
 sudo ip link set up can0 type can bitrate 1000000
 sudo ip link set can0 txqueuelen 1024
 
-# Recreate can0 interface file
+##### Recreate can0 interface file
 sudo rm -f /etc/network/interfaces.d/can0
 
 cat <<EOF | sudo tee /etc/network/interfaces.d/can0
@@ -139,16 +155,36 @@ iface can0 can static
 EOF
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################################################################
 #####
 ##### CANBUS TOOLBOARD SETUP #####
 #####
 
-##### EBB36 Toolhead Board Setup #####
+#####
+##### INSTALL KATAPULT ON EBB36 Toolhead Board
+#####
 
 cd ~/katapult/
 make menuconfig
 
-# Configure your makefile for the EBB36/42 v1.1/v1.2 with STM32G0B1
+##### Configure your makefile for the EBB36/42 v1.1/v1.2 with STM32G0B1
 
     Micro-controller Architecture (STMicroelectronics STM32)
     Processor model (STM32G0B1)
@@ -162,17 +198,16 @@ make menuconfig
 [ ] Enable bootloader entry on button (or gpio) state
 [ ] Enable Status LED
 
-
 make clean
 make -j4
 
-# Hook up the Board for flashing and Connect your device to RPi via USB
+##### Hook up the Board for flashing and Connect your device to RPi via USB
 
-Hold both the RESET button and BOOT, then
-    1. Release Reset
-    2. Release Boot
+##### Hold both the RESET button and BOOT, then
+#####    1. Release Reset
+#####    2. Release Boot
 
-# Verify the device is in bootloader mode:
+##### Verify the device is in bootloader mode:
 lsusb
 
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
@@ -183,7 +218,8 @@ Bus 001 Device 006: ID 0483:df11 STMicroelectronics STM Device in DFU Mode
 ##### FLASH KATAPULT BOOTLOADER ON EBB36 #####
 #####
 
-# Flash the Katapult bootloader to the board YOUR DeviceID (0483:df11) may be different CHECK IT!
+##### Flash the Katapult bootloader to the board YOUR DeviceID (0483:df11) may be different CHECK IT!
+
 sudo dfu-util -a 0 -D ~/katapult/out/katapult.bin --dfuse-address 0x08000000:force:mass-erase:leave -d 0483:df11
 
 dfu-util 0.9
@@ -211,11 +247,15 @@ Download done.
 File downloaded successfully
 dfu-util: Error during download get_status
 
-# NOTE: If you see an error, don’t worry its fine, provided you have the “File Downloaded Sucessfully”
+##### NOTE: If you see an error, don’t worry its fine, provided you have the “File Downloaded Sucessfully”
+#####
+##### Power off the Board, and insert the CANBUS cable
+#####
 
-# Power off the Board, and insert the CANBUS cable
+#####
+##### GET CANBUS UUID FOR EBB36 BEFORE INSTALLING KLIPPER #####
+#####
 
-#### EBB36 CANBUS ID #####
 ~/katapult/scripts/flashtool.py -q -v
 
 Resetting all bootloader node IDs...
@@ -223,8 +263,13 @@ Checking for Katapult nodes...
 Detected UUID: 4b55887a8a35, Application: Katapult
 Query Complete
 
+
+
+
+
+#################################################################
 #####
-##### KLIPPER #####
+##### INSTALL KLIPPER ON EBB36 #####
 #####
 
 cd ~/klipper
@@ -242,14 +287,10 @@ make menuconfig
 make clean
 make -j4
 
-
-##### EBB36 CANBUS UUID #####
-~/klippy-env/bin/python ~/klipper/scripts/canbus_query.py can0
-
-Found canbus_uuid=4b55887a8a35, Application: CanBoot
-Total 1 uuids found
-
+#####
 ##### FLASH KLIPPER TO EBB36 OVER CANBUS #####
+#####
+
 ~/katapult/scripts/flashtool.py -f ~/klipper/out/klipper.bin -u 4b55887a8a35
  
 Sending bootloader jump command...
@@ -274,11 +315,22 @@ Verification Complete: SHA = F836B5FC5E1BD91779D80950095C73C06F06593C
 Flash Success
 
 
------
+#####
+#####
+#####
 
 ~/klippy-env/bin/python ~/klipper/scripts/canbus_query.py can0
 
 Found canbus_uuid=4b55887a8a35, Application: Klipper
 Total 1 uuids found
-pi@deltamaker-0000:~/klipper $ 
+
+
+#####
+
+~/katapult/scripts/flashtool.py -q -v
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+Detected UUID: 0d3801706b7f, Application: Klipper
+Detected UUID: 4b55887a8a35, Application: Klipper
+Query Complete
 
