@@ -1,10 +1,9 @@
 #
 # DeltaMaker config file: /boot/deltamaker.txt
-# 2024-02-20
-# DeltaMaker 2XT
-# UCF Library
+# 2022-02-20
+# DeltaMaker 2
 
-serialnumber=0380
+serialnumber=0376
 
 /home/pi/deltamaker-config/scripts/set_serial_number.sh $serialnumber
 /home/pi/deltamaker-config/scripts/rm_uuid.sh

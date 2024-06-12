@@ -15,7 +15,7 @@ color: default
 extruder:
   count: 1
   defaultExtrusionLength: 5
-  nozzleDiameter: 0.5
+  nozzleDiameter: 0.35
   offsets:
   - - 0.0
     - 0.0
@@ -29,6 +29,6 @@ volume:
   custom_box: false
   depth: 240.0
   formFactor: circular
-  height: 570.0
+  height: 320.0
   origin: center
   width: 240.0

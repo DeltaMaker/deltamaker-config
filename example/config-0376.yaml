@@ -12,7 +12,7 @@ appearance:
       - connection
       - state
       - files
-  name: DeltaMaker 0380
+  name: DeltaMaker 0376
 controls:
 - children:
   - command: 'SKYLIGHT ENABLE=1 LEVEL=%(level)s '
@@ -104,7 +104,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 3bf2ca03-62cf-4ef4-bedf-d27113b0235a
+    upnpUuid: 047dcb19-7d51-4079-abff-5444e60b7380
   draggable_files:
     scrolled_expanded_height: '403'
   errortracking:
