@@ -1,0 +1,59 @@
+#
+# Date: 6/20/2024
+#
+# DeltaMaker Motion System Pin Definitions file: motion-system-azteeg-x3.pins
+#
+# Controller board specific: DeltaMaker MCU pin definitions for Azteeg X3 board.
+#
+# DeltaMaker Motion System and Skybox
+
+##### SKYBOX ENCLOSURE FAN #####
+[temperature_fan rpi_fan]
+pin: gpio20
+
+##### SKYLIGHT STATUS NEOPIXELS #####
+#[neopixel status_leds]
+#pin: gpio24
+
+##### STEPPER MOTOR A #####
+[stepper_a]
+step_pin: ar54
+dir_pin: !ar55
+enable_pin: !ar38
+endstop_pin: ^ar3
+
+#[tmc2209 stepper_a]
+#uart_pin: gpio9
+#tx_pin: gpio8
+#uart_address: 0
+#run_current: 0.68
+#hold_current: 0.58
+
+##### STEPPER MOTOR B #####
+[stepper_b]
+step_pin: ar60
+dir_pin: !ar61
+enable_pin: !ar56
+endstop_pin: ^ar14
+
+#[tmc2209 stepper_b]
+#uart_pin: gpio9
+#tx_pin: gpio8
+#uart_address: 2
+#run_current: 0.68
+#hold_current: 0.58
+
+##### STEPPER MOTOR C #####
+[stepper_c]
+step_pin: ar46
+dir_pin: !ar48
+enable_pin: !ar62
+endstop_pin: ^ar18
+
+#[tmc2209 stepper_c]
+#uart_pin: gpio9
+#tx_pin: gpio8
+#uart_address: 1
+#run_current: 0.68
+#hold_current: 0.58
+

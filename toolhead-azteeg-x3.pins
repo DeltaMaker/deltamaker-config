@@ -1,0 +1,55 @@
+#
+# Date: 6/20/2024
+#
+# DeltaMaker Toolhead Pin Definitions file: toolhead-azteeg-x3.pins
+#
+# Controller board specific: DeltaMaker MCU pin definitions for Azteeg X3 board.
+#
+#  Toolhead Objects
+# Extruder, Fan, Probe
+#
+# 
+#
+
+##### EXTRUDER MOTOR/HEATER/SENSOR #####
+[extruder]
+step_pin: ar26
+dir_pin: !ar28
+#dir_pin: ar28
+enable_pin: !ar24
+
+heater_pin: ar10	# HE0
+sensor_pin: analog13 	# TH0
+
+#[tmc2209 extruder]
+#uart_pin: gpio9
+#tx_pin: gpio8
+#uart_address: 3
+#run_current: 0.68
+#hold_current: 0.58
+#stealthchop_threshold: 999999
+
+##### EXTRUDER FAN #####
+[heater_fan extruder_fan]
+pin: ar16 		# FAN
+heater: extruder
+heater_temp: 50.0
+
+##### PART COOLING FAN #####
+#[fan]
+#pin: gpio21		# HB
+
+##### FILAMENT-OUT SWITCH #####
+#[filament_switch_sensor runout_sensor]
+#switch_pin: ^gpio16    # E0-STOP on skr-pico board
+#switch_pin: ^gpio22	# PROBE on skr-pico board (configurable for in/out)
+
+##### DELTAMAKER TOUCH PROBE #####
+[probe]
+pin: ^ar19 		#  (rev_c 9/28
+
+##### PROBE 5V POWER #####
+[output_pin probe_power_pin]
+pin: ar4		# 
+value: 0
+shutdown_value: 0
