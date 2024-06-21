@@ -115,11 +115,15 @@ plugins:
         read_until: 1611052200
     enabled_channels:
     - _important
+  classicwebcam:
+    _config_version: 1
+    snapshot: http://127.0.0.1:8080/?action=snapshot
+    stream: /webcam/?action=stream
   cura:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 1f823f86-1f4f-4f26-8e36-6cd4f4a3d362
+    upnpUuid: a5d01636-d9ae-4973-891d-34930eee0896
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -159,25 +163,20 @@ plugins:
       name: Abort Calibrate
       sidebar: false
       tab: true
-    - macro: 'G28
-
+    - macro: |-
+        G28
         G1 Z20 F4000
-
         PROBE_POWER_ON
-
         PROBE_CALIBRATE
-
-        TESTZ Z=-4'
+        TESTZ Z=-4
       name: Probe Calibrate
       sidebar: false
       tab: true
-    - macro: 'G28
-
+    - macro: |-
+        G28
         G1 Z20 F4000
-
         DELTA_CALIBRATE method=manual
-
-        TESTZ Z=-4'
+        TESTZ Z=-4
       name: Delta Calibrate
       sidebar: false
       tab: true
@@ -205,9 +204,9 @@ plugins:
       name: TESTZ Z=+0.01
       sidebar: false
       tab: true
-    - macro: 'ACCEPT
-
-        TESTZ Z=-4'
+    - macro: |-
+        ACCEPT
+        TESTZ Z=-4
       name: Next Point
       sidebar: false
       tab: true
@@ -289,8 +288,6 @@ temperature:
     name: UNLOAD
 webcam:
   ffmpeg: /usr/bin/ffmpeg
-  snapshot: http://127.0.0.1:8080/?action=snapshot
-  stream: /webcam/?action=stream
   timelapse:
     fps: 25
     options: {}

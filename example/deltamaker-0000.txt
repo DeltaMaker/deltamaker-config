@@ -1,6 +1,6 @@
 #
 # DeltaMaker config file: /boot/deltamaker.txt
-# 2024-02-08
+# 2024-06-20
 # Example config 18x12
 
 serialnumber=0000
