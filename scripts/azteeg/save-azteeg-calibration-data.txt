@@ -1,0 +1,16 @@
+
+
+
+
+
+pi@deltamaker ~/OctoPrint/deltamaker $ 
+pi@deltamaker ~/OctoPrint/deltamaker $ sudo service octoprint stop
+[ ok ] Stopping Octoprint Daemon: Octoprint.
+pi@deltamaker ~/OctoPrint/deltamaker $ tail -f /dev/ttyUSBDM > out.txt &
+[1] 3417
+pi@deltamaker ~/OctoPrint/deltamaker $ echo "G29 D" > /dev/ttyUSBDM
+pi@deltamaker ~/OctoPrint/deltamaker $ echo "" > /dev/ttyUSBDM
+pi@deltamaker ~/OctoPrint/deltamaker $ grep G29 out.txt > factory_calibration
+pi@deltamaker ~/OctoPrint/deltamaker $ sudo service octoprint start
+[ ok ] Starting Octoprint Daemon: Octoprint.
+pi@deltamaker ~/OctoPrint/deltamaker $ 
