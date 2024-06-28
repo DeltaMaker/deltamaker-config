@@ -46,7 +46,7 @@ heater_temp: 50.0
 
 ##### DELTAMAKER TOUCH PROBE #####
 [probe]
-pin: ^ar19 		#  (rev_c 9/28
+pin: ^ar19
 
 ##### PROBE 5V POWER #####
 [output_pin probe_power_pin]

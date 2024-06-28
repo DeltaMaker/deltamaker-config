@@ -7,9 +7,11 @@
 #
 # DeltaMaker Motion System and Skybox
 
+[include /home/pi/deltamaker-config/board-pins-azteeg-x3.cfg]
+
 ##### SKYBOX ENCLOSURE FAN #####
 [temperature_fan rpi_fan]
-pin: gpio20
+pin: ar17	# PH0=D17
 
 ##### SKYLIGHT STATUS NEOPIXELS #####
 #[neopixel status_leds]
