@@ -91,7 +91,7 @@ plugins:
   - tracking
   - automaticshutdown
   - gridspace
-  - softwareupdate
+  - classicwebcam
   action_command_notification:
     enable: false
   actioncommands:
@@ -115,6 +115,10 @@ plugins:
         read_until: 1611052200
     enabled_channels:
     - _important
+  camerasettings:
+    multicam_mapping:
+    - camera: rpivid
+      multicam: null
   classicwebcam:
     _config_version: 1
     snapshot: http://127.0.0.1:8080/?action=snapshot
@@ -123,7 +127,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: a5d01636-d9ae-4973-891d-34930eee0896
+    upnpUuid: 3392f75f-e9cf-4fe7-a5d1-fa8dcfef216e
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -139,9 +143,14 @@ plugins:
   klipper:
     _config_version: 4
     configuration:
+      config_path: ~/printer_data/config/
+      confirm_reload: false
+      hide_error_popups: true
+      logpath: ~/printer_data/logs/klippy.log
       shortStatus_sidebar: false
     connection:
       hide_editor_button: true
+      port: /home/pi/printer_data/comms/klippy.serial
     macros:
     - macro: M112
       name: E-Stop
@@ -245,16 +254,17 @@ plugins:
     f2z: '0'
     rot1: '0'
     rot2: '0'
+    url: webcam/?action=stream
 printerProfiles:
   default: _default
 serial:
   abortHeatupOnCancel: false
   additionalPorts:
+  - /home/pi/printer_data/comms/klippy.serial
   - /tmp/printer
   autoconnect: true
   baudrate: 250000
   disconnectOnErrors: false
-  port: /tmp/printer
 server:
   allowFraming: true
   commands:
@@ -294,4 +304,3 @@ webcam:
     postRoll: 0
     type: 'off'
   watermark: false
-  webcamEnabled: false
