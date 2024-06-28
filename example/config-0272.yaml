@@ -57,17 +57,14 @@ controls:
   name: Bed Leveling & Nozzle Height
   type: section
 - children:
-  - command: PROBE_BIAS_CALIBRATE
+  - command: ENDSTOPS_CALIBRATION
     confirm: null
-    name: Probe Bias Calibration
-  - command: TOO_LOW STEP=0.025
+    name: Endstop Phase Calibration
+  - commands:
+    - G28
+    - 'DELTA_CALIBRATE '
     confirm: null
-    name: Too Low
-  - command: TOO_HIGH STEP=0.025
-    confirm: null
-    name: Too High
-  - command: NEXT
-    name: Next Location
+    name: Delta Calibration
   - commands:
     - SAVE
     - SAVE_CONFIG
@@ -91,7 +88,6 @@ plugins:
   - tracking
   - automaticshutdown
   - gridspace
-  - softwareupdate
   action_command_notification:
     enable: false
   actioncommands:
@@ -119,6 +115,8 @@ plugins:
     multicam_mapping:
     - camera: rpivid
       multicam: null
+    - camera: ov5647 10-0036
+      multicam: null
   classicwebcam:
     _config_version: 1
     snapshot: http://127.0.0.1:8080/?action=snapshot
@@ -127,7 +125,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: f18b28bf-a7c1-4b74-9ff5-b41c7d1cffc2
+    upnpUuid: 3e228784-bb2c-4a8d-8e8e-873249fe8fe6
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -144,10 +142,13 @@ plugins:
     _config_version: 4
     configuration:
       config_path: ~/printer_data/config/
+      confirm_reload: false
+      hide_error_popups: true
       logpath: ~/printer_data/logs/klippy.log
       shortStatus_sidebar: false
     connection:
       hide_editor_button: true
+      port: /home/pi/printer_data/comms/klippy.serial
     macros:
     - macro: M112
       name: E-Stop
@@ -251,16 +252,17 @@ plugins:
     f2z: '0'
     rot1: '0'
     rot2: '0'
+    url: webcam/?action=stream
 printerProfiles:
   default: _default
 serial:
   abortHeatupOnCancel: false
   additionalPorts:
+  - /home/pi/printer_data/comms/klippy.serial
   - /tmp/printer
   autoconnect: true
   baudrate: 250000
   disconnectOnErrors: false
-  log: true
 server:
   allowFraming: true
   commands:
@@ -284,6 +286,10 @@ temperature:
     chamber: null
     extruder: 230
     name: DM-PLA
+  - bed: 0
+    chamber: null
+    extruder: 250
+    name: DM-PETG
   - bed: 0
     chamber: 0
     extruder: 100
