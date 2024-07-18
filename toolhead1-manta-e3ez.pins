@@ -36,9 +36,9 @@ run_current: 0.800
 #stealthchop_threshold: 999999
 
 ##### EXTRUDER FAN #####
-[heater_fan extruder_fan]
-pin: PA8 	# FAN1
-heater: extruder
+#[heater_fan extruder_fan]
+#pin: PB15 		# FAN1
+#heater: extruder1
 
 ##### PART COOLING FAN #####
 #[fan]
@@ -54,18 +54,19 @@ pin: ^PA6 	# sensor pin
 pin: PB15		# FAN2
 
 
-[extruder]
-step_pin: PD5
-dir_pin: !PD6
-enable_pin: !PB3
-heater_pin: PB11   #HE0
-sensor_pin: PA4    #TH0
-
 [filament_switch_sensor material_0]
 switch_pin: PC5
 
-#[fan]
-#pin: PA8
+[extruder1]
+step_pin: PB7
+dir_pin: PB6
+enable_pin: !PB4
+heater_pin: PB10   # HE1
+sensor_pin: PA5    # T1
+
+[filament_switch_sensor material_1]
+switch_pin: PB1
+
 
 #[heater_fan fan1]
 #pin: PB15
@@ -79,8 +80,8 @@ switch_pin: PC5
 ########################################
 
 
-[tmc2209 extruder]
-uart_pin: PD1
+[tmc2209 extruder1]
+uart_pin: PB5
 run_current: 0.800
 
 

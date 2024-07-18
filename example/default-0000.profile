@@ -27,8 +27,8 @@ model: DeltaMaker 3D Printer
 name: Default
 volume:
   custom_box: false
-  depth: 240.0
+  depth: 480.0
   formFactor: circular
   height: 320.0
   origin: center
-  width: 240.0
+  width: 480.0
