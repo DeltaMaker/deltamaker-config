@@ -1,6 +1,6 @@
 #
 # DeltaMaker config file: /boot/deltamaker.txt
-# 2023-05-31
+# 2024-07-01
 # DeltaMaker Pro, 18x12 config
 
 serialnumber=0407
