@@ -31,24 +31,18 @@ Building and flashing Katapult (formerly known as Canboot)
 Configure Katapult for the Manta E3EZ
 
 	cd ~/katapult/
+	git pull
 	make clean
 	make menuconfig
 
-Settings:
-[*]	Enable extra low-level configuration options
-	Micro-controller Architecture (STMicroelectronics STM32) --->
-	Processor model (STM32G0B1) --->
-	Bootloader offset (8KiB bootloader) --->
-	Clock Reference (8 MHz crystal) --->
-	Communication interface (USB (on PA11/PA12)) --->
-
-##### 1/18/24 NEED TO UPDATE WITH MANTA SETTINGS #####
-
-    Micro-controller Architecture (Raspberry Pi RP2040)  --->
-    Flash chip (W25Q080 with CLKDIV 2)  --->
+Settings: Katapult Configuration v0.0.1-64-g3e23332
+    Micro-controller Architecture (STMicroelectronics STM32)  --->
+    Processor model (STM32G0B1)  --->
     Build Katapult deployment application (Do not build)  --->
-    Communication interface (USB)  --->
-    USB ids  --->
+    Clock Reference (8 MHz crystal)  --->
+    Communication interface (CAN bus (on PB12/PB13))  --->
+    Application start offset (8KiB offset)  --->
+(1000000) CAN bus speed
 ()  GPIO pins to set on bootloader entry
 [*] Support bootloader entry on rapid double click of reset button
 [ ] Enable bootloader entry on button (or gpio) state
@@ -56,30 +50,25 @@ Settings:
 
 	make -j4
 
-Connect the Pico by USB to the Klipper Host
-Install boot jumper on the SKR Pico and press the reset button
-	-or-
-Run script to set DFU mode:  ~/deltamaker-config/scripts/boot-skr-pico.sh
+Hold down the boot button on the Manta E3EZ and press the reset button.
 
 	lsusb
-Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 001 Device 003: ID 2e8a:0003 Raspberry Pi RP2 Boot
-Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
-Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+	Bus 001 Device 006: ID 0483:df11 STMicroelectronics STM Device in DFU Mode
+	Bus 001 Device 002: ID 1a40:0101 Terminus Technology Inc. Hub
+	Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+	
+Flash the Katapult firmware
 
-Flash the SKR Pico firmware
+	sudo make flash FLASH_DEVICE=0483:df11
 
-	sudo make flash FLASH_DEVICE=2e8a:0003
-
-This will flash the firmware image we compiled earlier onto the SKR-Pico.
+This will flash the firmware image we compiled earlier onto the Manta.
 This take a minute or so.
-Then remove the boot jumper.
-Press reset and continue to the next phase...
+
+Confirm flash was successful
 
 	lsusb
-Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 001 Device 004: ID 1d50:6177 OpenMoko, Inc. rp2040
-Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
+Bus 001 Device 005: ID 1d50:614e OpenMoko, Inc. stm32g0b1xx
+Bus 001 Device 002: ID 1a40:0101 Terminus Technology Inc. Hub
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 
 
