@@ -11,6 +11,9 @@
 #
 # Controller board specific: DeltaMaker MCU pin definitions for BTT Manta E3EZ board.
 #
+##### EXTRUDER 0 #####
+
+# ACTIVATE_EXTRUDER EXTRUDER=extruder
 
 
 ##### EXTRUDER MOTOR/HEATER/SENSOR #####
@@ -18,22 +21,13 @@
 step_pin: PD5
 dir_pin: !PD6
 enable_pin: !PB3
-heater_pin: PB11 #HE0
+heater_pin: PB11   #HE0
+sensor_pin: PA4    #TH0
 sensor_type: EPCOS 100K B57560G104F
-sensor_pin: PA4 #TH0
-
 
 [tmc2209 extruder]
 uart_pin: PD1
 run_current: 0.800
-#stealthchop_threshold: 999999
-
-#uart_pin: gpio9
-#tx_pin: gpio8
-#uart_address: 3
-#run_current: 0.68
-#hold_current: 0.58
-#stealthchop_threshold: 999999
 
 ##### EXTRUDER FAN #####
 [heater_fan extruder_fan]
@@ -44,6 +38,9 @@ heater: extruder
 #[fan]
 #pin: PA8
 
+##### FILAMENT-OUT SWITCH #####
+[filament_switch_sensor material_0]
+switch_pin: PC5
 
 ##### DELTAMAKER TOUCH PROBE #####
 [probe]
@@ -54,15 +51,9 @@ pin: ^PA6 	# sensor pin
 pin: PB15		# FAN2
 
 
-[extruder]
-step_pin: PD5
-dir_pin: !PD6
-enable_pin: !PB3
-heater_pin: PB11   #HE0
-sensor_pin: PA4    #TH0
 
-[filament_switch_sensor material_0]
-switch_pin: PC5
+
+
 
 #[fan]
 #pin: PA8
@@ -73,15 +64,6 @@ switch_pin: PC5
 #[heater_fan fan2]
 #pin: PB14
 
-
-########################################
-# TMC2209 configuration
-########################################
-
-
-[tmc2209 extruder]
-uart_pin: PD1
-run_current: 0.800
 
 
 [board_pins]
@@ -108,3 +90,18 @@ aliases:
 #spi_software_miso_pin: PC11
 #spi_software_mosi_pin: PC12
 #spi_software_sclk_pin: PC10
+
+
+##### EXTRUDER MOTOR/HEATER/SENSOR #####
+
+##### EXTRUDER FAN #####
+
+##### PART COOLING FAN #####
+
+##### FILAMENT-OUT SWITCH #####
+
+##### DELTAMAKER TOUCH PROBE #####
+
+##### PROBE 5V POWER #####
+
+##### ACCEL
