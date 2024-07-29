@@ -19,7 +19,7 @@
 ##### EXTRUDER MOTOR/HEATER/SENSOR #####
 [extruder]
 step_pin: PD5
-dir_pin: !PD6
+dir_pin: PD6
 enable_pin: !PB3
 heater_pin: PB11   #HE0
 sensor_pin: PA4    #TH0
