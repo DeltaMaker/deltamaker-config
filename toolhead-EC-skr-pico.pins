@@ -17,7 +17,7 @@ pins: gpio21, gpio23
 
 [extruder]
 step_pin: gpio19
-dir_pin: !gpio28
+dir_pin: gpio28
 enable_pin: !gpio2
 
 ##### EXTRUDER HEATER/SENSOR #####
