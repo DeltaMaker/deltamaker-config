@@ -5,35 +5,32 @@
 
 # See docs/Config_Reference.md for a description of parameters.
 #
-# Date: 1/16/2024
+# Date: 7/29/2024
 #
-# DeltaMaker Toolhead Pin Definitions file: toolhead-manta-e3ez.pins
+# DeltaMaker Toolhead Pin Definitions file: toolhead1-manta-e3ez.pins
 #
 # Controller board specific: DeltaMaker MCU pin definitions for BTT Manta E3EZ board.
 #
+##### EXTRUDER 1 #####
+
+# ACTIVATE_EXTRUDER EXTRUDER=extruder1
 
 
 ##### EXTRUDER MOTOR/HEATER/SENSOR #####
-[extruder]
-step_pin: PD5
-dir_pin: !PD6
-enable_pin: !PB3
-heater_pin: PB11 #HE0
-sensor_type: EPCOS 100K B57560G104F
-sensor_pin: PA4 #TH0
+[extruder1]
+step_pin: PB7
+dir_pin: PB6
+enable_pin: !PB4
+heater_pin: PB10 # HE1
+sensor_pin: PA5 # T1
 
+[filament_switch_sensor material_1]
+switch_pin: PB1
 
-[tmc2209 extruder]
-uart_pin: PD1
+[tmc2209 extruder1]
+uart_pin: PB5
 run_current: 0.800
-#stealthchop_threshold: 999999
 
-#uart_pin: gpio9
-#tx_pin: gpio8
-#uart_address: 3
-#run_current: 0.68
-#hold_current: 0.58
-#stealthchop_threshold: 999999
 
 ##### EXTRUDER FAN #####
 #[heater_fan extruder_fan]
@@ -46,43 +43,18 @@ run_current: 0.800
 
 
 ##### DELTAMAKER TOUCH PROBE #####
-[probe]
-pin: ^PA6 	# sensor pin
+#[probe]
+#pin: ^PA6 	# sensor pin
 
 ##### PROBE 5V POWER #####
-[output_pin probe_power_pin]
-pin: PB15		# FAN2
-
-
-[filament_switch_sensor material_0]
-switch_pin: PC5
-
-[extruder1]
-step_pin: PB7
-dir_pin: PB6
-enable_pin: !PB4
-heater_pin: PB10   # HE1
-sensor_pin: PA5    # T1
-
-[filament_switch_sensor material_1]
-switch_pin: PB1
-
+#[output_pin probe_power_pin]
+#pin: PB15		# FAN2
 
 #[heater_fan fan1]
 #pin: PB15
 
 #[heater_fan fan2]
 #pin: PB14
-
-
-########################################
-# TMC2209 configuration
-########################################
-
-
-[tmc2209 extruder1]
-uart_pin: PB5
-run_current: 0.800
 
 
 [board_pins]
