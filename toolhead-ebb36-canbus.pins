@@ -27,7 +27,7 @@ heater_pin: ebb36:HE0
 sensor_pin: ebb36:TH0
 
 [tmc2209 extruder]
-uart_pin: ebb36:EXT_UART
+uart_pin: ebb36:PA15  # EXT_UART
 stealthchop_threshold: 0
 run_current: 0.68
 
