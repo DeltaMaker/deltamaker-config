@@ -145,6 +145,42 @@ make menuconfig
 [ ] Enable Status LED
 
 
+sudo rm -f /etc/network/interfaces.d/can0
+
+cat <<EOF | sudo tee /etc/network/interfaces.d/can0
+allow-hotplug can0
+iface can0 can static
+    bitrate 1000000
+    up ifconfig can0 txqueuelen 1024
+EOF
+
+
+#################################################################
+#####
+##### CANBUS TOOLBOARD SETUP #####
+#####
+
+#####
+##### INSTALL KATAPULT ON EBB36 Toolhead Board
+#####
+
+cd ~/katapult/
+make menuconfig
+
+##### Configure your makefile for the EBB36/42 v1.1/v1.2 with STM32G0B1
+
+    Micro-controller Architecture (STMicroelectronics STM32)
+    Processor model (STM32G0B1)
+    Build Katapult deployment application (Do not build)
+    Clock Reference (8 MHz crystal)
+    Communication interface (CAN bus (on PB0/PB1))
+    Application start offset (8KiB offset)
+(1000000) CAN bus speed
+()  GPIO pins to set on bootloader entry
+[*] Support bootloader entry on rapid double click of reset button
+[ ] Enable bootloader entry on button (or gpio) state
+[ ] Enable Status LED
+
 make clean
 make -j4
 
@@ -198,6 +234,64 @@ dfu-util: Error during download get_status
 # Power off the Board, and insert the CANBUS cable
 
 #### EBB36 CANBUS ID #####
+make clean
+make -j4
+
+##### Hook up the Board for flashing and Connect your device to RPi via USB
+
+##### Hold both the RESET button and BOOT, then
+#####    1. Release Reset
+#####    2. Release Boot
+
+##### Verify the device is in bootloader mode:
+lsusb
+
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 006: ID 0483:df11 STMicroelectronics STM Device in DFU Mode
+[snip]
+
+#####
+##### FLASH KATAPULT BOOTLOADER ON EBB36 #####
+#####
+
+##### Flash the Katapult bootloader to the board YOUR DeviceID (0483:df11) may be different CHECK IT!
+
+sudo dfu-util -a 0 -D ~/katapult/out/katapult.bin --dfuse-address 0x08000000:force:mass-erase:leave -d 0483:df11
+
+dfu-util 0.9
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2016 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to http://sourceforge.net/p/dfu-util/tickets/
+
+dfu-util: Invalid DFU suffix signature
+dfu-util: A valid DFU suffix will be required in a future dfu-util release!!!
+Opening DFU capable USB device...
+ID 0483:df11
+Run-time device DFU version 011a
+Claiming USB DFU Interface...
+Setting Alternate Setting #0 ...
+Determining device status: state = dfuIDLE, status = 0
+dfuIDLE, continuing
+DFU mode device DFU version 011a
+Device returned transfer size 1024
+DfuSe interface name: "Internal Flash   "
+Performing mass erase, this can take a moment
+Downloading to address = 0x08000000, size = 4200
+Download	[=========================] 100%         4200 bytes
+Download done.
+File downloaded successfully
+dfu-util: Error during download get_status
+
+##### NOTE: If you see an error, don’t worry its fine, provided you have the “File Downloaded Sucessfully”
+#####
+##### Power off the Board, and insert the CANBUS cable
+#####
+
+#####
+##### GET CANBUS UUID FOR EBB36 BEFORE INSTALLING KLIPPER #####
+#####
+
 ~/katapult/scripts/flashtool.py -q -v
 
 Resetting all bootloader node IDs...
@@ -232,6 +326,65 @@ Found canbus_uuid=4b55887a8a35, Application: CanBoot
 Total 1 uuids found
 
 ##### FLASH KLIPPER TO EBB36 OVER CANBUS #####
+Run-time device DFU version 011a
+Claiming USB DFU Interface...
+Setting Alternate Setting #0 ...
+Determining device status: state = dfuIDLE, status = 0
+dfuIDLE, continuing
+DFU mode device DFU version 011a
+Device returned transfer size 1024
+DfuSe interface name: "Internal Flash   "
+Performing mass erase, this can take a moment
+Downloading to address = 0x08000000, size = 4200
+Download	[=========================] 100%         4200 bytes
+Download done.
+File downloaded successfully
+dfu-util: Error during download get_status
+
+##### NOTE: If you see an error, don’t worry its fine, provided you have the “File Downloaded Sucessfully”
+#####
+##### Power off the Board, and insert the CANBUS cable
+#####
+
+#####
+##### GET CANBUS UUID FOR EBB36 BEFORE INSTALLING KLIPPER #####
+#####
+
+~/katapult/scripts/flashtool.py -q -v
+
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+Detected UUID: 4b55887a8a35, Application: Katapult
+Query Complete
+
+
+
+
+
+#################################################################
+#####
+##### INSTALL KLIPPER ON EBB36 #####
+#####
+
+cd ~/klipper
+make menuconfig
+
+[*]	Enable extra low-level configuration options
+	Micro-controller Architecture (STMicroelectronics STM32)
+	Processor model (STM32G0B1)
+	Bootloader offset (8KiB bootloader)
+	Clock Reference (8 MHz crystal)
+	Communication interface (CAN bus (on PB0/PB1))
+(1000000) CAN bus speed
+() GPIO pins to set at micro-controller startup
+
+make clean
+make -j4
+
+#####
+##### FLASH KLIPPER TO EBB36 OVER CANBUS #####
+#####
+
 ~/katapult/scripts/flashtool.py -f ~/klipper/out/klipper.bin -u 4b55887a8a35
  
 Sending bootloader jump command...
@@ -263,4 +416,73 @@ Flash Success
 Found canbus_uuid=4b55887a8a35, Application: Klipper
 Total 1 uuids found
 pi@deltamaker-0000:~/klipper $ 
+
+
+
+
+#################################################################
+#####
+##### INSTALL KLIPPER ON EBB36 #####
+#####
+
+cd ~/klipper
+make menuconfig
+
+[*]	Enable extra low-level configuration options
+	Micro-controller Architecture (STMicroelectronics STM32)
+	Processor model (STM32G0B1)
+	Bootloader offset (8KiB bootloader)
+	Clock Reference (8 MHz crystal)
+	Communication interface (CAN bus (on PB0/PB1))
+(1000000) CAN bus speed
+() GPIO pins to set at micro-controller startup
+
+make clean
+make -j4
+
+#####
+##### FLASH KLIPPER TO EBB36 OVER CANBUS #####
+#####
+
+~/katapult/scripts/flashtool.py -f ~/klipper/out/klipper.bin -u 4b55887a8a35
+ 
+Sending bootloader jump command...
+Resetting all bootloader node IDs...
+Attempting to connect to bootloader
+Katapult Connected
+Protocol Version: 1.0.0
+Block Size: 64 bytes
+Application Start: 0x8002000
+MCU type: stm32g0b1xx
+Verifying canbus connection
+Flashing '/home/pi/klipper/out/klipper.bin'...
+
+[##################################################]
+
+Write complete: 14 pages
+Verifying (block count = 427)...
+
+[##################################################]
+
+Verification Complete: SHA = F836B5FC5E1BD91779D80950095C73C06F06593C
+Flash Success
+
+
+#####
+#####
+#####
+
+~/klippy-env/bin/python ~/klipper/scripts/canbus_query.py can0
+
+Found canbus_uuid=4b55887a8a35, Application: Klipper
+Total 1 uuids found
+
+#####
+
+~/katapult/scripts/flashtool.py -q -v
+Resetting all bootloader node IDs...
+Checking for Katapult nodes...
+Detected UUID: 0d3801706b7f, Application: Klipper
+Detected UUID: 4b55887a8a35, Application: Klipper
+Query Complete
 
