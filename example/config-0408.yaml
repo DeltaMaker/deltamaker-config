@@ -258,7 +258,6 @@ serial:
   abortHeatupOnCancel: false
   additionalPorts:
   - /home/pi/printer_data/comms/klippy.serial
-  - /tmp/printer
   autoconnect: true
   baudrate: 250000
   disconnectOnErrors: false
