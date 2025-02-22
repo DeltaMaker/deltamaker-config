@@ -60,7 +60,7 @@ endstop_pin: ^PC6
 [tmc2209 stepper_c]
 uart_pin: PD0
 ##diag_pin: PC6
-run_current: 0.650
+run_current: 0.800
 #stealthchop_threshold: 999999
 
 
