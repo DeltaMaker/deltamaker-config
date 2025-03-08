@@ -11,8 +11,11 @@
 #
 # Controller board specific: DeltaMaker MCU pin definitions for BTT Manta E3EZ board.
 #
-##### EXTRUDER 0 #####
 
+[multi_pin dual_heater]
+pins: PB11, PB10
+
+##### EXTRUDER 0 #####
 # ACTIVATE_EXTRUDER EXTRUDER=extruder
 
 
