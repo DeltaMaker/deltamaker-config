@@ -13,10 +13,12 @@ axes:
     speed: 6000
 color: default
 extruder:
-  count: 1
+  count: 2
   defaultExtrusionLength: 5
   nozzleDiameter: 0.5
   offsets:
+  - - 0.0
+    - 0.0
   - - 0.0
     - 0.0
   sharedNozzle: false

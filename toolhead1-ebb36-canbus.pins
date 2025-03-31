@@ -62,7 +62,8 @@ heater: extruder1
 #shutdown_value: 0
 
 ##### BOARD PINS #####
-[board_pins EBB36_G0B1_v1.2] 
+#[board_pins EBB36_G0B1_v1.2]
+[board_pins ebb36_1_mcu]
 mcu: ebb36_1
 aliases:
 aliases_step:
