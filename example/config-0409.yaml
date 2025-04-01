@@ -12,7 +12,7 @@ appearance:
       - connection
       - state
       - files
-  name: DeltaMaker 0410
+  name: DeltaMaker 0409
 controls:
 - children:
   - command: 'SKYLIGHT ENABLE=1 LEVEL=%(level)s '
@@ -115,7 +115,7 @@ plugins:
     multicam_mapping:
     - camera: rpivid
       multicam: null
-    - camera: imx296 10-001a
+    - camera: ov5647 10-0036
       multicam: null
   classicwebcam:
     _config_version: 1
@@ -125,6 +125,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
+    upnpUuid: aeb180bb-6366-47fd-82e7-2035b2b6d131
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -301,4 +302,3 @@ webcam:
     postRoll: 0
     type: 'off'
   watermark: false
-  webcamEnabled: false

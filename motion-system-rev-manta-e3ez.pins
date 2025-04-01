@@ -7,7 +7,9 @@
 #
 # Date: 2/18/2025
 #
-# DeltaMaker Motion System Pin Definitions file: motion-system-manta-e3ez.pins
+# DeltaMaker Motion System Pin Definitions file: motion-system-rev-manta-e3ez.pins
+#
+# Reverse motor directions
 #
 # Controller board specific: DeltaMaker MCU pin definitions for BTT Manta E3EZ board.
 #
@@ -24,7 +26,7 @@ pin: PC7
 ##### STEPPER MOTOR A #####
 [stepper_a]
 step_pin: PA14
-dir_pin: PA10
+dir_pin: !PA10
 enable_pin: !PA13
 endstop_pin: ^PC4
 
@@ -37,7 +39,7 @@ run_current: 0.800
 ##### STEPPER MOTOR B #####
 [stepper_b]
 step_pin: PC8
-dir_pin: PA15
+dir_pin: !PA15
 enable_pin: !PC14
 endstop_pin: ^PB0
 
@@ -50,7 +52,7 @@ run_current: 0.800
 ##### STEPPER MOTOR C #####
 [stepper_c]
 step_pin: PD2
-dir_pin: !PD4
+dir_pin: PD4
 enable_pin: !PD3
 endstop_pin: ^PC6
 
