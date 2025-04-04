@@ -12,7 +12,7 @@ appearance:
       - connection
       - state
       - files
-  name: DeltaMaker 0000
+  name: DeltaMaker 0408
 controls:
 - children:
   - command: 'SKYLIGHT ENABLE=1 LEVEL=%(level)s '
@@ -115,7 +115,7 @@ plugins:
     multicam_mapping:
     - camera: rpivid
       multicam: null
-    - camera: imx296 10-001a
+    - camera: ov5647 10-0036
       multicam: null
   classicwebcam:
     _config_version: 1
@@ -125,7 +125,7 @@ plugins:
     cura_engine: null
   discovery:
     publicPort: 80
-    upnpUuid: 3392f75f-e9cf-4fe7-a5d1-fa8dcfef216e
+    upnpUuid: 516788a3-0887-42a0-b6a4-265e7fe16970
   errortracking:
     unique_id: 02709403-5425-40ca-8a4d-2c272f73be09
   firmwareupdater:
@@ -252,7 +252,6 @@ plugins:
     f2z: '0'
     rot1: '0'
     rot2: '0'
-    url: webcam/?action=stream
 printerProfiles:
   default: _default
 serial:
@@ -263,6 +262,7 @@ serial:
   autoconnect: true
   baudrate: 250000
   disconnectOnErrors: false
+  port: /home/pi/printer_data/comms/klippy.serial
 server:
   allowFraming: true
   commands:
@@ -302,3 +302,4 @@ webcam:
     postRoll: 0
     type: 'off'
   watermark: false
+  webcamEnabled: false

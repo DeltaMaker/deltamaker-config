@@ -10,70 +10,67 @@
 #   extruder
 #   adxl345
 #   extruder_fan
-#   probe
 #
 # Canbus support for 4-pin Toolhead Wire Harness
 #
 
 ##### EBB36 toolhead mcu #####
-[mcu ebb36]
+[mcu ebb36_2]
 
 ##### EXTRUDER MOTOR/HEATER/SENSOR #####
 [extruder]
-step_pin: ebb36:EXT_STEP
-dir_pin: ebb36:EXT_DIR
-enable_pin: !ebb36:EXT_EN
-heater_pin: ebb36:HE0
-sensor_pin: ebb36:TH0
+step_pin: ebb36_2:EXT_STEP
+dir_pin: ebb36_2:EXT_DIR
+enable_pin: !ebb36_2:EXT_EN
+heater_pin: ebb36_2:HE0
+sensor_pin: ebb36_2:TH0
 
 [tmc2209 extruder]
-uart_pin: ebb36:PA15  # EXT_UART
+uart_pin: ebb36_2:EXT_UART
 stealthchop_threshold: 0
 run_current: 0.68
 
 ##### RESONANCE_TESTER #####
-[resonance_tester]
-accel_chip: adxl345
-probe_points:
-    0,0,50
-    0,-100,80
+#[resonance_tester]
+#accel_chip: adxl345
+#probe_points:
+#    0,0,50
+#    0,-100,80
 
 ##### ADXL345 ######
-[adxl345]
-cs_pin: ebb36:ADXL_CS
-spi_software_sclk_pin: ebb36:ADXL_SCLK
-spi_software_mosi_pin: ebb36:ADXL_MOSI
-spi_software_miso_pin: ebb36:ADXL_MISO
-axes_map: x,y,z
+#[adxl345]
+#cs_pin: ebb36_2:ADXL_CS
+#spi_software_sclk_pin: ebb36_2:ADXL_SCLK
+#spi_software_mosi_pin: ebb36_2:ADXL_MOSI
+#spi_software_miso_pin: ebb36_2:ADXL_MISO
+#axes_map: x,y,z
 
 ##### EXTRUDER FAN #####
-[heater_fan extruder_fan]
-pin: ebb36:FAN1
-heater: extruder
+#[heater_fan extruder_fan]
+#pin: ebb36_2:FAN1
+#heater: extruder
 
 ##### PART COOLING FAN #####
 #[fan]
-#pin: ebb36:FAN1
+#pin: ebb36_2:FAN1
 
 ##### FILAMENT-OUT SWITCH #####
 #[filament_switch_sensor runout_sensor]
 #switch_pin: ^gpio22	# PROBE on skr-pico board (configurable for in/out)
 
 ##### DELTAMAKER TOUCH PROBE #####
-[probe]
-pin: ^ebb36:PROBE_1
-#pin: ^ebb36:AUX0
-#pin: ^gpio29           # SERVO on skr-pico board (configurable for in/out)
+#[probe]
+#pin: ^ebb36_2:PROBE_1
 
 ##### PROBE 5V POWER #####
-[output_pin probe_power_pin]
-pin: ebb36:FAN0
-value: 0
-shutdown_value: 0
+#[output_pin probe_power_pin]
+#pin: ebb36_2:FAN0
+#value: 0
+#shutdown_value: 0
 
 ##### BOARD PINS #####
 [board_pins EBB36_G0B1_v1.2] 
-mcu: ebb36
+mcu: ebb36_2
 aliases:
 aliases_step:
     EXT_EN=PD2,EXT_STEP=PD0,EXT_DIR=PD1,EXT_UART=PA15
