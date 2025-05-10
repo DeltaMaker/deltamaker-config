@@ -1,9 +1,11 @@
 #
 # DeltaMaker config file: /boot/deltamaker.txt
-# 2022-02-20
-# DeltaMaker 2
+# 2025-05-09
+# DeltaMaker Pro, 9x22 config
 
 serialnumber=0376
 
 /home/pi/deltamaker-config/scripts/set_serial_number.sh $serialnumber
 /home/pi/deltamaker-config/scripts/rm_uuid.sh
+
+# usage: $ sudo /boot/deltamaker.txt
