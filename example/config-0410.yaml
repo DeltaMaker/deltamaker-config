@@ -115,7 +115,7 @@ plugins:
     multicam_mapping:
     - camera: rpivid
       multicam: null
-    - camera: imx296 10-001a
+    - camera: ov5647 10-0036
       multicam: null
   classicwebcam:
     _config_version: 1
