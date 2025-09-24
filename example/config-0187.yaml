@@ -112,10 +112,6 @@ plugins:
         read_until: 1611052200
     enabled_channels:
     - _important
-  camerasettings:
-    multicam_mapping:
-    - camera: rpivid
-      multicam: null
   classicwebcam:
     _config_version: 1
     snapshot: http://127.0.0.1:8080/?action=snapshot
