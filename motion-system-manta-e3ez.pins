@@ -5,7 +5,7 @@
 
 # See docs/Config_Reference.md for a description of parameters.
 #
-# Date: 2/18/2025
+# Date: 10/15/2025
 #
 # DeltaMaker Motion System Pin Definitions file: motion-system-manta-e3ez.pins
 #
@@ -59,8 +59,6 @@ endstop_pin: ^PC6
 uart_pin: PD0
 ##diag_pin: PC6
 run_current: 0.800
-
-
 
 
 
