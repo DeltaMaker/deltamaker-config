@@ -231,6 +231,8 @@ plugins:
     progress_from_time: true
   navbartemp:
     soc_name: RPi
+  pluginmanager:
+    repository_restricted: false
   preheat:
     enable_bed: false
     enable_chamber: false
