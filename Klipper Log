@@ -1,0 +1,3995 @@
+Restarting printer
+Start printer at Thu Oct 16 12:09:13 2025 (1760630953.4 2414526.2)
+===== Config file =====
+[gcode_macro START_PRINT]
+gcode = 
+	START_PRINT_BASE
+	SET_VELOCITY_LIMIT VELOCITY=200 ACCEL=2500 ACCEL_TO_DECEL=1250
+
+[gcode_macro END_PRINT]
+gcode = 
+	END_PRINT_BASE
+
+[mcu]
+serial = /dev/serial/by-id/usb-Klipper_stm32g0b1xx_57003B0009504B5735313920-if00
+restart_method = command
+
+[temperature_fan rpi_fan]
+pin = PB14
+target_temp = 42
+kick_start_time = 0.8
+off_below = 0.1
+max_power = 1.0
+sensor_type = temperature_host
+control = pid
+min_temp = -40
+max_temp = 85
+pid_kp = 1.0
+pid_ki = 0.5
+pid_kd = 2.0
+min_speed = 0.2
+max_speed = 0.9
+
+[neopixel status_leds]
+pin = PC7
+
+[stepper_a]
+step_pin = PA14
+dir_pin = PA10
+enable_pin = !PA13
+endstop_pin = ^PC4
+microsteps = 16
+rotation_distance = 40
+homing_speed = 60
+homing_retract_dist = 4
+homing_retract_speed = 30
+second_homing_speed = 10
+position_endstop = 540
+arm_length = 525
+
+[tmc2209 stepper_a]
+uart_pin = PB8
+run_current = 0.800
+
+[stepper_b]
+step_pin = PC8
+dir_pin = PA15
+enable_pin = !PC14
+endstop_pin = ^PB0
+microsteps = 16
+rotation_distance = 40
+
+[tmc2209 stepper_b]
+uart_pin = PC9
+run_current = 0.800
+
+[stepper_c]
+step_pin = PD2
+dir_pin = !PD4
+enable_pin = !PD3
+endstop_pin = ^PC6
+microsteps = 16
+rotation_distance = 40
+
+[tmc2209 stepper_c]
+uart_pin = PD0
+run_current = 0.800
+
+[board_pins]
+aliases = 
+	
+	EXP1_1=PC1, EXP1_3=PC3, EXP1_5=PC0, EXP1_7=PA2, EXP1_9=<GND>,
+	EXP1_2=PC2,  EXP1_4=<RST>, EXP1_6=PA0, EXP1_8=PA1, EXP1_10=<5V>
+
+[multi_pin dual_heater]
+pins = PB11, PB10
+
+[extruder]
+step_pin = PD5
+dir_pin = PD6
+enable_pin = !PB3
+heater_pin = PB11
+sensor_pin = PA4
+sensor_type = ATC Semitec 104GT-2
+max_extrude_only_accel = 1000
+max_extrude_only_velocity = 25
+microsteps = 16
+rotation_distance = 33.275
+filament_diameter = 1.75
+max_temp = 280
+min_temp = -100
+min_extrude_temp = -100
+nozzle_diameter = 0.5
+control = pid
+pid_kp = 34.298
+pid_ki = 2.287
+pid_kd = 128.617
+
+[tmc2209 extruder]
+uart_pin = PD1
+run_current = 0.800
+
+[heater_fan extruder_fan]
+pin = PA8
+heater = extruder
+
+[filament_switch_sensor material_0]
+switch_pin = PC5
+
+[probe]
+pin = ^PA6
+speed = 6
+x_offset = 0
+y_offset = 0
+samples = 3
+activate_gcode = 
+	ACTIVATE_PROBE
+deactivate_gcode = 
+	DEACTIVATE_PROBE
+z_offset = 0.0
+
+[output_pin probe_power_pin]
+pin = PB15
+
+[extruder1]
+step_pin = PB7
+dir_pin = !PB6
+enable_pin = !PB4
+heater_pin = PB10
+sensor_pin = PA5
+max_extrude_only_accel = 1000
+max_extrude_only_velocity = 25
+microsteps = 16
+rotation_distance = 33.275
+filament_diameter = 1.75
+sensor_type = ATC Semitec 104GT-2
+max_temp = 280
+min_temp = -100
+min_extrude_temp = -100
+nozzle_diameter = 0.5
+control = pid
+pid_kp = 34.298
+pid_ki = 2.287
+pid_kd = 128.617
+
+[filament_switch_sensor material_1]
+switch_pin = PB1
+
+[tmc2209 extruder1]
+uart_pin = PB5
+run_current = 0.800
+
+[verify_heater extruder]
+
+[firmware_retraction]
+retract_length = 8.0
+retract_speed = 40
+
+[verify_heater extruder1]
+
+[delayed_gcode STARTUP_INIT]
+initial_duration = 0.1
+gcode = 
+	SET_PIN PIN=probe_power_pin VALUE=1
+	
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=max_temp VALUE=50
+	
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=probe_first VALUE=1
+	
+	BED_MESH_PROFILE LOAD="default"
+
+[gcode_macro SERVO_CALIBRATE]
+gcode = 
+	NOZZLE_LIFT_CALIBRATE START=1
+
+[servo nozzle_lift]
+pin = PA7
+minimum_pulse_width = 0.000615
+maximum_pulse_width = 0.002495
+
+[gcode_macro ACTIVATE_PROBE]
+variable_state = 0
+variable_active = 0
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set state = svv.get("nozzle_lift_state", 0) %}
+	{% if state == 0 %}
+	NOZZLE_LIFT_CALIBRATE START=1
+	{% endif %}
+	
+	SET_GCODE_VARIABLE MACRO=DEACTIVATE_PROBE VARIABLE=min_trig VALUE={state.min_trig}
+	SET_NOZZLE_LIFT ANGLE=0
+	SET_NOZZLE_LIFT ANGLE={state.max_open}
+	
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=active VALUE=1
+
+[gcode_macro DEACTIVATE_PROBE]
+variable_min_trig = 180
+gcode = 
+	
+	
+	SET_NOZZLE_LIFT ANGLE={min_trig}
+	
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=active VALUE=0
+	UPDATE_DELAYED_GCODE ID=RESET_NOZZLE_AFTER_PROBING DURATION=2
+
+[delayed_gcode RESET_NOZZLE_AFTER_PROBING]
+initial_duration = 1
+gcode = 
+	{% set probing = printer["gcode_macro ACTIVATE_PROBE"].active %}
+	
+	{% if probing == 0 %}
+	
+	
+	
+	LOWER_NOZZLE
+	{% endif %}
+
+[gcode_macro lift_nozzle]
+gcode = 
+	SET_NOZZLE_LIFT ANGLE=180 OFF=1
+
+[gcode_macro lower_nozzle]
+gcode = 
+	SET_NOZZLE_LIFT ANGLE=0 OFF=1
+
+[gcode_macro SET_NOZZLE_LIFT]
+variable_last_angle = 0
+gcode = 
+	{% set servo = params.SERVO|default("nozzle_lift") %}
+	{% set angle = params.ANGLE|default(last_angle)|int %}
+	{% set turn_off = params.OFF|default(0)|int %}
+	{% set ease = (last_angle + angle) / 2 %}
+	SET_GCODE_VARIABLE MACRO=SET_NOZZLE_LIFT VARIABLE=last_angle VALUE={angle}
+	
+	
+	SET_SERVO SERVO={servo} ANGLE={angle}
+	G4 P400
+	M118 // SET_NOZZLE_LIFT angle={angle}
+	{% if turn_off == 1 %}
+	G4 P400
+	SET_SERVO SERVO={servo} WIDTH=0
+	M118 // SET_NOZZLE_LIFT width=0
+	{% endif %}
+
+[delayed_gcode NOZZLE_LIFT_LOOP]
+initial_duration = 0
+gcode = 
+	
+	
+	NOZZLE_LIFT_CALIBRATE
+
+[gcode_macro NOZZLE_LIFT_CALIBRATE]
+variable_state = {'min_open': 0, 'max_open': 0, 'min_trig': 180, 'max_trig': 180}
+variable_angle = 180
+gcode = 
+	{% set running = 1 %}
+	{% set limit = params.LIMIT|default(10)|int %}
+	{% set start = params.START|default(0)|int %}
+	{% if start == 1 %}
+	M118 // Begin Lift calibration
+	{% set state = {'min_open': 0, 'max_open': 0, 'min_trig': 180, 'max_trig': 180} %}
+	{% set angle = state.max_trig %}
+	M118 // state={state}
+	
+	{% else %}
+	{% set query = printer.probe.last_query|int %}
+	
+	{% if query == 1 %}
+	{% set null = state.update({'min_trig': angle}) %}
+	{% set angle = ((angle + state.max_open) / 2)|int %}
+	
+	{% else %}
+	{% set null = state.update({'max_open': angle|int}) %}
+	{% set null = state.update({'min_open': (angle/2)|int}) %}
+	{% set angle = ((angle + state.min_trig) / 2)|int %}
+	
+	{% endif %}
+	{% set distance = (state.min_trig - state.max_open)|abs %}
+	{% if distance <= limit %}
+	M118 // {state | pprint}
+	SAVE_VARIABLE VARIABLE=nozzle_lift_state VALUE="{state|pprint}"
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=state VALUE="{state}"
+	M118 // Lift calibration={state.max_open|int} angle={angle|int}
+	{% set running = 0 %}
+	{% endif %}
+	{% endif %}
+	
+	SET_GCODE_VARIABLE MACRO=NOZZLE_LIFT_CALIBRATE VARIABLE=angle VALUE={angle|int}
+	SET_GCODE_VARIABLE MACRO=NOZZLE_LIFT_CALIBRATE VARIABLE=state VALUE="{state}"
+	
+	SET_NOZZLE_LIFT min_open={state.min_open}
+	SET_NOZZLE_LIFT ANGLE={angle|int}
+	QUERY_PROBE
+	UPDATE_DELAYED_GCODE ID=NOZZLE_LIFT_LOOP DURATION={running}
+
+[bed_mesh]
+round_probe_count = 5
+speed = 200
+mesh_radius = 230
+
+[gcode_macro _DELTA_CALIBRATE]
+gcode = 
+	SET_GCODE_OFFSET Z=0
+	G28
+	delta_calibrate
+	G1 X0 Y0 Z50 F4200
+	G28
+	save_config
+
+[gcode_macro _BED_MESH_CALIBRATE]
+gcode = 
+	G28
+	G1 X0 Y0 Z50 F4200
+	bed_mesh_calibrate
+	G1 X0 Y0 Z50 F4200
+	G28
+	save_config
+
+[delayed_gcode STARTUP_INIT_TOOL]
+initial_duration = 0.1
+gcode = 
+	{% set current_tool = printer.save_variables.variables.get("current_tool", 0) %}
+	SET_GCODE_VARIABLE MACRO=SELECT_TOOL VARIABLE=current_tool VALUE={current_tool}
+
+[gcode_macro PROBE]
+rename_existing = PROBE_REAL
+gcode = 
+	M118 // PROBE {rawparams}
+	SELECT_TOOL T=0
+	PROBE_REAL {rawparams}
+	SELECT_TOOL T={printer.gcode
+
+[gcode_macro SELECT_TOOL]
+variable_current_tool = 0
+gcode = 
+	{% set tool = params.T|default(0)|int %}
+	{% if tool != current_tool %}
+	M118 // SELECT_TOOL tool={tool} current_tool={current_tool}
+	{% if tool == 1 %}
+	ACTIVATE_EXTRUDER EXTRUDER=extruder1
+	LIFT_NOZZLE
+	{% else %}
+	ACTIVATE_EXTRUDER EXTRUDER=extruder
+	LOWER_NOZZLE
+	{% endif %}
+	SET_GCODE_VARIABLE MACRO=SELECT_TOOL VARIABLE=current_tool VALUE={tool}
+	RESTORE_GCODE_OFFSET TOOL={tool} VERBOSE=1
+	{% endif %}
+
+[gcode_macro T0]
+gcode = 
+	SELECT_TOOL T=0
+
+[gcode_macro T1]
+gcode = 
+	SELECT_TOOL T=1
+
+[gcode_macro START_PRINT_BASE]
+gcode = 
+	M104 S{params.EXTRUDER_TEMP|default(printer.extruder.target, true) }
+	G21
+	G90
+	M82
+	{% if printer.toolhead.homed_axes != "xyz" %}
+	G28
+	{% endif %}
+	BED_MESH_PROFILE LOAD="default"
+	CLEAR_PAUSE
+	M109 S{params.EXTRUDER_TEMP|default(printer.extruder.target, true) }
+
+[gcode_macro START_PRINT_PURGE]
+gcode = 
+	{% set EXTRUDER_TEMP = params.EXTRUDER_TEMP|default(220)|float %}
+	G21
+	G90
+	M82
+	{% if printer.extruder.target != 0 %}
+	M104 S{EXTRUDER_TEMP}
+	{% else %}
+	M104 S150
+	{% endif %}
+	
+	
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	{% set min_x = printer.toolhead.axis_minimum.x|float * 0.9 %}
+	{% set min_y = printer.toolhead.axis_minimum.y|float * 0.9 %}
+	{% set max_y = printer.toolhead.axis_maximum.y|float * 0.9 %}
+	{% set extr = 80 %}
+	G1 Z{max_z - 100} F3000
+	G1 X{min_x} F3000
+	M109 S{EXTRUDER_TEMP}
+	G1 Z1 F3000
+	G1 X{min_x} Y0 Z0.4
+	G92 E0
+	G3 X0 Y{min_y} I{max_y} J1 Z0.2 E{extr} F1000
+	G92 E0
+	G1 E-1 F2100
+	G1 Z1
+
+[gcode_macro END_PRINT_BASE]
+gcode = 
+	TURN_OFF_HEATERS
+	SAFE_LIFT X=0 Y=0
+	G28
+
+[gcode_macro LAYER_CHANGE]
+gcode = 
+
+[gcode_macro SAFE_LIFT]
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float - 5 %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	SAVE_GCODE_STATE NAME=safe_lift
+	SET_GCODE_OFFSET X=0 Y=0
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	RESTORE_GCODE_STATE NAME=safe_lift
+
+[gcode_macro PAUSE]
+description = Pause the current print
+rename_existing = PAUSE_BASE
+gcode = 
+	{% set z = printer.toolhead.position.z|round(3) %}
+	SAVE_VARIABLE VARIABLE=pause_z VALUE={z}
+	RESPOND MSG="Pausing at z={z}"
+	PAUSE_BASE
+	SAFE_LIFT {rawparams}
+	
+	{% set restore_z = printer.toolhead.position.z|float %}
+	SET_GCODE_VARIABLE MACRO=RESUME VARIABLE=restore_z VALUE={restore_z}
+
+[gcode_macro PAUSE2]
+description = Pause the current print
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	SAVE_VARIABLE VARIABLE=pause_z VALUE={act_z|round(3)}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	
+	RESPOND MSG="Pausing..."
+	PAUSE_BASE
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	
+	{% set restore_z = printer.toolhead.position.z|float %}
+	SET_GCODE_VARIABLE MACRO=RESUME VARIABLE=restore_z VALUE={restore_z}
+
+[gcode_macro RESUME]
+description = Resume the current print
+rename_existing = RESUME_BASE
+variable_restore_z = 0
+gcode = 
+	
+	{% if restore_z > 0 %}
+	G90
+	G1 Z{restore_z} F2500
+	{% endif%}
+	
+	{% set e = params.E|default(1) %}
+	
+	{% if 'VELOCITY' in params|upper %}
+	{% set get_params = ('VELOCITY=' + params.VELOCITY)  %}
+	{%else %}
+	{% set get_params = "" %}
+	{% endif %}
+	
+	SET_IDLE_TIMEOUT TIMEOUT=1800
+	G91
+	{% if printer["gcode_macro M600"].m600_enabled == 1 %}
+	RESPOND MSG="Heating..."
+	M109 S{printer["gcode_macro M600"].hotend_temp}
+	RESPOND MSG="Loading filament..."
+	G0 E50 F800
+	G0 E30 F300
+	M400
+	M106 S255
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=m600_enabled VALUE=0
+	{% else %}
+	G1 E{e} F2100
+	{% endif %}
+	RESPOND MSG="Resuming..."
+	RESUME_BASE {get_params}
+
+[gcode_macro CANCEL_PRINT]
+description = Cancel the current print
+rename_existing = CANCEL_PRINT_BASE
+gcode = 
+	RESPOND MSG="Printing canceled!"
+	G28
+	TURN_OFF_HEATERS
+	CANCEL_PRINT_BASE
+
+[gcode_macro M600]
+description = Filament change
+variable_hotend_temp = 0
+variable_m600_enabled = 0
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	
+	SAVE_GCODE_STATE NAME=M600_state
+	SET_IDLE_TIMEOUT TIMEOUT=86400
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=m600_enabled VALUE=1
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=hotend_temp VALUE={printer.extruder.target}
+	RESPOND MSG="Pausing..."
+	PAUSE
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	RESPOND MSG="Unloading filament..."
+	G91
+	G0 E-10 F300
+	G0 E-30 F800
+	M400
+	RESPOND MSG="Heating stopped!"
+	M109 S0
+	RESTORE_GCODE_STATE NAME=M600_state
+
+[gcode_macro TMC]
+gcode = 
+	DUMP_TMC STEPPER=stepper_a
+	DUMP_TMC STEPPER=stepper_b
+	DUMP_TMC STEPPER=stepper_c
+	DUMP_TMC STEPPER=extruder
+
+[gcode_macro ENDSTOPS_CALIBRATION]
+description = Endstops Phase Calibration
+gcode = 
+	{% if printer.idle_timeout.state == "Printing" %}
+	RESPOND TYPE=error MSG="This macro cannot be used while printing!"
+	{% else %}
+	{% if printer.toolhead.homed_axes != "xyz" %}
+	G28
+	{% endif %}
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_a
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_b
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_c
+	M400
+	G28
+	{% endif %}
+
+[save_variables]
+filename = /home/pi/printer_data/config/variables.cfg
+
+[virtual_sdcard]
+path = /home/pi/printer_data/gcodes
+on_error_gcode = CANCEL_PRINT
+
+[mcu rpi]
+serial = /tmp/klipper_host_mcu
+
+[fan]
+pin = rpi:gpio16
+kick_start_time = 0.1
+off_below = 0.2
+cycle_time = 0.005
+max_power = 0.8
+hardware_pwm = False
+
+[idle_timeout]
+timeout = 600
+
+[respond]
+
+[pause_resume]
+
+[gcode_arcs]
+
+[gcode_macro MOTOR_OFF_POSITION]
+gcode = 
+	M18
+	{% set toolhead = printer.toolhead %}
+	{% set kin = toolhead.kinematics %}
+	M118 toolhead.status()
+	{% set steppers = kin.get_steppers() %}
+	{% for s in steppers %}
+	M118 s.get_name() s.get_commanded_position()
+	{% endfor %}
+
+[gcode_macro START_DANCE]
+gcode = 
+	G28
+	G1 Z40 F25000
+	SET_GCODE_OFFSET X=0 Y=0
+	RESUME_DANCE
+
+[gcode_macro STOP_DANCE]
+gcode = 
+	PAUSE_DANCE
+
+[gcode_macro RESUME_DANCE]
+gcode = 
+	SET_VELOCITY_LIMIT VELOCITY=500 ACCEL=6000 ACCEL_TO_DECEL=3000
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=2
+
+[gcode_macro PAUSE_DANCE]
+gcode = 
+	SET_VELOCITY_LIMIT VELOCITY=200 ACCEL=2000 ACCEL_TO_DECEL=1000
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=0
+
+[delayed_gcode DANCE_LOOP]
+initial_duration = 0
+gcode = 
+	G1 X200 Y0
+	G1 X-200
+	G1 X0 Y-200
+	G1 Y200
+	G1 X-200 Y0
+	G1 X200
+	G1 X0 Y-200
+	G1 Y200
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=2
+
+[gcode_macro AUTO_BED_MAPPING]
+variable_retry = 0
+variable_max_temp = 50
+gcode = 
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 Ignored while printing.
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=retry VALUE={retry+1}
+	{% elif max_temp > 0 and printer.extruder.temperature > max_temp %}
+	M118 // Nozzle too hot to probe.
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=retry VALUE=0
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=save_config VALUE=1
+	SET_GCODE_OFFSET X=0 Y=0
+	
+	SAVE_GCODE_STATE NAME=current_state
+	SET_VELOCITY_LIMIT VELOCITY=250 ACCEL=1000 ACCEL_TO_DECEL=1000
+	BED_MESH_CLEAR
+	DETECT_BED_HEIGHT
+	BED_MESH_CALIBRATE
+	
+	RESTORE_GCODE_STATE NAME=current_state
+	SAVE_AND_HOME
+	{% endif %}
+
+[gcode_macro MOVE_NOZZLE_TO_BED]
+variable_retry = 0
+variable_probe_first = 0
+gcode = 
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 // Ignored while printing.
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=retry VALUE={retry+1}
+	{% elif params.PROBE_FIRST|default(probe_first)|int == 1 %}
+	{% set max_temp = printer["gcode_macro AUTO_BED_MAPPING"].max_temp %}
+	{% if max_temp > 0 and printer.extruder.temperature > max_temp %}
+	M118 // Nozzle too hot to probe.
+	G28
+	{% else %}
+	DETECT_BED_HEIGHT
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=1
+	{% endif %}
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=retry VALUE=0
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=1
+	G28
+	G1 Z30 F6000
+	G1 X0 Y0
+	G1 Z0 F600
+	{% endif %}
+
+[gcode_macro TOO_LOW]
+gcode = 
+	{% set step = params.STEP|default(0.05)|float %}
+	{% if printer.toolhead.position.z|float > printer.toolhead.axis_maximum.z|float - 5 %}
+	SET_GCODE_OFFSET Z_ADJUST={step}
+	{% else %}
+	{% set hop = 1.0 + step %}
+	SET_GCODE_OFFSET Z_ADJUST={hop} MOVE=1
+	SET_GCODE_OFFSET Z_ADJUST=-1.00 MOVE=1
+	{% endif %}
+
+[gcode_macro TOO_HIGH]
+gcode = 
+	{% set step = params.STEP|default(0.05)|float %}
+	{% if printer.toolhead.position.z|float > printer.toolhead.axis_maximum.z|float - 5 %}
+	SET_GCODE_OFFSET Z_ADJUST={-step}
+	{% else %}
+	{% set hop = 1.0 - step %}
+	SET_GCODE_OFFSET Z_ADJUST={hop} MOVE=1
+	SET_GCODE_OFFSET Z_ADJUST=-1.00 MOVE=1
+	{% endif %}
+
+[gcode_macro SAVE_AND_HOME]
+variable_retry = 0
+variable_save_config = 0
+gcode = 
+	SAVE_PROBE_OFFSET
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 // Ignore HOME while printing.
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=retry VALUE={retry+1}
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=retry VALUE=0
+	G28
+	{% if save_config > 0 %}
+	SAVE_CONFIG
+	{% endif %}
+	{% endif %}
+
+[gcode_macro SAVE_PROBE_OFFSET]
+variable_save_probe = 0
+gcode = 
+	{% if save_probe == 1 %}
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+	{% set probe_z = printer.probe.last_z_result - printer.gcode_move.position.z %}
+	
+	
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set o = svv.get(offset_key, {'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': 0.0}) %}
+	{% set ns = namespace(offsets={'x': o.x,'y': o.y,'z': o.z,'probe_z': probe_z|float|round(4)}) %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+	{% endif %}
+
+[delayed_gcode LOAD_GCODE_OFFSETS]
+initial_duration = 0.1
+gcode = 
+	RESTORE_GCODE_OFFSET VERBOSE=1
+	TURN_OFF_HEATERS
+
+[homing_override]
+gcode = 
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+	G28
+
+[gcode_macro SET_GCODE_OFFSET]
+rename_existing = _SET_GCODE_OFFSET
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set o = svv.get(offset_key, {'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': 0.0}) %}
+	{% set ns = namespace(offsets={'x': o.x,'y': o.y,'z': o.z,'probe_z': o.probe_z}) %}
+	
+	_SET_GCODE_OFFSET {% for p in params %}{'%s=%s '% (p, params[p])}{% endfor %}
+	
+	{%if 'X' in params %}{% set null = ns.offsets.update({'x': params.X|float|round(4)}) %}{% endif %}
+	{%if 'Y' in params %}{% set null = ns.offsets.update({'y': params.Y|float|round(4)}) %}{% endif %}
+	{%if 'Z' in params %}{% set null = ns.offsets.update({'z': params.Z|float|round(4)}) %}{% endif %}
+	{%if 'Z_ADJUST' in params %}
+	{% set z_adjust = params.Z_ADJUST|float %}
+	{% if printer["gcode_macro SAVE_PROBE_OFFSET"].save_probe == 0 %}
+	{% set null = ns.offsets.update({'z': (ns.offsets.z + z_adjust)|round(4)}) %}
+	{% endif %}
+	{% endif %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+
+[gcode_macro RESTORE_GCODE_OFFSET]
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set current_tool = params.TOOL|default(svv.get("current_tool", 0))|int %}
+	{% set offset_key = 'tool' ~ current_tool ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	{% if offsets != None %}
+	_SET_GCODE_OFFSET X={offsets.x} Y={offsets.y} Z={offsets.z - offsets.probe_z|float}
+	{% else %}
+	
+	{% set cfg_z = printer["configfile"].config["probe"].get("z_offset", 0.0)|float %}
+	{% set ns = namespace(offsets={'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': cfg_z}) %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+	{% endif %}
+	
+	{% if params.VERBOSE|default(0)|int == 1 %}
+	{action_respond_info("restore gcode offset: %s = %s" % (offset_key, offsets|pprint))}
+	{% endif %}
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+
+[gcode_macro DETECT_BED_HEIGHT]
+variable_safe_z = 20
+gcode = 
+	G28
+	G1 Z{safe_z} F6000
+	PROBE
+	
+	SET_PROBE_ZERO
+
+[gcode_macro SET_PROBE_ZERO]
+gcode = 
+	
+	
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	{% if offsets != None %}
+	
+	SET_GCODE_OFFSET Z={printer.probe.last_z_result - offsets.probe_z}
+	
+	G1 Z0
+	{% endif %}
+
+[gcode_macro _SET_NOZZLE_ZERO]
+gcode = 
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	
+	
+	{% set z_diff = printer.gcode_move.position.z - offsets.z %}
+	{% set null = offsets.update({'probe_z': -z_diff|float|round(5)}) %}
+	
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{offsets | pprint | replace("\n", "") | replace("\"", "\\\"")}"
+
+[gcode_macro UNLOAD_FILAMENT]
+gcode = 
+	{% if printer.print_stats.state == "Printing" %}
+	M118 // Must pause printing before unloading
+	{% else %}
+	G28
+	M118 // Caution: Begin nozzle heating
+	M109 S230
+	G91
+	G92 E0.0
+	G1 E10 F100
+	M104 S0
+	M118 // Retracting filament from nozzle
+	G1 E10 F200
+	G1 E-10 F100
+	G1 E-10 F200
+	G92 E0.0
+	G1 E-50 F500
+	G1 E-50 F1000
+	G1 E-50
+	G1 E-50
+	G1 E-50
+	G90
+	M18
+	M118 // Filament unloaded
+	{% endif %}
+
+[printer]
+kinematics = delta
+max_velocity = 200
+max_accel = 2500
+max_z_velocity = 100
+minimum_z_position = -20
+square_corner_velocity = 5.0
+print_radius = 240.0
+delta_radius = 277.246
+
+[endstop_phase]
+
+[delta_calibrate]
+radius = 220
+
+[input_shaper]
+=======================
+Error loading template 'gcode_macro PROBE:gcode'
+line 5: SELECT_TOOL T={printer.gcode # unexpected end of template, expected 'end of print statement'.
+Traceback (most recent call last):
+  File "/home/pi/klipper/klippy/extras/gcode_macro.py", line 51, in __init__
+    self.template = env.from_string(script)
+  File "/home/pi/klippy-env/lib/python3.9/site-packages/jinja2/environment.py", line 941, in from_string
+    return cls.from_code(self, self.compile(source), globals, None)
+  File "/home/pi/klippy-env/lib/python3.9/site-packages/jinja2/environment.py", line 638, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/pi/klippy-env/lib/python3.9/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/home/pi/klippy-env/lib/python3.9/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "<unknown>", line 5, in template
+jinja2.exceptions.TemplateSyntaxError: unexpected end of template, expected 'end of print statement'.
+Unhandled exception during connect
+Traceback (most recent call last):
+  File "/home/pi/klipper/klippy/extras/gcode_macro.py", line 51, in __init__
+    self.template = env.from_string(script)
+  File "/home/pi/klippy-env/lib/python3.9/site-packages/jinja2/environment.py", line 941, in from_string
+    return cls.from_code(self, self.compile(source), globals, None)
+  File "/home/pi/klippy-env/lib/python3.9/site-packages/jinja2/environment.py", line 638, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/pi/klippy-env/lib/python3.9/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/home/pi/klippy-env/lib/python3.9/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "<unknown>", line 5, in template
+jinja2.exceptions.TemplateSyntaxError: unexpected end of template, expected 'end of print statement'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pi/klipper/klippy/klippy.py", line 130, in _connect
+    self._read_config()
+  File "/home/pi/klipper/klippy/klippy.py", line 123, in _read_config
+    self.load_object(config, section_config.get_name(), None)
+  File "/home/pi/klipper/klippy/klippy.py", line 112, in load_object
+    self.objects[section] = init_func(config.getsection(section))
+  File "/home/pi/klipper/klippy/extras/gcode_macro.py", line 200, in load_config_prefix
+    return GCodeMacro(config)
+  File "/home/pi/klipper/klippy/extras/gcode_macro.py", line 130, in __init__
+    self.template = gcode_macro.load_template(config, 'gcode')
+  File "/home/pi/klipper/klippy/extras/gcode_macro.py", line 87, in load_template
+    return TemplateWrapper(self.printer, self.env, name, script)
+  File "/home/pi/klipper/klippy/extras/gcode_macro.py", line 57, in __init__
+    raise self.gcode.error(msg)
+gcode.CommandError: Error loading template 'gcode_macro PROBE:gcode'
+line 5: SELECT_TOOL T={printer.gcode # unexpected end of template, expected 'end of print statement'.
+webhooks client 548560689424: New connection
+webhooks client 548560689424: Client info {'program': 'Moonraker', 'version': 'v0.9.3-110-g00170f3'}
+
+^C
+pi@deltamaker-0410:~/printer_data/config $ sudo service klipper restart
+pi@deltamaker-0410:~/printer_data/config $ tail -f ~/printer_data/logs/klippy.log|grep -v print_stall
+print_radius = 240.0
+delta_radius = 277.246
+
+[endstop_phase]
+
+[delta_calibrate]
+radius = 220
+
+[input_shaper]
+=======================
+Delta max build height 540.00mm (radius tapered above 460.82mm)
+Delta max build radius 240.00mm (moves slowed past 220.82mm and 240.62mm)
+Extruder max_extrude_ratio=0.415752
+Extruder max_extrude_ratio=0.415752
+mcu 'mcu': Starting serial connect
+webhooks client 548286172992: New connection
+webhooks client 548286172992: Client info {'program': 'Moonraker', 'version': 'v0.9.3-110-g00170f3'}
+mcu 'mcu': got {'oid': 27, 'next_clock': 2079941632, 'value': 31397, '#name': 'analog_in_state', '#sent_time': 2416793.855816923, '#receive_time': 2416793.889165812}
+mcu 'mcu': got {'oid': 30, 'next_clock': 2081861632, 'value': 31400, '#name': 'analog_in_state', '#sent_time': 2416793.907653367, '#receive_time': 2416793.919147182}
+Loaded MCU 'mcu' 132 commands (v0.5.0-5158-g9ce3ae74 / gcc: (15:8-2019-q3-1+b1) 8.3.1 20190703 (release) [gcc-8-branch revision 273027] binutils: (2.35.2-2+14+b2) 2.35.2)
+MCU 'mcu' config: ADC_MAX=4095 BUS_PINS_i2c1_PA9_PA10=PA9,PA10 BUS_PINS_i2c1_PB6_PB7=PB6,PB7 BUS_PINS_i2c1_PB8_PB9=PB8,PB9 BUS_PINS_i2c2_PA7_PA6=PA7,PA6 BUS_PINS_i2c2_PB10_PB11=PB10,PB11 BUS_PINS_i2c2_PB13_PB14=PB13,PB14 BUS_PINS_i2c3_PA7_PA6=PA7,PA6 BUS_PINS_i2c3_PB3_PB4=PB3,PB4 BUS_PINS_i2c3_PC0_PC1=PC0,PC1 BUS_PINS_spi1=PA6,PA7,PA5 BUS_PINS_spi1a=PB4,PB5,PB3 BUS_PINS_spi2=PB14,PB15,PB13 BUS_PINS_spi2_PB2_PB11_PB10=PB2,PB11,PB10 BUS_PINS_spi2a=PC2,PC3,PB10 BUS_PINS_spi3=PB4,PB5,PB3 CLOCK_FREQ=64000000 MCU=stm32g0b1xx PWM_MAX=257 RESERVE_PINS_USB=PA11,PA12 RESERVE_PINS_crystal=PF0,PF1 STATS_SUMSQ_BASE=256 STEPPER_OPTIMIZED_EDGE=8 STEPPER_STEP_BOTH_EDGE=1
+mcu 'rpi': Starting connect
+mcu 'mcu': got {'oid': 27, 'next_clock': 2099141632, 'value': 31394, '#name': 'analog_in_state', '#sent_time': 2416794.07813783, '#receive_time': 2416794.189176552}
+mcu 'rpi': got {'count': 135, 'sum': 119777, 'sumsq': 599691, '#name': 'stats', '#sent_time': 2416794.191079756, '#receive_time': 2416794.191218126}
+mcu 'mcu': got {'oid': 30, 'next_clock': 2101061632, 'value': 31413, '#name': 'analog_in_state', '#sent_time': 2416794.07813783, '#receive_time': 2416794.219172571}
+mcu 'mcu': got {'oid': 27, 'next_clock': 2118341632, 'value': 31389, '#name': 'analog_in_state', '#sent_time': 2416794.07813783, '#receive_time': 2416794.489175385}
+mcu 'mcu': got {'oid': 30, 'next_clock': 2120261632, 'value': 31407, '#name': 'analog_in_state', '#sent_time': 2416794.07813783, '#receive_time': 2416794.519172682}
+Loaded MCU 'rpi' 119 commands (v0.5.0-4608-g3d50af74 / gcc: (Debian 10.2.1-6) 10.2.1 20210110 binutils: (GNU Binutils for Debian) 2.35.2)
+MCU 'rpi' config: ADC_MAX=4095 CLOCK_FREQ=50000000 MCU=linux PCA9685_MAX=4096 PWM_MAX=32768 STATS_SUMSQ_BASE=256
+Attempting automated MCU 'mcu' restart: CRC mismatch
+Attempting MCU 'mcu' reset command
+Attempting MCU 'rpi' config_reset command
+b'Got EOF when reading from device'
+webhooks client 548286172992: Disconnected
+Restarting printer
+Start printer at Thu Oct 16 12:47:02 2025 (1760633222.8 2416795.6)
+===== Config file =====
+[gcode_macro START_PRINT]
+gcode = 
+	START_PRINT_BASE
+	SET_VELOCITY_LIMIT VELOCITY=200 ACCEL=2500 ACCEL_TO_DECEL=1250
+
+[gcode_macro END_PRINT]
+gcode = 
+	END_PRINT_BASE
+
+[mcu]
+serial = /dev/serial/by-id/usb-Klipper_stm32g0b1xx_57003B0009504B5735313920-if00
+restart_method = command
+
+[temperature_fan rpi_fan]
+pin = PB14
+target_temp = 42
+kick_start_time = 0.8
+off_below = 0.1
+max_power = 1.0
+sensor_type = temperature_host
+control = pid
+min_temp = -40
+max_temp = 85
+pid_kp = 1.0
+pid_ki = 0.5
+pid_kd = 2.0
+min_speed = 0.2
+max_speed = 0.9
+
+[neopixel status_leds]
+pin = PC7
+
+[stepper_a]
+step_pin = PA14
+dir_pin = PA10
+enable_pin = !PA13
+endstop_pin = ^PC4
+microsteps = 16
+rotation_distance = 40
+homing_speed = 60
+homing_retract_dist = 4
+homing_retract_speed = 30
+second_homing_speed = 10
+position_endstop = 540
+arm_length = 525
+
+[tmc2209 stepper_a]
+uart_pin = PB8
+run_current = 0.800
+
+[stepper_b]
+step_pin = PC8
+dir_pin = PA15
+enable_pin = !PC14
+endstop_pin = ^PB0
+microsteps = 16
+rotation_distance = 40
+
+[tmc2209 stepper_b]
+uart_pin = PC9
+run_current = 0.800
+
+[stepper_c]
+step_pin = PD2
+dir_pin = !PD4
+enable_pin = !PD3
+endstop_pin = ^PC6
+microsteps = 16
+rotation_distance = 40
+
+[tmc2209 stepper_c]
+uart_pin = PD0
+run_current = 0.800
+
+[board_pins]
+aliases = 
+	
+	EXP1_1=PC1, EXP1_3=PC3, EXP1_5=PC0, EXP1_7=PA2, EXP1_9=<GND>,
+	EXP1_2=PC2,  EXP1_4=<RST>, EXP1_6=PA0, EXP1_8=PA1, EXP1_10=<5V>
+
+[multi_pin dual_heater]
+pins = PB11, PB10
+
+[extruder]
+step_pin = PD5
+dir_pin = PD6
+enable_pin = !PB3
+heater_pin = PB11
+sensor_pin = PA4
+sensor_type = ATC Semitec 104GT-2
+max_extrude_only_accel = 1000
+max_extrude_only_velocity = 25
+microsteps = 16
+rotation_distance = 33.275
+filament_diameter = 1.75
+max_temp = 280
+min_temp = -100
+min_extrude_temp = -100
+nozzle_diameter = 0.5
+control = pid
+pid_kp = 34.298
+pid_ki = 2.287
+pid_kd = 128.617
+
+[tmc2209 extruder]
+uart_pin = PD1
+run_current = 0.800
+
+[heater_fan extruder_fan]
+pin = PA8
+heater = extruder
+
+[filament_switch_sensor material_0]
+switch_pin = PC5
+
+[probe]
+pin = ^PA6
+speed = 6
+x_offset = 0
+y_offset = 0
+samples = 3
+activate_gcode = 
+	ACTIVATE_PROBE
+deactivate_gcode = 
+	DEACTIVATE_PROBE
+z_offset = 0.0
+
+[output_pin probe_power_pin]
+pin = PB15
+
+[extruder1]
+step_pin = PB7
+dir_pin = !PB6
+enable_pin = !PB4
+heater_pin = PB10
+sensor_pin = PA5
+max_extrude_only_accel = 1000
+max_extrude_only_velocity = 25
+microsteps = 16
+rotation_distance = 33.275
+filament_diameter = 1.75
+sensor_type = ATC Semitec 104GT-2
+max_temp = 280
+min_temp = -100
+min_extrude_temp = -100
+nozzle_diameter = 0.5
+control = pid
+pid_kp = 34.298
+pid_ki = 2.287
+pid_kd = 128.617
+
+[filament_switch_sensor material_1]
+switch_pin = PB1
+
+[tmc2209 extruder1]
+uart_pin = PB5
+run_current = 0.800
+
+[verify_heater extruder]
+
+[firmware_retraction]
+retract_length = 8.0
+retract_speed = 40
+
+[verify_heater extruder1]
+
+[delayed_gcode STARTUP_INIT]
+initial_duration = 0.1
+gcode = 
+	SET_PIN PIN=probe_power_pin VALUE=1
+	
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=max_temp VALUE=50
+	
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=probe_first VALUE=1
+	
+	BED_MESH_PROFILE LOAD="default"
+
+[gcode_macro SERVO_CALIBRATE]
+gcode = 
+	NOZZLE_LIFT_CALIBRATE START=1
+
+[servo nozzle_lift]
+pin = PA7
+minimum_pulse_width = 0.000615
+maximum_pulse_width = 0.002495
+
+[gcode_macro ACTIVATE_PROBE]
+variable_state = 0
+variable_active = 0
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set state = svv.get("nozzle_lift_state", 0) %}
+	{% if state == 0 %}
+	NOZZLE_LIFT_CALIBRATE START=1
+	{% endif %}
+	
+	SET_GCODE_VARIABLE MACRO=DEACTIVATE_PROBE VARIABLE=min_trig VALUE={state.min_trig}
+	SET_NOZZLE_LIFT ANGLE=0
+	SET_NOZZLE_LIFT ANGLE={state.max_open}
+	
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=active VALUE=1
+
+[gcode_macro DEACTIVATE_PROBE]
+variable_min_trig = 180
+gcode = 
+	
+	
+	SET_NOZZLE_LIFT ANGLE={min_trig}
+	
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=active VALUE=0
+	UPDATE_DELAYED_GCODE ID=RESET_NOZZLE_AFTER_PROBING DURATION=2
+
+[delayed_gcode RESET_NOZZLE_AFTER_PROBING]
+initial_duration = 1
+gcode = 
+	{% set probing = printer["gcode_macro ACTIVATE_PROBE"].active %}
+	
+	{% if probing == 0 %}
+	
+	
+	
+	LOWER_NOZZLE
+	{% endif %}
+
+[gcode_macro lift_nozzle]
+gcode = 
+	SET_NOZZLE_LIFT ANGLE=180 OFF=1
+
+[gcode_macro lower_nozzle]
+gcode = 
+	SET_NOZZLE_LIFT ANGLE=0 OFF=1
+
+[gcode_macro SET_NOZZLE_LIFT]
+variable_last_angle = 0
+gcode = 
+	{% set servo = params.SERVO|default("nozzle_lift") %}
+	{% set angle = params.ANGLE|default(last_angle)|int %}
+	{% set turn_off = params.OFF|default(0)|int %}
+	{% set ease = (last_angle + angle) / 2 %}
+	SET_GCODE_VARIABLE MACRO=SET_NOZZLE_LIFT VARIABLE=last_angle VALUE={angle}
+	
+	
+	SET_SERVO SERVO={servo} ANGLE={angle}
+	G4 P400
+	M118 // SET_NOZZLE_LIFT angle={angle}
+	{% if turn_off == 1 %}
+	G4 P400
+	SET_SERVO SERVO={servo} WIDTH=0
+	M118 // SET_NOZZLE_LIFT width=0
+	{% endif %}
+
+[delayed_gcode NOZZLE_LIFT_LOOP]
+initial_duration = 0
+gcode = 
+	
+	
+	NOZZLE_LIFT_CALIBRATE
+
+[gcode_macro NOZZLE_LIFT_CALIBRATE]
+variable_state = {'min_open': 0, 'max_open': 0, 'min_trig': 180, 'max_trig': 180}
+variable_angle = 180
+gcode = 
+	{% set running = 1 %}
+	{% set limit = params.LIMIT|default(10)|int %}
+	{% set start = params.START|default(0)|int %}
+	{% if start == 1 %}
+	M118 // Begin Lift calibration
+	{% set state = {'min_open': 0, 'max_open': 0, 'min_trig': 180, 'max_trig': 180} %}
+	{% set angle = state.max_trig %}
+	M118 // state={state}
+	
+	{% else %}
+	{% set query = printer.probe.last_query|int %}
+	
+	{% if query == 1 %}
+	{% set null = state.update({'min_trig': angle}) %}
+	{% set angle = ((angle + state.max_open) / 2)|int %}
+	
+	{% else %}
+	{% set null = state.update({'max_open': angle|int}) %}
+	{% set null = state.update({'min_open': (angle/2)|int}) %}
+	{% set angle = ((angle + state.min_trig) / 2)|int %}
+	
+	{% endif %}
+	{% set distance = (state.min_trig - state.max_open)|abs %}
+	{% if distance <= limit %}
+	M118 // {state | pprint}
+	SAVE_VARIABLE VARIABLE=nozzle_lift_state VALUE="{state|pprint}"
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=state VALUE="{state}"
+	M118 // Lift calibration={state.max_open|int} angle={angle|int}
+	{% set running = 0 %}
+	{% endif %}
+	{% endif %}
+	
+	SET_GCODE_VARIABLE MACRO=NOZZLE_LIFT_CALIBRATE VARIABLE=angle VALUE={angle|int}
+	SET_GCODE_VARIABLE MACRO=NOZZLE_LIFT_CALIBRATE VARIABLE=state VALUE="{state}"
+	
+	SET_NOZZLE_LIFT min_open={state.min_open}
+	SET_NOZZLE_LIFT ANGLE={angle|int}
+	QUERY_PROBE
+	UPDATE_DELAYED_GCODE ID=NOZZLE_LIFT_LOOP DURATION={running}
+
+[bed_mesh]
+round_probe_count = 5
+speed = 200
+mesh_radius = 230
+
+[gcode_macro _DELTA_CALIBRATE]
+gcode = 
+	SET_GCODE_OFFSET Z=0
+	G28
+	delta_calibrate
+	G1 X0 Y0 Z50 F4200
+	G28
+	save_config
+
+[gcode_macro _BED_MESH_CALIBRATE]
+gcode = 
+	G28
+	G1 X0 Y0 Z50 F4200
+	bed_mesh_calibrate
+	G1 X0 Y0 Z50 F4200
+	G28
+	save_config
+
+[delayed_gcode STARTUP_INIT_TOOL]
+initial_duration = 0.1
+gcode = 
+	{% set current_tool = printer.save_variables.variables.get("current_tool", 0) %}
+	SET_GCODE_VARIABLE MACRO=SELECT_TOOL VARIABLE=current_tool VALUE={current_tool}
+
+[gcode_macro PROBE]
+rename_existing = PROBE_REAL
+gcode = 
+	M118 // PROBE {rawparams}
+	SELECT_TOOL PROBING=1
+	PROBE_REAL {rawparams}
+	SELECT_TOOL PROBING=0
+
+[gcode_macro SELECT_TOOL]
+variable_current_tool = 0
+gcode = 
+	{% set tool = params.TOOL|default(current_tool)|int %}
+	{% if params.PROBING|default(-1)|int == 1 %}
+	RESTORE_GCODE_OFFSET TOOL=0 VERBOSE=1
+	LOWER_NOZZLE
+	{% elif params.PROBING|default(-1)|int == 0 %}
+	{% if current_tool == 1 %}
+	LIFT_NOZZLE
+	{% else %}
+	LOWER_NOZZLE
+	{% endif %}
+	RESTORE_GCODE_OFFSET TOOL={current_tool} VERBOSE=1
+	
+	{% elif params.TOOL|default(None) != None %}
+	{% if tool != current_tool %}
+	M118 // SELECT_TOOL tool={current_tool}
+	{% if tool == 1 %}
+	ACTIVATE_EXTRUDER EXTRUDER=extruder1
+	LIFT_NOZZLE
+	{% else %}
+	ACTIVATE_EXTRUDER EXTRUDER=extruder
+	LOWER_NOZZLE
+	{% endif %}
+	SET_GCODE_VARIABLE MACRO=SELECT_TOOL VARIABLE=current_tool VALUE={tool}
+	RESTORE_GCODE_OFFSET TOOL={tool} VERBOSE=1
+	{% endif %}
+	{% endif %}
+
+[gcode_macro T0]
+gcode = 
+	SELECT_TOOL TOOL=0
+
+[gcode_macro T1]
+gcode = 
+	SELECT_TOOL TOOL=1
+
+[gcode_macro START_PRINT_BASE]
+gcode = 
+	M104 S{params.EXTRUDER_TEMP|default(printer.extruder.target, true) }
+	G21
+	G90
+	M82
+	{% if printer.toolhead.homed_axes != "xyz" %}
+	G28
+	{% endif %}
+	BED_MESH_PROFILE LOAD="default"
+	CLEAR_PAUSE
+	M109 S{params.EXTRUDER_TEMP|default(printer.extruder.target, true) }
+
+[gcode_macro START_PRINT_PURGE]
+gcode = 
+	{% set EXTRUDER_TEMP = params.EXTRUDER_TEMP|default(220)|float %}
+	G21
+	G90
+	M82
+	{% if printer.extruder.target != 0 %}
+	M104 S{EXTRUDER_TEMP}
+	{% else %}
+	M104 S150
+	{% endif %}
+	
+	
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	{% set min_x = printer.toolhead.axis_minimum.x|float * 0.9 %}
+	{% set min_y = printer.toolhead.axis_minimum.y|float * 0.9 %}
+	{% set max_y = printer.toolhead.axis_maximum.y|float * 0.9 %}
+	{% set extr = 80 %}
+	G1 Z{max_z - 100} F3000
+	G1 X{min_x} F3000
+	M109 S{EXTRUDER_TEMP}
+	G1 Z1 F3000
+	G1 X{min_x} Y0 Z0.4
+	G92 E0
+	G3 X0 Y{min_y} I{max_y} J1 Z0.2 E{extr} F1000
+	G92 E0
+	G1 E-1 F2100
+	G1 Z1
+
+[gcode_macro END_PRINT_BASE]
+gcode = 
+	TURN_OFF_HEATERS
+	SAFE_LIFT X=0 Y=0
+	G28
+
+[gcode_macro LAYER_CHANGE]
+gcode = 
+
+[gcode_macro SAFE_LIFT]
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float - 5 %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	SAVE_GCODE_STATE NAME=safe_lift
+	SET_GCODE_OFFSET X=0 Y=0
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	RESTORE_GCODE_STATE NAME=safe_lift
+
+[gcode_macro PAUSE]
+description = Pause the current print
+rename_existing = PAUSE_BASE
+gcode = 
+	{% set z = printer.toolhead.position.z|round(3) %}
+	SAVE_VARIABLE VARIABLE=pause_z VALUE={z}
+	RESPOND MSG="Pausing at z={z}"
+	PAUSE_BASE
+	SAFE_LIFT {rawparams}
+	
+	{% set restore_z = printer.toolhead.position.z|float %}
+	SET_GCODE_VARIABLE MACRO=RESUME VARIABLE=restore_z VALUE={restore_z}
+
+[gcode_macro PAUSE2]
+description = Pause the current print
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	SAVE_VARIABLE VARIABLE=pause_z VALUE={act_z|round(3)}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	
+	RESPOND MSG="Pausing..."
+	PAUSE_BASE
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	
+	{% set restore_z = printer.toolhead.position.z|float %}
+	SET_GCODE_VARIABLE MACRO=RESUME VARIABLE=restore_z VALUE={restore_z}
+
+[gcode_macro RESUME]
+description = Resume the current print
+rename_existing = RESUME_BASE
+variable_restore_z = 0
+gcode = 
+	
+	{% if restore_z > 0 %}
+	G90
+	G1 Z{restore_z} F2500
+	{% endif%}
+	
+	{% set e = params.E|default(1) %}
+	
+	{% if 'VELOCITY' in params|upper %}
+	{% set get_params = ('VELOCITY=' + params.VELOCITY)  %}
+	{%else %}
+	{% set get_params = "" %}
+	{% endif %}
+	
+	SET_IDLE_TIMEOUT TIMEOUT=1800
+	G91
+	{% if printer["gcode_macro M600"].m600_enabled == 1 %}
+	RESPOND MSG="Heating..."
+	M109 S{printer["gcode_macro M600"].hotend_temp}
+	RESPOND MSG="Loading filament..."
+	G0 E50 F800
+	G0 E30 F300
+	M400
+	M106 S255
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=m600_enabled VALUE=0
+	{% else %}
+	G1 E{e} F2100
+	{% endif %}
+	RESPOND MSG="Resuming..."
+	RESUME_BASE {get_params}
+
+[gcode_macro CANCEL_PRINT]
+description = Cancel the current print
+rename_existing = CANCEL_PRINT_BASE
+gcode = 
+	RESPOND MSG="Printing canceled!"
+	G28
+	TURN_OFF_HEATERS
+	CANCEL_PRINT_BASE
+
+[gcode_macro M600]
+description = Filament change
+variable_hotend_temp = 0
+variable_m600_enabled = 0
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	
+	SAVE_GCODE_STATE NAME=M600_state
+	SET_IDLE_TIMEOUT TIMEOUT=86400
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=m600_enabled VALUE=1
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=hotend_temp VALUE={printer.extruder.target}
+	RESPOND MSG="Pausing..."
+	PAUSE
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	RESPOND MSG="Unloading filament..."
+	G91
+	G0 E-10 F300
+	G0 E-30 F800
+	M400
+	RESPOND MSG="Heating stopped!"
+	M109 S0
+	RESTORE_GCODE_STATE NAME=M600_state
+
+[gcode_macro TMC]
+gcode = 
+	DUMP_TMC STEPPER=stepper_a
+	DUMP_TMC STEPPER=stepper_b
+	DUMP_TMC STEPPER=stepper_c
+	DUMP_TMC STEPPER=extruder
+
+[gcode_macro ENDSTOPS_CALIBRATION]
+description = Endstops Phase Calibration
+gcode = 
+	{% if printer.idle_timeout.state == "Printing" %}
+	RESPOND TYPE=error MSG="This macro cannot be used while printing!"
+	{% else %}
+	{% if printer.toolhead.homed_axes != "xyz" %}
+	G28
+	{% endif %}
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_a
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_b
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_c
+	M400
+	G28
+	{% endif %}
+
+[save_variables]
+filename = /home/pi/printer_data/config/variables.cfg
+
+[virtual_sdcard]
+path = /home/pi/printer_data/gcodes
+on_error_gcode = CANCEL_PRINT
+
+[mcu rpi]
+serial = /tmp/klipper_host_mcu
+
+[fan]
+pin = rpi:gpio16
+kick_start_time = 0.1
+off_below = 0.2
+cycle_time = 0.005
+max_power = 0.8
+hardware_pwm = False
+
+[idle_timeout]
+timeout = 600
+
+[respond]
+
+[pause_resume]
+
+[gcode_arcs]
+
+[gcode_macro MOTOR_OFF_POSITION]
+gcode = 
+	M18
+	{% set toolhead = printer.toolhead %}
+	{% set kin = toolhead.kinematics %}
+	M118 toolhead.status()
+	{% set steppers = kin.get_steppers() %}
+	{% for s in steppers %}
+	M118 s.get_name() s.get_commanded_position()
+	{% endfor %}
+
+[gcode_macro START_DANCE]
+gcode = 
+	G28
+	G1 Z40 F25000
+	SET_GCODE_OFFSET X=0 Y=0
+	RESUME_DANCE
+
+[gcode_macro STOP_DANCE]
+gcode = 
+	PAUSE_DANCE
+
+[gcode_macro RESUME_DANCE]
+gcode = 
+	SET_VELOCITY_LIMIT VELOCITY=500 ACCEL=6000 ACCEL_TO_DECEL=3000
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=2
+
+[gcode_macro PAUSE_DANCE]
+gcode = 
+	SET_VELOCITY_LIMIT VELOCITY=200 ACCEL=2000 ACCEL_TO_DECEL=1000
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=0
+
+[delayed_gcode DANCE_LOOP]
+initial_duration = 0
+gcode = 
+	G1 X200 Y0
+	G1 X-200
+	G1 X0 Y-200
+	G1 Y200
+	G1 X-200 Y0
+	G1 X200
+	G1 X0 Y-200
+	G1 Y200
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=2
+
+[gcode_macro AUTO_BED_MAPPING]
+variable_retry = 0
+variable_max_temp = 50
+gcode = 
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 Ignored while printing.
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=retry VALUE={retry+1}
+	{% elif max_temp > 0 and printer.extruder.temperature > max_temp %}
+	M118 // Nozzle too hot to probe.
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=retry VALUE=0
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=save_config VALUE=1
+	SET_GCODE_OFFSET X=0 Y=0
+	
+	SAVE_GCODE_STATE NAME=current_state
+	SET_VELOCITY_LIMIT VELOCITY=250 ACCEL=1000 ACCEL_TO_DECEL=1000
+	BED_MESH_CLEAR
+	DETECT_BED_HEIGHT
+	BED_MESH_CALIBRATE
+	
+	RESTORE_GCODE_STATE NAME=current_state
+	SAVE_AND_HOME
+	{% endif %}
+
+[gcode_macro MOVE_NOZZLE_TO_BED]
+variable_retry = 0
+variable_probe_first = 0
+gcode = 
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 // Ignored while printing.
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=retry VALUE={retry+1}
+	{% elif params.PROBE_FIRST|default(probe_first)|int == 1 %}
+	{% set max_temp = printer["gcode_macro AUTO_BED_MAPPING"].max_temp %}
+	{% if max_temp > 0 and printer.extruder.temperature > max_temp %}
+	M118 // Nozzle too hot to probe.
+	G28
+	{% else %}
+	DETECT_BED_HEIGHT
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=1
+	{% endif %}
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=retry VALUE=0
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=1
+	G28
+	G1 Z30 F6000
+	G1 X0 Y0
+	G1 Z0 F600
+	{% endif %}
+
+[gcode_macro TOO_LOW]
+gcode = 
+	{% set step = params.STEP|default(0.05)|float %}
+	{% if printer.toolhead.position.z|float > printer.toolhead.axis_maximum.z|float - 5 %}
+	SET_GCODE_OFFSET Z_ADJUST={step}
+	{% else %}
+	{% set hop = 1.0 + step %}
+	SET_GCODE_OFFSET Z_ADJUST={hop} MOVE=1
+	SET_GCODE_OFFSET Z_ADJUST=-1.00 MOVE=1
+	{% endif %}
+
+[gcode_macro TOO_HIGH]
+gcode = 
+	{% set step = params.STEP|default(0.05)|float %}
+	{% if printer.toolhead.position.z|float > printer.toolhead.axis_maximum.z|float - 5 %}
+	SET_GCODE_OFFSET Z_ADJUST={-step}
+	{% else %}
+	{% set hop = 1.0 - step %}
+	SET_GCODE_OFFSET Z_ADJUST={hop} MOVE=1
+	SET_GCODE_OFFSET Z_ADJUST=-1.00 MOVE=1
+	{% endif %}
+
+[gcode_macro SAVE_AND_HOME]
+variable_retry = 0
+variable_save_config = 0
+gcode = 
+	SAVE_PROBE_OFFSET
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 // Ignore HOME while printing.
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=retry VALUE={retry+1}
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=retry VALUE=0
+	G28
+	{% if save_config > 0 %}
+	SAVE_CONFIG
+	{% endif %}
+	{% endif %}
+
+[gcode_macro SAVE_PROBE_OFFSET]
+variable_save_probe = 0
+gcode = 
+	{% if save_probe == 1 %}
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+	{% set probe_z = printer.probe.last_z_result - printer.gcode_move.position.z %}
+	
+	
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set o = svv.get(offset_key, {'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': 0.0}) %}
+	{% set ns = namespace(offsets={'x': o.x,'y': o.y,'z': o.z,'probe_z': probe_z|float|round(4)}) %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+	{% endif %}
+
+[delayed_gcode LOAD_GCODE_OFFSETS]
+initial_duration = 0.1
+gcode = 
+	RESTORE_GCODE_OFFSET VERBOSE=1
+	TURN_OFF_HEATERS
+
+[homing_override]
+gcode = 
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+	G28
+
+[gcode_macro SET_GCODE_OFFSET]
+rename_existing = _SET_GCODE_OFFSET
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set o = svv.get(offset_key, {'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': 0.0}) %}
+	{% set ns = namespace(offsets={'x': o.x,'y': o.y,'z': o.z,'probe_z': o.probe_z}) %}
+	
+	_SET_GCODE_OFFSET {% for p in params %}{'%s=%s '% (p, params[p])}{% endfor %}
+	
+	{%if 'X' in params %}{% set null = ns.offsets.update({'x': params.X|float|round(4)}) %}{% endif %}
+	{%if 'Y' in params %}{% set null = ns.offsets.update({'y': params.Y|float|round(4)}) %}{% endif %}
+	{%if 'Z' in params %}{% set null = ns.offsets.update({'z': params.Z|float|round(4)}) %}{% endif %}
+	{%if 'Z_ADJUST' in params %}
+	{% set z_adjust = params.Z_ADJUST|float %}
+	{% if printer["gcode_macro SAVE_PROBE_OFFSET"].save_probe == 0 %}
+	{% set null = ns.offsets.update({'z': (ns.offsets.z + z_adjust)|round(4)}) %}
+	{% endif %}
+	{% endif %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+
+[gcode_macro RESTORE_GCODE_OFFSET]
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set current_tool = params.TOOL|default(svv.get("current_tool", 0))|int %}
+	{% set offset_key = 'tool' ~ current_tool ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	{% if offsets != None %}
+	_SET_GCODE_OFFSET X={offsets.x} Y={offsets.y} Z={offsets.z - offsets.probe_z|float}
+	{% else %}
+	
+	{% set cfg_z = printer["configfile"].config["probe"].get("z_offset", 0.0)|float %}
+	{% set ns = namespace(offsets={'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': cfg_z}) %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+	{% endif %}
+	
+	{% if params.VERBOSE|default(0)|int == 1 %}
+	{action_respond_info("restore gcode offset: %s = %s" % (offset_key, offsets|pprint))}
+	{% endif %}
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+
+[gcode_macro DETECT_BED_HEIGHT]
+variable_safe_z = 20
+gcode = 
+	G28
+	G1 Z{safe_z} F6000
+	PROBE
+	
+	SET_PROBE_ZERO
+
+[gcode_macro SET_PROBE_ZERO]
+gcode = 
+	
+	
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	{% if offsets != None %}
+	
+	SET_GCODE_OFFSET Z={printer.probe.last_z_result - offsets.probe_z}
+	
+	G1 Z0
+	{% endif %}
+
+[gcode_macro _SET_NOZZLE_ZERO]
+gcode = 
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	
+	
+	{% set z_diff = printer.gcode_move.position.z - offsets.z %}
+	{% set null = offsets.update({'probe_z': -z_diff|float|round(5)}) %}
+	
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{offsets | pprint | replace("\n", "") | replace("\"", "\\\"")}"
+
+[gcode_macro UNLOAD_FILAMENT]
+gcode = 
+	{% if printer.print_stats.state == "Printing" %}
+	M118 // Must pause printing before unloading
+	{% else %}
+	G28
+	M118 // Caution: Begin nozzle heating
+	M109 S230
+	G91
+	G92 E0.0
+	G1 E10 F100
+	M104 S0
+	M118 // Retracting filament from nozzle
+	G1 E10 F200
+	G1 E-10 F100
+	G1 E-10 F200
+	G92 E0.0
+	G1 E-50 F500
+	G1 E-50 F1000
+	G1 E-50
+	G1 E-50
+	G1 E-50
+	G90
+	M18
+	M118 // Filament unloaded
+	{% endif %}
+
+[printer]
+kinematics = delta
+max_velocity = 200
+max_accel = 2500
+max_z_velocity = 100
+minimum_z_position = -20
+square_corner_velocity = 5.0
+print_radius = 240.0
+delta_radius = 277.246
+
+[endstop_phase]
+
+[delta_calibrate]
+radius = 220
+
+[input_shaper]
+=======================
+Delta max build height 540.00mm (radius tapered above 460.82mm)
+Delta max build radius 240.00mm (moves slowed past 220.82mm and 240.62mm)
+Extruder max_extrude_ratio=0.415752
+Extruder max_extrude_ratio=0.415752
+mcu 'mcu': Starting serial connect
+webhooks client 548303322992: New connection
+webhooks client 548303322992: Client info {'program': 'Moonraker', 'version': 'v0.9.3-110-g00170f3'}
+Loaded MCU 'mcu' 132 commands (v0.5.0-5158-g9ce3ae74 / gcc: (15:8-2019-q3-1+b1) 8.3.1 20190703 (release) [gcc-8-branch revision 273027] binutils: (2.35.2-2+14+b2) 2.35.2)
+MCU 'mcu' config: ADC_MAX=4095 BUS_PINS_i2c1_PA9_PA10=PA9,PA10 BUS_PINS_i2c1_PB6_PB7=PB6,PB7 BUS_PINS_i2c1_PB8_PB9=PB8,PB9 BUS_PINS_i2c2_PA7_PA6=PA7,PA6 BUS_PINS_i2c2_PB10_PB11=PB10,PB11 BUS_PINS_i2c2_PB13_PB14=PB13,PB14 BUS_PINS_i2c3_PA7_PA6=PA7,PA6 BUS_PINS_i2c3_PB3_PB4=PB3,PB4 BUS_PINS_i2c3_PC0_PC1=PC0,PC1 BUS_PINS_spi1=PA6,PA7,PA5 BUS_PINS_spi1a=PB4,PB5,PB3 BUS_PINS_spi2=PB14,PB15,PB13 BUS_PINS_spi2_PB2_PB11_PB10=PB2,PB11,PB10 BUS_PINS_spi2a=PC2,PC3,PB10 BUS_PINS_spi3=PB4,PB5,PB3 CLOCK_FREQ=64000000 MCU=stm32g0b1xx PWM_MAX=257 RESERVE_PINS_USB=PA11,PA12 RESERVE_PINS_crystal=PF0,PF1 STATS_SUMSQ_BASE=256 STEPPER_OPTIMIZED_EDGE=8 STEPPER_STEP_BOTH_EDGE=1
+mcu 'rpi': Starting connect
+Loaded MCU 'rpi' 119 commands (v0.5.0-4608-g3d50af74 / gcc: (Debian 10.2.1-6) 10.2.1 20210110 binutils: (GNU Binutils for Debian) 2.35.2)
+MCU 'rpi' config: ADC_MAX=4095 CLOCK_FREQ=50000000 MCU=linux PCA9685_MAX=4096 PWM_MAX=32768 STATS_SUMSQ_BASE=256
+Sending MCU 'mcu' printer configuration...
+Configured MCU 'mcu' (1024 moves)
+Sending MCU 'rpi' printer configuration...
+Configured MCU 'rpi' (1024 moves)
+Starting heater checks for extruder
+Starting heater checks for extruder1
+bed_mesh: generated points
+Index |  Tool Adjusted  |   Probe
+  0   | (0.0, -230.0)   | (0.0, -230.0)
+  1   | (115.0, -115.0) | (115.0, -115.0)
+  2   | (0.0, -115.0)   | (0.0, -115.0)
+  3   | (-115.0, -115.0)| (-115.0, -115.0)
+  4   | (-230.0, 0.0)   | (-230.0, 0.0)
+  5   | (-115.0, 0.0)   | (-115.0, 0.0)
+  6   | (0.0, 0.0)      | (0.0, 0.0)
+  7   | (115.0, 0.0)    | (115.0, 0.0)
+  8   | (230.0, 0.0)    | (230.0, 0.0)
+  9   | (115.0, 115.0)  | (115.0, 115.0)
+  10  | (0.0, 115.0)    | (0.0, 115.0)
+  11  | (-115.0, 115.0) | (-115.0, 115.0)
+  12  | (0.0, 230.0)    | (0.0, 230.0)
+bed_mesh: Unknown profile [default]
+Script running error
+Traceback (most recent call last):
+  File "/home/pi/klipper/klippy/extras/delayed_gcode.py", line 34, in _gcode_timer_event
+    self.gcode.run_script(self.timer_gcode.render())
+  File "/home/pi/klipper/klippy/gcode.py", line 230, in run_script
+    self._process_commands(script.split('\n'), need_ack=False)
+  File "/home/pi/klipper/klippy/gcode.py", line 212, in _process_commands
+    handler(gcmd)
+  File "/home/pi/klipper/klippy/gcode.py", line 140, in <lambda>
+    func = lambda params: origfunc(self._get_extended_params(params))
+  File "/home/pi/klipper/klippy/extras/bed_mesh.py", line 1760, in cmd_BED_MESH_PROFILE
+    options[key](name)
+  File "/home/pi/klipper/klippy/extras/bed_mesh.py", line 1716, in load_profile
+    raise self.gcode.error(
+gcode.CommandError: bed_mesh: Unknown profile [default]
+restore gcode offset: tool0_offsets = {'probe_z': 1.762, 'x': 0.0, 'y': 0.0, 'z': -3.0471}
+webhooks: registering remote method 'shutdown_machine' for connection id: 548303322992
+webhooks: registering remote method 'reboot_machine' for connection id: 548303322992
+webhooks: registering remote method 'pause_job_queue' for connection id: 548303322992
+webhooks: registering remote method 'start_job_queue' for connection id: 548303322992
+Endstop stepper_a still triggered after retract
+Endstop stepper_a still triggered after retract
+Attempting MCU 'mcu' reset command
+Attempting MCU 'rpi' config_reset command
+b'Got EOF when reading from device'
+webhooks client 548303322992: Disconnected
+Restarting printer
+Start printer at Thu Oct 16 12:47:30 2025 (1760633250.5 2416823.4)
+===== Config file =====
+[gcode_macro START_PRINT]
+gcode = 
+	START_PRINT_BASE
+	SET_VELOCITY_LIMIT VELOCITY=200 ACCEL=2500 ACCEL_TO_DECEL=1250
+
+[gcode_macro END_PRINT]
+gcode = 
+	END_PRINT_BASE
+
+[mcu]
+serial = /dev/serial/by-id/usb-Klipper_stm32g0b1xx_57003B0009504B5735313920-if00
+restart_method = command
+
+[temperature_fan rpi_fan]
+pin = PB14
+target_temp = 42
+kick_start_time = 0.8
+off_below = 0.1
+max_power = 1.0
+sensor_type = temperature_host
+control = pid
+min_temp = -40
+max_temp = 85
+pid_kp = 1.0
+pid_ki = 0.5
+pid_kd = 2.0
+min_speed = 0.2
+max_speed = 0.9
+
+[neopixel status_leds]
+pin = PC7
+
+[stepper_a]
+step_pin = PA14
+dir_pin = PA10
+enable_pin = !PA13
+endstop_pin = ^PC4
+microsteps = 16
+rotation_distance = 40
+homing_speed = 60
+homing_retract_dist = 4
+homing_retract_speed = 30
+second_homing_speed = 10
+position_endstop = 540
+arm_length = 525
+
+[tmc2209 stepper_a]
+uart_pin = PB8
+run_current = 0.800
+
+[stepper_b]
+step_pin = PC8
+dir_pin = PA15
+enable_pin = !PC14
+endstop_pin = ^PB0
+microsteps = 16
+rotation_distance = 40
+
+[tmc2209 stepper_b]
+uart_pin = PC9
+run_current = 0.800
+
+[stepper_c]
+step_pin = PD2
+dir_pin = !PD4
+enable_pin = !PD3
+endstop_pin = ^PC6
+microsteps = 16
+rotation_distance = 40
+
+[tmc2209 stepper_c]
+uart_pin = PD0
+run_current = 0.800
+
+[board_pins]
+aliases = 
+	
+	EXP1_1=PC1, EXP1_3=PC3, EXP1_5=PC0, EXP1_7=PA2, EXP1_9=<GND>,
+	EXP1_2=PC2,  EXP1_4=<RST>, EXP1_6=PA0, EXP1_8=PA1, EXP1_10=<5V>
+
+[multi_pin dual_heater]
+pins = PB11, PB10
+
+[extruder]
+step_pin = PD5
+dir_pin = PD6
+enable_pin = !PB3
+heater_pin = PB11
+sensor_pin = PA4
+sensor_type = ATC Semitec 104GT-2
+max_extrude_only_accel = 1000
+max_extrude_only_velocity = 25
+microsteps = 16
+rotation_distance = 33.275
+filament_diameter = 1.75
+max_temp = 280
+min_temp = -100
+min_extrude_temp = -100
+nozzle_diameter = 0.5
+control = pid
+pid_kp = 34.298
+pid_ki = 2.287
+pid_kd = 128.617
+
+[tmc2209 extruder]
+uart_pin = PD1
+run_current = 0.800
+
+[heater_fan extruder_fan]
+pin = PA8
+heater = extruder
+
+[filament_switch_sensor material_0]
+switch_pin = PC5
+
+[probe]
+pin = ^PA6
+speed = 6
+x_offset = 0
+y_offset = 0
+samples = 3
+activate_gcode = 
+	ACTIVATE_PROBE
+deactivate_gcode = 
+	DEACTIVATE_PROBE
+z_offset = 0.0
+
+[output_pin probe_power_pin]
+pin = PB15
+
+[extruder1]
+step_pin = PB7
+dir_pin = !PB6
+enable_pin = !PB4
+heater_pin = PB10
+sensor_pin = PA5
+max_extrude_only_accel = 1000
+max_extrude_only_velocity = 25
+microsteps = 16
+rotation_distance = 33.275
+filament_diameter = 1.75
+sensor_type = ATC Semitec 104GT-2
+max_temp = 280
+min_temp = -100
+min_extrude_temp = -100
+nozzle_diameter = 0.5
+control = pid
+pid_kp = 34.298
+pid_ki = 2.287
+pid_kd = 128.617
+
+[filament_switch_sensor material_1]
+switch_pin = PB1
+
+[tmc2209 extruder1]
+uart_pin = PB5
+run_current = 0.800
+
+[verify_heater extruder]
+
+[firmware_retraction]
+retract_length = 8.0
+retract_speed = 40
+
+[verify_heater extruder1]
+
+[delayed_gcode STARTUP_INIT]
+initial_duration = 0.1
+gcode = 
+	SET_PIN PIN=probe_power_pin VALUE=1
+	
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=max_temp VALUE=50
+	
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=probe_first VALUE=1
+	
+	BED_MESH_PROFILE LOAD="default"
+
+[gcode_macro SERVO_CALIBRATE]
+gcode = 
+	NOZZLE_LIFT_CALIBRATE START=1
+
+[servo nozzle_lift]
+pin = PA7
+minimum_pulse_width = 0.000615
+maximum_pulse_width = 0.002495
+
+[gcode_macro ACTIVATE_PROBE]
+variable_state = 0
+variable_active = 0
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set state = svv.get("nozzle_lift_state", 0) %}
+	{% if state == 0 %}
+	NOZZLE_LIFT_CALIBRATE START=1
+	{% endif %}
+	
+	SET_GCODE_VARIABLE MACRO=DEACTIVATE_PROBE VARIABLE=min_trig VALUE={state.min_trig}
+	SET_NOZZLE_LIFT ANGLE=0
+	SET_NOZZLE_LIFT ANGLE={state.max_open}
+	
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=active VALUE=1
+
+[gcode_macro DEACTIVATE_PROBE]
+variable_min_trig = 180
+gcode = 
+	
+	
+	SET_NOZZLE_LIFT ANGLE={min_trig}
+	
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=active VALUE=0
+	UPDATE_DELAYED_GCODE ID=RESET_NOZZLE_AFTER_PROBING DURATION=2
+
+[delayed_gcode RESET_NOZZLE_AFTER_PROBING]
+initial_duration = 1
+gcode = 
+	{% set probing = printer["gcode_macro ACTIVATE_PROBE"].active %}
+	
+	{% if probing == 0 %}
+	
+	
+	
+	LOWER_NOZZLE
+	{% endif %}
+
+[gcode_macro lift_nozzle]
+gcode = 
+	SET_NOZZLE_LIFT ANGLE=180 OFF=1
+
+[gcode_macro lower_nozzle]
+gcode = 
+	SET_NOZZLE_LIFT ANGLE=0 OFF=1
+
+[gcode_macro SET_NOZZLE_LIFT]
+variable_last_angle = 0
+gcode = 
+	{% set servo = params.SERVO|default("nozzle_lift") %}
+	{% set angle = params.ANGLE|default(last_angle)|int %}
+	{% set turn_off = params.OFF|default(0)|int %}
+	{% set ease = (last_angle + angle) / 2 %}
+	SET_GCODE_VARIABLE MACRO=SET_NOZZLE_LIFT VARIABLE=last_angle VALUE={angle}
+	
+	
+	SET_SERVO SERVO={servo} ANGLE={angle}
+	G4 P400
+	M118 // SET_NOZZLE_LIFT angle={angle}
+	{% if turn_off == 1 %}
+	G4 P400
+	SET_SERVO SERVO={servo} WIDTH=0
+	M118 // SET_NOZZLE_LIFT width=0
+	{% endif %}
+
+[delayed_gcode NOZZLE_LIFT_LOOP]
+initial_duration = 0
+gcode = 
+	
+	
+	NOZZLE_LIFT_CALIBRATE
+
+[gcode_macro NOZZLE_LIFT_CALIBRATE]
+variable_state = {'min_open': 0, 'max_open': 0, 'min_trig': 180, 'max_trig': 180}
+variable_angle = 180
+gcode = 
+	{% set running = 1 %}
+	{% set limit = params.LIMIT|default(10)|int %}
+	{% set start = params.START|default(0)|int %}
+	{% if start == 1 %}
+	M118 // Begin Lift calibration
+	{% set state = {'min_open': 0, 'max_open': 0, 'min_trig': 180, 'max_trig': 180} %}
+	{% set angle = state.max_trig %}
+	M118 // state={state}
+	
+	{% else %}
+	{% set query = printer.probe.last_query|int %}
+	
+	{% if query == 1 %}
+	{% set null = state.update({'min_trig': angle}) %}
+	{% set angle = ((angle + state.max_open) / 2)|int %}
+	
+	{% else %}
+	{% set null = state.update({'max_open': angle|int}) %}
+	{% set null = state.update({'min_open': (angle/2)|int}) %}
+	{% set angle = ((angle + state.min_trig) / 2)|int %}
+	
+	{% endif %}
+	{% set distance = (state.min_trig - state.max_open)|abs %}
+	{% if distance <= limit %}
+	M118 // {state | pprint}
+	SAVE_VARIABLE VARIABLE=nozzle_lift_state VALUE="{state|pprint}"
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=state VALUE="{state}"
+	M118 // Lift calibration={state.max_open|int} angle={angle|int}
+	{% set running = 0 %}
+	{% endif %}
+	{% endif %}
+	
+	SET_GCODE_VARIABLE MACRO=NOZZLE_LIFT_CALIBRATE VARIABLE=angle VALUE={angle|int}
+	SET_GCODE_VARIABLE MACRO=NOZZLE_LIFT_CALIBRATE VARIABLE=state VALUE="{state}"
+	
+	SET_NOZZLE_LIFT min_open={state.min_open}
+	SET_NOZZLE_LIFT ANGLE={angle|int}
+	QUERY_PROBE
+	UPDATE_DELAYED_GCODE ID=NOZZLE_LIFT_LOOP DURATION={running}
+
+[bed_mesh]
+round_probe_count = 5
+speed = 200
+mesh_radius = 230
+
+[gcode_macro _DELTA_CALIBRATE]
+gcode = 
+	SET_GCODE_OFFSET Z=0
+	G28
+	delta_calibrate
+	G1 X0 Y0 Z50 F4200
+	G28
+	save_config
+
+[gcode_macro _BED_MESH_CALIBRATE]
+gcode = 
+	G28
+	G1 X0 Y0 Z50 F4200
+	bed_mesh_calibrate
+	G1 X0 Y0 Z50 F4200
+	G28
+	save_config
+
+[delayed_gcode STARTUP_INIT_TOOL]
+initial_duration = 0.1
+gcode = 
+	{% set current_tool = printer.save_variables.variables.get("current_tool", 0) %}
+	SET_GCODE_VARIABLE MACRO=SELECT_TOOL VARIABLE=current_tool VALUE={current_tool}
+
+[gcode_macro PROBE]
+rename_existing = PROBE_REAL
+gcode = 
+	M118 // PROBE {rawparams}
+	SELECT_TOOL PROBING=1
+	PROBE_REAL {rawparams}
+	SELECT_TOOL PROBING=0
+
+[gcode_macro SELECT_TOOL]
+variable_current_tool = 0
+gcode = 
+	{% set tool = params.TOOL|default(current_tool)|int %}
+	{% if params.PROBING|default(-1)|int == 1 %}
+	RESTORE_GCODE_OFFSET TOOL=0 VERBOSE=1
+	LOWER_NOZZLE
+	{% elif params.PROBING|default(-1)|int == 0 %}
+	{% if current_tool == 1 %}
+	LIFT_NOZZLE
+	{% else %}
+	LOWER_NOZZLE
+	{% endif %}
+	RESTORE_GCODE_OFFSET TOOL={current_tool} VERBOSE=1
+	
+	{% elif params.TOOL|default(None) != None %}
+	{% if tool != current_tool %}
+	M118 // SELECT_TOOL tool={current_tool}
+	{% if tool == 1 %}
+	ACTIVATE_EXTRUDER EXTRUDER=extruder1
+	LIFT_NOZZLE
+	{% else %}
+	ACTIVATE_EXTRUDER EXTRUDER=extruder
+	LOWER_NOZZLE
+	{% endif %}
+	SET_GCODE_VARIABLE MACRO=SELECT_TOOL VARIABLE=current_tool VALUE={tool}
+	RESTORE_GCODE_OFFSET TOOL={tool} VERBOSE=1
+	{% endif %}
+	{% endif %}
+
+[gcode_macro T0]
+gcode = 
+	SELECT_TOOL TOOL=0
+
+[gcode_macro T1]
+gcode = 
+	SELECT_TOOL TOOL=1
+
+[gcode_macro START_PRINT_BASE]
+gcode = 
+	M104 S{params.EXTRUDER_TEMP|default(printer.extruder.target, true) }
+	G21
+	G90
+	M82
+	{% if printer.toolhead.homed_axes != "xyz" %}
+	G28
+	{% endif %}
+	BED_MESH_PROFILE LOAD="default"
+	CLEAR_PAUSE
+	M109 S{params.EXTRUDER_TEMP|default(printer.extruder.target, true) }
+
+[gcode_macro START_PRINT_PURGE]
+gcode = 
+	{% set EXTRUDER_TEMP = params.EXTRUDER_TEMP|default(220)|float %}
+	G21
+	G90
+	M82
+	{% if printer.extruder.target != 0 %}
+	M104 S{EXTRUDER_TEMP}
+	{% else %}
+	M104 S150
+	{% endif %}
+	
+	
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	{% set min_x = printer.toolhead.axis_minimum.x|float * 0.9 %}
+	{% set min_y = printer.toolhead.axis_minimum.y|float * 0.9 %}
+	{% set max_y = printer.toolhead.axis_maximum.y|float * 0.9 %}
+	{% set extr = 80 %}
+	G1 Z{max_z - 100} F3000
+	G1 X{min_x} F3000
+	M109 S{EXTRUDER_TEMP}
+	G1 Z1 F3000
+	G1 X{min_x} Y0 Z0.4
+	G92 E0
+	G3 X0 Y{min_y} I{max_y} J1 Z0.2 E{extr} F1000
+	G92 E0
+	G1 E-1 F2100
+	G1 Z1
+
+[gcode_macro END_PRINT_BASE]
+gcode = 
+	TURN_OFF_HEATERS
+	SAFE_LIFT X=0 Y=0
+	G28
+
+[gcode_macro LAYER_CHANGE]
+gcode = 
+
+[gcode_macro SAFE_LIFT]
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float - 5 %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	SAVE_GCODE_STATE NAME=safe_lift
+	SET_GCODE_OFFSET X=0 Y=0
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	RESTORE_GCODE_STATE NAME=safe_lift
+
+[gcode_macro PAUSE]
+description = Pause the current print
+rename_existing = PAUSE_BASE
+gcode = 
+	{% set z = printer.toolhead.position.z|round(3) %}
+	SAVE_VARIABLE VARIABLE=pause_z VALUE={z}
+	RESPOND MSG="Pausing at z={z}"
+	PAUSE_BASE
+	SAFE_LIFT {rawparams}
+	
+	{% set restore_z = printer.toolhead.position.z|float %}
+	SET_GCODE_VARIABLE MACRO=RESUME VARIABLE=restore_z VALUE={restore_z}
+
+[gcode_macro PAUSE2]
+description = Pause the current print
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	SAVE_VARIABLE VARIABLE=pause_z VALUE={act_z|round(3)}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	
+	RESPOND MSG="Pausing..."
+	PAUSE_BASE
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	
+	{% set restore_z = printer.toolhead.position.z|float %}
+	SET_GCODE_VARIABLE MACRO=RESUME VARIABLE=restore_z VALUE={restore_z}
+
+[gcode_macro RESUME]
+description = Resume the current print
+rename_existing = RESUME_BASE
+variable_restore_z = 0
+gcode = 
+	
+	{% if restore_z > 0 %}
+	G90
+	G1 Z{restore_z} F2500
+	{% endif%}
+	
+	{% set e = params.E|default(1) %}
+	
+	{% if 'VELOCITY' in params|upper %}
+	{% set get_params = ('VELOCITY=' + params.VELOCITY)  %}
+	{%else %}
+	{% set get_params = "" %}
+	{% endif %}
+	
+	SET_IDLE_TIMEOUT TIMEOUT=1800
+	G91
+	{% if printer["gcode_macro M600"].m600_enabled == 1 %}
+	RESPOND MSG="Heating..."
+	M109 S{printer["gcode_macro M600"].hotend_temp}
+	RESPOND MSG="Loading filament..."
+	G0 E50 F800
+	G0 E30 F300
+	M400
+	M106 S255
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=m600_enabled VALUE=0
+	{% else %}
+	G1 E{e} F2100
+	{% endif %}
+	RESPOND MSG="Resuming..."
+	RESUME_BASE {get_params}
+
+[gcode_macro CANCEL_PRINT]
+description = Cancel the current print
+rename_existing = CANCEL_PRINT_BASE
+gcode = 
+	RESPOND MSG="Printing canceled!"
+	G28
+	TURN_OFF_HEATERS
+	CANCEL_PRINT_BASE
+
+[gcode_macro M600]
+description = Filament change
+variable_hotend_temp = 0
+variable_m600_enabled = 0
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	
+	SAVE_GCODE_STATE NAME=M600_state
+	SET_IDLE_TIMEOUT TIMEOUT=86400
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=m600_enabled VALUE=1
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=hotend_temp VALUE={printer.extruder.target}
+	RESPOND MSG="Pausing..."
+	PAUSE
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	RESPOND MSG="Unloading filament..."
+	G91
+	G0 E-10 F300
+	G0 E-30 F800
+	M400
+	RESPOND MSG="Heating stopped!"
+	M109 S0
+	RESTORE_GCODE_STATE NAME=M600_state
+
+[gcode_macro TMC]
+gcode = 
+	DUMP_TMC STEPPER=stepper_a
+	DUMP_TMC STEPPER=stepper_b
+	DUMP_TMC STEPPER=stepper_c
+	DUMP_TMC STEPPER=extruder
+
+[gcode_macro ENDSTOPS_CALIBRATION]
+description = Endstops Phase Calibration
+gcode = 
+	{% if printer.idle_timeout.state == "Printing" %}
+	RESPOND TYPE=error MSG="This macro cannot be used while printing!"
+	{% else %}
+	{% if printer.toolhead.homed_axes != "xyz" %}
+	G28
+	{% endif %}
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_a
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_b
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_c
+	M400
+	G28
+	{% endif %}
+
+[save_variables]
+filename = /home/pi/printer_data/config/variables.cfg
+
+[virtual_sdcard]
+path = /home/pi/printer_data/gcodes
+on_error_gcode = CANCEL_PRINT
+
+[mcu rpi]
+serial = /tmp/klipper_host_mcu
+
+[fan]
+pin = rpi:gpio16
+kick_start_time = 0.1
+off_below = 0.2
+cycle_time = 0.005
+max_power = 0.8
+hardware_pwm = False
+
+[idle_timeout]
+timeout = 600
+
+[respond]
+
+[pause_resume]
+
+[gcode_arcs]
+
+[gcode_macro MOTOR_OFF_POSITION]
+gcode = 
+	M18
+	{% set toolhead = printer.toolhead %}
+	{% set kin = toolhead.kinematics %}
+	M118 toolhead.status()
+	{% set steppers = kin.get_steppers() %}
+	{% for s in steppers %}
+	M118 s.get_name() s.get_commanded_position()
+	{% endfor %}
+
+[gcode_macro START_DANCE]
+gcode = 
+	G28
+	G1 Z40 F25000
+	SET_GCODE_OFFSET X=0 Y=0
+	RESUME_DANCE
+
+[gcode_macro STOP_DANCE]
+gcode = 
+	PAUSE_DANCE
+
+[gcode_macro RESUME_DANCE]
+gcode = 
+	SET_VELOCITY_LIMIT VELOCITY=500 ACCEL=6000 ACCEL_TO_DECEL=3000
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=2
+
+[gcode_macro PAUSE_DANCE]
+gcode = 
+	SET_VELOCITY_LIMIT VELOCITY=200 ACCEL=2000 ACCEL_TO_DECEL=1000
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=0
+
+[delayed_gcode DANCE_LOOP]
+initial_duration = 0
+gcode = 
+	G1 X200 Y0
+	G1 X-200
+	G1 X0 Y-200
+	G1 Y200
+	G1 X-200 Y0
+	G1 X200
+	G1 X0 Y-200
+	G1 Y200
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=2
+
+[gcode_macro AUTO_BED_MAPPING]
+variable_retry = 0
+variable_max_temp = 50
+gcode = 
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 Ignored while printing.
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=retry VALUE={retry+1}
+	{% elif max_temp > 0 and printer.extruder.temperature > max_temp %}
+	M118 // Nozzle too hot to probe.
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=retry VALUE=0
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=save_config VALUE=1
+	SET_GCODE_OFFSET X=0 Y=0
+	
+	SAVE_GCODE_STATE NAME=current_state
+	SET_VELOCITY_LIMIT VELOCITY=250 ACCEL=1000 ACCEL_TO_DECEL=1000
+	BED_MESH_CLEAR
+	DETECT_BED_HEIGHT
+	BED_MESH_CALIBRATE
+	
+	RESTORE_GCODE_STATE NAME=current_state
+	SAVE_AND_HOME
+	{% endif %}
+
+[gcode_macro MOVE_NOZZLE_TO_BED]
+variable_retry = 0
+variable_probe_first = 0
+gcode = 
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 // Ignored while printing.
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=retry VALUE={retry+1}
+	{% elif params.PROBE_FIRST|default(probe_first)|int == 1 %}
+	{% set max_temp = printer["gcode_macro AUTO_BED_MAPPING"].max_temp %}
+	{% if max_temp > 0 and printer.extruder.temperature > max_temp %}
+	M118 // Nozzle too hot to probe.
+	G28
+	{% else %}
+	DETECT_BED_HEIGHT
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=1
+	{% endif %}
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=retry VALUE=0
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=1
+	G28
+	G1 Z30 F6000
+	G1 X0 Y0
+	G1 Z0 F600
+	{% endif %}
+
+[gcode_macro TOO_LOW]
+gcode = 
+	{% set step = params.STEP|default(0.05)|float %}
+	{% if printer.toolhead.position.z|float > printer.toolhead.axis_maximum.z|float - 5 %}
+	SET_GCODE_OFFSET Z_ADJUST={step}
+	{% else %}
+	{% set hop = 1.0 + step %}
+	SET_GCODE_OFFSET Z_ADJUST={hop} MOVE=1
+	SET_GCODE_OFFSET Z_ADJUST=-1.00 MOVE=1
+	{% endif %}
+
+[gcode_macro TOO_HIGH]
+gcode = 
+	{% set step = params.STEP|default(0.05)|float %}
+	{% if printer.toolhead.position.z|float > printer.toolhead.axis_maximum.z|float - 5 %}
+	SET_GCODE_OFFSET Z_ADJUST={-step}
+	{% else %}
+	{% set hop = 1.0 - step %}
+	SET_GCODE_OFFSET Z_ADJUST={hop} MOVE=1
+	SET_GCODE_OFFSET Z_ADJUST=-1.00 MOVE=1
+	{% endif %}
+
+[gcode_macro SAVE_AND_HOME]
+variable_retry = 0
+variable_save_config = 0
+gcode = 
+	SAVE_PROBE_OFFSET
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 // Ignore HOME while printing.
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=retry VALUE={retry+1}
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=retry VALUE=0
+	G28
+	{% if save_config > 0 %}
+	SAVE_CONFIG
+	{% endif %}
+	{% endif %}
+
+[gcode_macro SAVE_PROBE_OFFSET]
+variable_save_probe = 0
+gcode = 
+	{% if save_probe == 1 %}
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+	{% set probe_z = printer.probe.last_z_result - printer.gcode_move.position.z %}
+	
+	
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set o = svv.get(offset_key, {'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': 0.0}) %}
+	{% set ns = namespace(offsets={'x': o.x,'y': o.y,'z': o.z,'probe_z': probe_z|float|round(4)}) %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+	{% endif %}
+
+[delayed_gcode LOAD_GCODE_OFFSETS]
+initial_duration = 0.1
+gcode = 
+	RESTORE_GCODE_OFFSET VERBOSE=1
+	TURN_OFF_HEATERS
+
+[homing_override]
+gcode = 
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+	G28
+
+[gcode_macro SET_GCODE_OFFSET]
+rename_existing = _SET_GCODE_OFFSET
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set o = svv.get(offset_key, {'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': 0.0}) %}
+	{% set ns = namespace(offsets={'x': o.x,'y': o.y,'z': o.z,'probe_z': o.probe_z}) %}
+	
+	_SET_GCODE_OFFSET {% for p in params %}{'%s=%s '% (p, params[p])}{% endfor %}
+	
+	{%if 'X' in params %}{% set null = ns.offsets.update({'x': params.X|float|round(4)}) %}{% endif %}
+	{%if 'Y' in params %}{% set null = ns.offsets.update({'y': params.Y|float|round(4)}) %}{% endif %}
+	{%if 'Z' in params %}{% set null = ns.offsets.update({'z': params.Z|float|round(4)}) %}{% endif %}
+	{%if 'Z_ADJUST' in params %}
+	{% set z_adjust = params.Z_ADJUST|float %}
+	{% if printer["gcode_macro SAVE_PROBE_OFFSET"].save_probe == 0 %}
+	{% set null = ns.offsets.update({'z': (ns.offsets.z + z_adjust)|round(4)}) %}
+	{% endif %}
+	{% endif %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+
+[gcode_macro RESTORE_GCODE_OFFSET]
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set current_tool = params.TOOL|default(svv.get("current_tool", 0))|int %}
+	{% set offset_key = 'tool' ~ current_tool ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	{% if offsets != None %}
+	_SET_GCODE_OFFSET X={offsets.x} Y={offsets.y} Z={offsets.z - offsets.probe_z|float}
+	{% else %}
+	
+	{% set cfg_z = printer["configfile"].config["probe"].get("z_offset", 0.0)|float %}
+	{% set ns = namespace(offsets={'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': cfg_z}) %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+	{% endif %}
+	
+	{% if params.VERBOSE|default(0)|int == 1 %}
+	{action_respond_info("restore gcode offset: %s = %s" % (offset_key, offsets|pprint))}
+	{% endif %}
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+
+[gcode_macro DETECT_BED_HEIGHT]
+variable_safe_z = 20
+gcode = 
+	G28
+	G1 Z{safe_z} F6000
+	PROBE
+	
+	SET_PROBE_ZERO
+
+[gcode_macro SET_PROBE_ZERO]
+gcode = 
+	
+	
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	{% if offsets != None %}
+	
+	SET_GCODE_OFFSET Z={printer.probe.last_z_result - offsets.probe_z}
+	
+	G1 Z0
+	{% endif %}
+
+[gcode_macro _SET_NOZZLE_ZERO]
+gcode = 
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	
+	
+	{% set z_diff = printer.gcode_move.position.z - offsets.z %}
+	{% set null = offsets.update({'probe_z': -z_diff|float|round(5)}) %}
+	
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{offsets | pprint | replace("\n", "") | replace("\"", "\\\"")}"
+
+[gcode_macro UNLOAD_FILAMENT]
+gcode = 
+	{% if printer.print_stats.state == "Printing" %}
+	M118 // Must pause printing before unloading
+	{% else %}
+	G28
+	M118 // Caution: Begin nozzle heating
+	M109 S230
+	G91
+	G92 E0.0
+	G1 E10 F100
+	M104 S0
+	M118 // Retracting filament from nozzle
+	G1 E10 F200
+	G1 E-10 F100
+	G1 E-10 F200
+	G92 E0.0
+	G1 E-50 F500
+	G1 E-50 F1000
+	G1 E-50
+	G1 E-50
+	G1 E-50
+	G90
+	M18
+	M118 // Filament unloaded
+	{% endif %}
+
+[printer]
+kinematics = delta
+max_velocity = 200
+max_accel = 2500
+max_z_velocity = 100
+minimum_z_position = -20
+square_corner_velocity = 5.0
+print_radius = 240.0
+delta_radius = 277.246
+
+[endstop_phase]
+
+[delta_calibrate]
+radius = 220
+
+[input_shaper]
+=======================
+Delta max build height 540.00mm (radius tapered above 460.82mm)
+Delta max build radius 240.00mm (moves slowed past 220.82mm and 240.62mm)
+Extruder max_extrude_ratio=0.415752
+Extruder max_extrude_ratio=0.415752
+mcu 'mcu': Starting serial connect
+webhooks client 548286316160: New connection
+webhooks client 548286316160: Client info {'program': 'Moonraker', 'version': 'v0.9.3-110-g00170f3'}
+
+Printer is not ready
+The klippy host software is attempting to connect.  Please
+retry in a few moments.
+
+Loaded MCU 'mcu' 132 commands (v0.5.0-5158-g9ce3ae74 / gcc: (15:8-2019-q3-1+b1) 8.3.1 20190703 (release) [gcc-8-branch revision 273027] binutils: (2.35.2-2+14+b2) 2.35.2)
+MCU 'mcu' config: ADC_MAX=4095 BUS_PINS_i2c1_PA9_PA10=PA9,PA10 BUS_PINS_i2c1_PB6_PB7=PB6,PB7 BUS_PINS_i2c1_PB8_PB9=PB8,PB9 BUS_PINS_i2c2_PA7_PA6=PA7,PA6 BUS_PINS_i2c2_PB10_PB11=PB10,PB11 BUS_PINS_i2c2_PB13_PB14=PB13,PB14 BUS_PINS_i2c3_PA7_PA6=PA7,PA6 BUS_PINS_i2c3_PB3_PB4=PB3,PB4 BUS_PINS_i2c3_PC0_PC1=PC0,PC1 BUS_PINS_spi1=PA6,PA7,PA5 BUS_PINS_spi1a=PB4,PB5,PB3 BUS_PINS_spi2=PB14,PB15,PB13 BUS_PINS_spi2_PB2_PB11_PB10=PB2,PB11,PB10 BUS_PINS_spi2a=PC2,PC3,PB10 BUS_PINS_spi3=PB4,PB5,PB3 CLOCK_FREQ=64000000 MCU=stm32g0b1xx PWM_MAX=257 RESERVE_PINS_USB=PA11,PA12 RESERVE_PINS_crystal=PF0,PF1 STATS_SUMSQ_BASE=256 STEPPER_OPTIMIZED_EDGE=8 STEPPER_STEP_BOTH_EDGE=1
+mcu 'rpi': Starting connect
+Loaded MCU 'rpi' 119 commands (v0.5.0-4608-g3d50af74 / gcc: (Debian 10.2.1-6) 10.2.1 20210110 binutils: (GNU Binutils for Debian) 2.35.2)
+MCU 'rpi' config: ADC_MAX=4095 CLOCK_FREQ=50000000 MCU=linux PCA9685_MAX=4096 PWM_MAX=32768 STATS_SUMSQ_BASE=256
+Sending MCU 'mcu' printer configuration...
+Configured MCU 'mcu' (1024 moves)
+Sending MCU 'rpi' printer configuration...
+Configured MCU 'rpi' (1024 moves)
+Starting heater checks for extruder
+Starting heater checks for extruder1
+bed_mesh: generated points
+Index |  Tool Adjusted  |   Probe
+  0   | (0.0, -230.0)   | (0.0, -230.0)
+  1   | (115.0, -115.0) | (115.0, -115.0)
+  2   | (0.0, -115.0)   | (0.0, -115.0)
+  3   | (-115.0, -115.0)| (-115.0, -115.0)
+  4   | (-230.0, 0.0)   | (-230.0, 0.0)
+  5   | (-115.0, 0.0)   | (-115.0, 0.0)
+  6   | (0.0, 0.0)      | (0.0, 0.0)
+  7   | (115.0, 0.0)    | (115.0, 0.0)
+  8   | (230.0, 0.0)    | (230.0, 0.0)
+  9   | (115.0, 115.0)  | (115.0, 115.0)
+  10  | (0.0, 115.0)    | (0.0, 115.0)
+  11  | (-115.0, 115.0) | (-115.0, 115.0)
+  12  | (0.0, 230.0)    | (0.0, 230.0)
+bed_mesh: Unknown profile [default]
+Script running error
+Traceback (most recent call last):
+  File "/home/pi/klipper/klippy/extras/delayed_gcode.py", line 34, in _gcode_timer_event
+    self.gcode.run_script(self.timer_gcode.render())
+  File "/home/pi/klipper/klippy/gcode.py", line 230, in run_script
+    self._process_commands(script.split('\n'), need_ack=False)
+  File "/home/pi/klipper/klippy/gcode.py", line 212, in _process_commands
+    handler(gcmd)
+  File "/home/pi/klipper/klippy/gcode.py", line 140, in <lambda>
+    func = lambda params: origfunc(self._get_extended_params(params))
+  File "/home/pi/klipper/klippy/extras/bed_mesh.py", line 1760, in cmd_BED_MESH_PROFILE
+    options[key](name)
+  File "/home/pi/klipper/klippy/extras/bed_mesh.py", line 1716, in load_profile
+    raise self.gcode.error(
+gcode.CommandError: bed_mesh: Unknown profile [default]
+restore gcode offset: tool0_offsets = {'probe_z': 1.762, 'x': 0.0, 'y': 0.0, 'z': -3.0471}
+webhooks: registering remote method 'shutdown_machine' for connection id: 548286316160
+webhooks: registering remote method 'reboot_machine' for connection id: 548286316160
+webhooks: registering remote method 'pause_job_queue' for connection id: 548286316160
+webhooks: registering remote method 'start_job_queue' for connection id: 548286316160
+Attempting MCU 'mcu' reset command
+Attempting MCU 'rpi' config_reset command
+b'Got EOF when reading from device'
+webhooks client 548286316160: Disconnected
+Restarting printer
+Start printer at Thu Oct 16 12:47:35 2025 (1760633255.0 2416827.9)
+===== Config file =====
+[gcode_macro START_PRINT]
+gcode = 
+	START_PRINT_BASE
+	SET_VELOCITY_LIMIT VELOCITY=200 ACCEL=2500 ACCEL_TO_DECEL=1250
+
+[gcode_macro END_PRINT]
+gcode = 
+	END_PRINT_BASE
+
+[mcu]
+serial = /dev/serial/by-id/usb-Klipper_stm32g0b1xx_57003B0009504B5735313920-if00
+restart_method = command
+
+[temperature_fan rpi_fan]
+pin = PB14
+target_temp = 42
+kick_start_time = 0.8
+off_below = 0.1
+max_power = 1.0
+sensor_type = temperature_host
+control = pid
+min_temp = -40
+max_temp = 85
+pid_kp = 1.0
+pid_ki = 0.5
+pid_kd = 2.0
+min_speed = 0.2
+max_speed = 0.9
+
+[neopixel status_leds]
+pin = PC7
+
+[stepper_a]
+step_pin = PA14
+dir_pin = PA10
+enable_pin = !PA13
+endstop_pin = ^PC4
+microsteps = 16
+rotation_distance = 40
+homing_speed = 60
+homing_retract_dist = 4
+homing_retract_speed = 30
+second_homing_speed = 10
+position_endstop = 540
+arm_length = 525
+
+[tmc2209 stepper_a]
+uart_pin = PB8
+run_current = 0.800
+
+[stepper_b]
+step_pin = PC8
+dir_pin = PA15
+enable_pin = !PC14
+endstop_pin = ^PB0
+microsteps = 16
+rotation_distance = 40
+
+[tmc2209 stepper_b]
+uart_pin = PC9
+run_current = 0.800
+
+[stepper_c]
+step_pin = PD2
+dir_pin = !PD4
+enable_pin = !PD3
+endstop_pin = ^PC6
+microsteps = 16
+rotation_distance = 40
+
+[tmc2209 stepper_c]
+uart_pin = PD0
+run_current = 0.800
+
+[board_pins]
+aliases = 
+	
+	EXP1_1=PC1, EXP1_3=PC3, EXP1_5=PC0, EXP1_7=PA2, EXP1_9=<GND>,
+	EXP1_2=PC2,  EXP1_4=<RST>, EXP1_6=PA0, EXP1_8=PA1, EXP1_10=<5V>
+
+[multi_pin dual_heater]
+pins = PB11, PB10
+
+[extruder]
+step_pin = PD5
+dir_pin = PD6
+enable_pin = !PB3
+heater_pin = PB11
+sensor_pin = PA4
+sensor_type = ATC Semitec 104GT-2
+max_extrude_only_accel = 1000
+max_extrude_only_velocity = 25
+microsteps = 16
+rotation_distance = 33.275
+filament_diameter = 1.75
+max_temp = 280
+min_temp = -100
+min_extrude_temp = -100
+nozzle_diameter = 0.5
+control = pid
+pid_kp = 34.298
+pid_ki = 2.287
+pid_kd = 128.617
+
+[tmc2209 extruder]
+uart_pin = PD1
+run_current = 0.800
+
+[heater_fan extruder_fan]
+pin = PA8
+heater = extruder
+
+[filament_switch_sensor material_0]
+switch_pin = PC5
+
+[probe]
+pin = ^PA6
+speed = 6
+x_offset = 0
+y_offset = 0
+samples = 3
+activate_gcode = 
+	ACTIVATE_PROBE
+deactivate_gcode = 
+	DEACTIVATE_PROBE
+z_offset = 0.0
+
+[output_pin probe_power_pin]
+pin = PB15
+
+[extruder1]
+step_pin = PB7
+dir_pin = !PB6
+enable_pin = !PB4
+heater_pin = PB10
+sensor_pin = PA5
+max_extrude_only_accel = 1000
+max_extrude_only_velocity = 25
+microsteps = 16
+rotation_distance = 33.275
+filament_diameter = 1.75
+sensor_type = ATC Semitec 104GT-2
+max_temp = 280
+min_temp = -100
+min_extrude_temp = -100
+nozzle_diameter = 0.5
+control = pid
+pid_kp = 34.298
+pid_ki = 2.287
+pid_kd = 128.617
+
+[filament_switch_sensor material_1]
+switch_pin = PB1
+
+[tmc2209 extruder1]
+uart_pin = PB5
+run_current = 0.800
+
+[verify_heater extruder]
+
+[firmware_retraction]
+retract_length = 8.0
+retract_speed = 40
+
+[verify_heater extruder1]
+
+[delayed_gcode STARTUP_INIT]
+initial_duration = 0.1
+gcode = 
+	SET_PIN PIN=probe_power_pin VALUE=1
+	
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=max_temp VALUE=50
+	
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=probe_first VALUE=1
+	
+	BED_MESH_PROFILE LOAD="default"
+
+[gcode_macro SERVO_CALIBRATE]
+gcode = 
+	NOZZLE_LIFT_CALIBRATE START=1
+
+[servo nozzle_lift]
+pin = PA7
+minimum_pulse_width = 0.000615
+maximum_pulse_width = 0.002495
+
+[gcode_macro ACTIVATE_PROBE]
+variable_state = 0
+variable_active = 0
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set state = svv.get("nozzle_lift_state", 0) %}
+	{% if state == 0 %}
+	NOZZLE_LIFT_CALIBRATE START=1
+	{% endif %}
+	
+	SET_GCODE_VARIABLE MACRO=DEACTIVATE_PROBE VARIABLE=min_trig VALUE={state.min_trig}
+	SET_NOZZLE_LIFT ANGLE=0
+	SET_NOZZLE_LIFT ANGLE={state.max_open}
+	
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=active VALUE=1
+
+[gcode_macro DEACTIVATE_PROBE]
+variable_min_trig = 180
+gcode = 
+	
+	
+	SET_NOZZLE_LIFT ANGLE={min_trig}
+	
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=active VALUE=0
+	UPDATE_DELAYED_GCODE ID=RESET_NOZZLE_AFTER_PROBING DURATION=2
+
+[delayed_gcode RESET_NOZZLE_AFTER_PROBING]
+initial_duration = 1
+gcode = 
+	{% set probing = printer["gcode_macro ACTIVATE_PROBE"].active %}
+	
+	{% if probing == 0 %}
+	
+	
+	
+	LOWER_NOZZLE
+	{% endif %}
+
+[gcode_macro lift_nozzle]
+gcode = 
+	SET_NOZZLE_LIFT ANGLE=180 OFF=1
+
+[gcode_macro lower_nozzle]
+gcode = 
+	SET_NOZZLE_LIFT ANGLE=0 OFF=1
+
+[gcode_macro SET_NOZZLE_LIFT]
+variable_last_angle = 0
+gcode = 
+	{% set servo = params.SERVO|default("nozzle_lift") %}
+	{% set angle = params.ANGLE|default(last_angle)|int %}
+	{% set turn_off = params.OFF|default(0)|int %}
+	{% set ease = (last_angle + angle) / 2 %}
+	SET_GCODE_VARIABLE MACRO=SET_NOZZLE_LIFT VARIABLE=last_angle VALUE={angle}
+	
+	
+	SET_SERVO SERVO={servo} ANGLE={angle}
+	G4 P400
+	M118 // SET_NOZZLE_LIFT angle={angle}
+	{% if turn_off == 1 %}
+	G4 P400
+	SET_SERVO SERVO={servo} WIDTH=0
+	M118 // SET_NOZZLE_LIFT width=0
+	{% endif %}
+
+[delayed_gcode NOZZLE_LIFT_LOOP]
+initial_duration = 0
+gcode = 
+	
+	
+	NOZZLE_LIFT_CALIBRATE
+
+[gcode_macro NOZZLE_LIFT_CALIBRATE]
+variable_state = {'min_open': 0, 'max_open': 0, 'min_trig': 180, 'max_trig': 180}
+variable_angle = 180
+gcode = 
+	{% set running = 1 %}
+	{% set limit = params.LIMIT|default(10)|int %}
+	{% set start = params.START|default(0)|int %}
+	{% if start == 1 %}
+	M118 // Begin Lift calibration
+	{% set state = {'min_open': 0, 'max_open': 0, 'min_trig': 180, 'max_trig': 180} %}
+	{% set angle = state.max_trig %}
+	M118 // state={state}
+	
+	{% else %}
+	{% set query = printer.probe.last_query|int %}
+	
+	{% if query == 1 %}
+	{% set null = state.update({'min_trig': angle}) %}
+	{% set angle = ((angle + state.max_open) / 2)|int %}
+	
+	{% else %}
+	{% set null = state.update({'max_open': angle|int}) %}
+	{% set null = state.update({'min_open': (angle/2)|int}) %}
+	{% set angle = ((angle + state.min_trig) / 2)|int %}
+	
+	{% endif %}
+	{% set distance = (state.min_trig - state.max_open)|abs %}
+	{% if distance <= limit %}
+	M118 // {state | pprint}
+	SAVE_VARIABLE VARIABLE=nozzle_lift_state VALUE="{state|pprint}"
+	SET_GCODE_VARIABLE MACRO=ACTIVATE_PROBE VARIABLE=state VALUE="{state}"
+	M118 // Lift calibration={state.max_open|int} angle={angle|int}
+	{% set running = 0 %}
+	{% endif %}
+	{% endif %}
+	
+	SET_GCODE_VARIABLE MACRO=NOZZLE_LIFT_CALIBRATE VARIABLE=angle VALUE={angle|int}
+	SET_GCODE_VARIABLE MACRO=NOZZLE_LIFT_CALIBRATE VARIABLE=state VALUE="{state}"
+	
+	SET_NOZZLE_LIFT min_open={state.min_open}
+	SET_NOZZLE_LIFT ANGLE={angle|int}
+	QUERY_PROBE
+	UPDATE_DELAYED_GCODE ID=NOZZLE_LIFT_LOOP DURATION={running}
+
+[bed_mesh]
+round_probe_count = 5
+speed = 200
+mesh_radius = 230
+
+[gcode_macro _DELTA_CALIBRATE]
+gcode = 
+	SET_GCODE_OFFSET Z=0
+	G28
+	delta_calibrate
+	G1 X0 Y0 Z50 F4200
+	G28
+	save_config
+
+[gcode_macro _BED_MESH_CALIBRATE]
+gcode = 
+	G28
+	G1 X0 Y0 Z50 F4200
+	bed_mesh_calibrate
+	G1 X0 Y0 Z50 F4200
+	G28
+	save_config
+
+[delayed_gcode STARTUP_INIT_TOOL]
+initial_duration = 0.1
+gcode = 
+	{% set current_tool = printer.save_variables.variables.get("current_tool", 0) %}
+	SET_GCODE_VARIABLE MACRO=SELECT_TOOL VARIABLE=current_tool VALUE={current_tool}
+
+[gcode_macro PROBE]
+rename_existing = PROBE_REAL
+gcode = 
+	M118 // PROBE {rawparams}
+	SELECT_TOOL PROBING=1
+	PROBE_REAL {rawparams}
+	SELECT_TOOL PROBING=0
+
+[gcode_macro SELECT_TOOL]
+variable_current_tool = 0
+gcode = 
+	{% set tool = params.TOOL|default(current_tool)|int %}
+	{% if params.PROBING|default(-1)|int == 1 %}
+	RESTORE_GCODE_OFFSET TOOL=0 VERBOSE=1
+	LOWER_NOZZLE
+	{% elif params.PROBING|default(-1)|int == 0 %}
+	{% if current_tool == 1 %}
+	LIFT_NOZZLE
+	{% else %}
+	LOWER_NOZZLE
+	{% endif %}
+	RESTORE_GCODE_OFFSET TOOL={current_tool} VERBOSE=1
+	
+	{% elif params.TOOL|default(None) != None %}
+	{% if tool != current_tool %}
+	M118 // SELECT_TOOL tool={current_tool}
+	{% if tool == 1 %}
+	ACTIVATE_EXTRUDER EXTRUDER=extruder1
+	LIFT_NOZZLE
+	{% else %}
+	ACTIVATE_EXTRUDER EXTRUDER=extruder
+	LOWER_NOZZLE
+	{% endif %}
+	SET_GCODE_VARIABLE MACRO=SELECT_TOOL VARIABLE=current_tool VALUE={tool}
+	RESTORE_GCODE_OFFSET TOOL={tool} VERBOSE=1
+	{% endif %}
+	{% endif %}
+
+[gcode_macro T0]
+gcode = 
+	SELECT_TOOL TOOL=0
+
+[gcode_macro T1]
+gcode = 
+	SELECT_TOOL TOOL=1
+
+[gcode_macro START_PRINT_BASE]
+gcode = 
+	M104 S{params.EXTRUDER_TEMP|default(printer.extruder.target, true) }
+	G21
+	G90
+	M82
+	{% if printer.toolhead.homed_axes != "xyz" %}
+	G28
+	{% endif %}
+	BED_MESH_PROFILE LOAD="default"
+	CLEAR_PAUSE
+	M109 S{params.EXTRUDER_TEMP|default(printer.extruder.target, true) }
+
+[gcode_macro START_PRINT_PURGE]
+gcode = 
+	{% set EXTRUDER_TEMP = params.EXTRUDER_TEMP|default(220)|float %}
+	G21
+	G90
+	M82
+	{% if printer.extruder.target != 0 %}
+	M104 S{EXTRUDER_TEMP}
+	{% else %}
+	M104 S150
+	{% endif %}
+	
+	
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	{% set min_x = printer.toolhead.axis_minimum.x|float * 0.9 %}
+	{% set min_y = printer.toolhead.axis_minimum.y|float * 0.9 %}
+	{% set max_y = printer.toolhead.axis_maximum.y|float * 0.9 %}
+	{% set extr = 80 %}
+	G1 Z{max_z - 100} F3000
+	G1 X{min_x} F3000
+	M109 S{EXTRUDER_TEMP}
+	G1 Z1 F3000
+	G1 X{min_x} Y0 Z0.4
+	G92 E0
+	G3 X0 Y{min_y} I{max_y} J1 Z0.2 E{extr} F1000
+	G92 E0
+	G1 E-1 F2100
+	G1 Z1
+
+[gcode_macro END_PRINT_BASE]
+gcode = 
+	TURN_OFF_HEATERS
+	SAFE_LIFT X=0 Y=0
+	G28
+
+[gcode_macro LAYER_CHANGE]
+gcode = 
+
+[gcode_macro SAFE_LIFT]
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float - 5 %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	SAVE_GCODE_STATE NAME=safe_lift
+	SET_GCODE_OFFSET X=0 Y=0
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	RESTORE_GCODE_STATE NAME=safe_lift
+
+[gcode_macro PAUSE]
+description = Pause the current print
+rename_existing = PAUSE_BASE
+gcode = 
+	{% set z = printer.toolhead.position.z|round(3) %}
+	SAVE_VARIABLE VARIABLE=pause_z VALUE={z}
+	RESPOND MSG="Pausing at z={z}"
+	PAUSE_BASE
+	SAFE_LIFT {rawparams}
+	
+	{% set restore_z = printer.toolhead.position.z|float %}
+	SET_GCODE_VARIABLE MACRO=RESUME VARIABLE=restore_z VALUE={restore_z}
+
+[gcode_macro PAUSE2]
+description = Pause the current print
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	SAVE_VARIABLE VARIABLE=pause_z VALUE={act_z|round(3)}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	
+	RESPOND MSG="Pausing..."
+	PAUSE_BASE
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	
+	{% set restore_z = printer.toolhead.position.z|float %}
+	SET_GCODE_VARIABLE MACRO=RESUME VARIABLE=restore_z VALUE={restore_z}
+
+[gcode_macro RESUME]
+description = Resume the current print
+rename_existing = RESUME_BASE
+variable_restore_z = 0
+gcode = 
+	
+	{% if restore_z > 0 %}
+	G90
+	G1 Z{restore_z} F2500
+	{% endif%}
+	
+	{% set e = params.E|default(1) %}
+	
+	{% if 'VELOCITY' in params|upper %}
+	{% set get_params = ('VELOCITY=' + params.VELOCITY)  %}
+	{%else %}
+	{% set get_params = "" %}
+	{% endif %}
+	
+	SET_IDLE_TIMEOUT TIMEOUT=1800
+	G91
+	{% if printer["gcode_macro M600"].m600_enabled == 1 %}
+	RESPOND MSG="Heating..."
+	M109 S{printer["gcode_macro M600"].hotend_temp}
+	RESPOND MSG="Loading filament..."
+	G0 E50 F800
+	G0 E30 F300
+	M400
+	M106 S255
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=m600_enabled VALUE=0
+	{% else %}
+	G1 E{e} F2100
+	{% endif %}
+	RESPOND MSG="Resuming..."
+	RESUME_BASE {get_params}
+
+[gcode_macro CANCEL_PRINT]
+description = Cancel the current print
+rename_existing = CANCEL_PRINT_BASE
+gcode = 
+	RESPOND MSG="Printing canceled!"
+	G28
+	TURN_OFF_HEATERS
+	CANCEL_PRINT_BASE
+
+[gcode_macro M600]
+description = Filament change
+variable_hotend_temp = 0
+variable_m600_enabled = 0
+gcode = 
+	{% set max_y = printer.toolhead.axis_maximum.y|float %}
+	{% set max_z = printer.toolhead.axis_maximum.z|float %}
+	
+	{% set x = params.X|default(0) %}
+	{% set y = params.Y|default(max_y * 0.90) %}
+	{% set z = params.Z|default(10)|float %}
+	{% set e = params.E|default(1) %}
+	
+	{% set act_z = printer.toolhead.position.z|float %}
+	{% set lift_z = z|abs %}
+	{% if act_z < (max_z - lift_z) %}
+	{% set z_safe = lift_z %}
+	{% else %}
+	{% set z_safe = max_z - act_z %}
+	{% endif %}
+	
+	SAVE_GCODE_STATE NAME=M600_state
+	SET_IDLE_TIMEOUT TIMEOUT=86400
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=m600_enabled VALUE=1
+	SET_GCODE_VARIABLE MACRO=M600 VARIABLE=hotend_temp VALUE={printer.extruder.target}
+	RESPOND MSG="Pausing..."
+	PAUSE
+	G91
+	G1 E-{e} F2100
+	G1 Z{z_safe}
+	G90
+	G1 X{x} Y{y} F2500
+	RESPOND MSG="Unloading filament..."
+	G91
+	G0 E-10 F300
+	G0 E-30 F800
+	M400
+	RESPOND MSG="Heating stopped!"
+	M109 S0
+	RESTORE_GCODE_STATE NAME=M600_state
+
+[gcode_macro TMC]
+gcode = 
+	DUMP_TMC STEPPER=stepper_a
+	DUMP_TMC STEPPER=stepper_b
+	DUMP_TMC STEPPER=stepper_c
+	DUMP_TMC STEPPER=extruder
+
+[gcode_macro ENDSTOPS_CALIBRATION]
+description = Endstops Phase Calibration
+gcode = 
+	{% if printer.idle_timeout.state == "Printing" %}
+	RESPOND TYPE=error MSG="This macro cannot be used while printing!"
+	{% else %}
+	{% if printer.toolhead.homed_axes != "xyz" %}
+	G28
+	{% endif %}
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	G28
+	G91
+	G0 Z-80 F1500
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_a
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_b
+	ENDSTOP_PHASE_CALIBRATE stepper=stepper_c
+	M400
+	G28
+	{% endif %}
+
+[save_variables]
+filename = /home/pi/printer_data/config/variables.cfg
+
+[virtual_sdcard]
+path = /home/pi/printer_data/gcodes
+on_error_gcode = CANCEL_PRINT
+
+[mcu rpi]
+serial = /tmp/klipper_host_mcu
+
+[fan]
+pin = rpi:gpio16
+kick_start_time = 0.1
+off_below = 0.2
+cycle_time = 0.005
+max_power = 0.8
+hardware_pwm = False
+
+[idle_timeout]
+timeout = 600
+
+[respond]
+
+[pause_resume]
+
+[gcode_arcs]
+
+[gcode_macro MOTOR_OFF_POSITION]
+gcode = 
+	M18
+	{% set toolhead = printer.toolhead %}
+	{% set kin = toolhead.kinematics %}
+	M118 toolhead.status()
+	{% set steppers = kin.get_steppers() %}
+	{% for s in steppers %}
+	M118 s.get_name() s.get_commanded_position()
+	{% endfor %}
+
+[gcode_macro START_DANCE]
+gcode = 
+	G28
+	G1 Z40 F25000
+	SET_GCODE_OFFSET X=0 Y=0
+	RESUME_DANCE
+
+[gcode_macro STOP_DANCE]
+gcode = 
+	PAUSE_DANCE
+
+[gcode_macro RESUME_DANCE]
+gcode = 
+	SET_VELOCITY_LIMIT VELOCITY=500 ACCEL=6000 ACCEL_TO_DECEL=3000
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=2
+
+[gcode_macro PAUSE_DANCE]
+gcode = 
+	SET_VELOCITY_LIMIT VELOCITY=200 ACCEL=2000 ACCEL_TO_DECEL=1000
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=0
+
+[delayed_gcode DANCE_LOOP]
+initial_duration = 0
+gcode = 
+	G1 X200 Y0
+	G1 X-200
+	G1 X0 Y-200
+	G1 Y200
+	G1 X-200 Y0
+	G1 X200
+	G1 X0 Y-200
+	G1 Y200
+	UPDATE_DELAYED_GCODE ID=DANCE_LOOP DURATION=2
+
+[gcode_macro AUTO_BED_MAPPING]
+variable_retry = 0
+variable_max_temp = 50
+gcode = 
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 Ignored while printing.
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=retry VALUE={retry+1}
+	{% elif max_temp > 0 and printer.extruder.temperature > max_temp %}
+	M118 // Nozzle too hot to probe.
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=AUTO_BED_MAPPING VARIABLE=retry VALUE=0
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=save_config VALUE=1
+	SET_GCODE_OFFSET X=0 Y=0
+	
+	SAVE_GCODE_STATE NAME=current_state
+	SET_VELOCITY_LIMIT VELOCITY=250 ACCEL=1000 ACCEL_TO_DECEL=1000
+	BED_MESH_CLEAR
+	DETECT_BED_HEIGHT
+	BED_MESH_CALIBRATE
+	
+	RESTORE_GCODE_STATE NAME=current_state
+	SAVE_AND_HOME
+	{% endif %}
+
+[gcode_macro MOVE_NOZZLE_TO_BED]
+variable_retry = 0
+variable_probe_first = 0
+gcode = 
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 // Ignored while printing.
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=retry VALUE={retry+1}
+	{% elif params.PROBE_FIRST|default(probe_first)|int == 1 %}
+	{% set max_temp = printer["gcode_macro AUTO_BED_MAPPING"].max_temp %}
+	{% if max_temp > 0 and printer.extruder.temperature > max_temp %}
+	M118 // Nozzle too hot to probe.
+	G28
+	{% else %}
+	DETECT_BED_HEIGHT
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=1
+	{% endif %}
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=MOVE_NOZZLE_TO_BED VARIABLE=retry VALUE=0
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=1
+	G28
+	G1 Z30 F6000
+	G1 X0 Y0
+	G1 Z0 F600
+	{% endif %}
+
+[gcode_macro TOO_LOW]
+gcode = 
+	{% set step = params.STEP|default(0.05)|float %}
+	{% if printer.toolhead.position.z|float > printer.toolhead.axis_maximum.z|float - 5 %}
+	SET_GCODE_OFFSET Z_ADJUST={step}
+	{% else %}
+	{% set hop = 1.0 + step %}
+	SET_GCODE_OFFSET Z_ADJUST={hop} MOVE=1
+	SET_GCODE_OFFSET Z_ADJUST=-1.00 MOVE=1
+	{% endif %}
+
+[gcode_macro TOO_HIGH]
+gcode = 
+	{% set step = params.STEP|default(0.05)|float %}
+	{% if printer.toolhead.position.z|float > printer.toolhead.axis_maximum.z|float - 5 %}
+	SET_GCODE_OFFSET Z_ADJUST={-step}
+	{% else %}
+	{% set hop = 1.0 - step %}
+	SET_GCODE_OFFSET Z_ADJUST={hop} MOVE=1
+	SET_GCODE_OFFSET Z_ADJUST=-1.00 MOVE=1
+	{% endif %}
+
+[gcode_macro SAVE_AND_HOME]
+variable_retry = 0
+variable_save_config = 0
+gcode = 
+	SAVE_PROBE_OFFSET
+	
+	{% if printer.print_stats.state == "Printing" and retry < 2 %}
+	M118 // Ignore HOME while printing.
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=retry VALUE={retry+1}
+	{% else %}
+	SET_GCODE_VARIABLE MACRO=SAVE_AND_HOME VARIABLE=retry VALUE=0
+	G28
+	{% if save_config > 0 %}
+	SAVE_CONFIG
+	{% endif %}
+	{% endif %}
+
+[gcode_macro SAVE_PROBE_OFFSET]
+variable_save_probe = 0
+gcode = 
+	{% if save_probe == 1 %}
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+	{% set probe_z = printer.probe.last_z_result - printer.gcode_move.position.z %}
+	
+	
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set o = svv.get(offset_key, {'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': 0.0}) %}
+	{% set ns = namespace(offsets={'x': o.x,'y': o.y,'z': o.z,'probe_z': probe_z|float|round(4)}) %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+	{% endif %}
+
+[delayed_gcode LOAD_GCODE_OFFSETS]
+initial_duration = 0.1
+gcode = 
+	RESTORE_GCODE_OFFSET VERBOSE=1
+	TURN_OFF_HEATERS
+
+[homing_override]
+gcode = 
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+	G28
+
+[gcode_macro SET_GCODE_OFFSET]
+rename_existing = _SET_GCODE_OFFSET
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set o = svv.get(offset_key, {'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': 0.0}) %}
+	{% set ns = namespace(offsets={'x': o.x,'y': o.y,'z': o.z,'probe_z': o.probe_z}) %}
+	
+	_SET_GCODE_OFFSET {% for p in params %}{'%s=%s '% (p, params[p])}{% endfor %}
+	
+	{%if 'X' in params %}{% set null = ns.offsets.update({'x': params.X|float|round(4)}) %}{% endif %}
+	{%if 'Y' in params %}{% set null = ns.offsets.update({'y': params.Y|float|round(4)}) %}{% endif %}
+	{%if 'Z' in params %}{% set null = ns.offsets.update({'z': params.Z|float|round(4)}) %}{% endif %}
+	{%if 'Z_ADJUST' in params %}
+	{% set z_adjust = params.Z_ADJUST|float %}
+	{% if printer["gcode_macro SAVE_PROBE_OFFSET"].save_probe == 0 %}
+	{% set null = ns.offsets.update({'z': (ns.offsets.z + z_adjust)|round(4)}) %}
+	{% endif %}
+	{% endif %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+
+[gcode_macro RESTORE_GCODE_OFFSET]
+gcode = 
+	{% set svv = printer.save_variables.variables %}
+	{% set current_tool = params.TOOL|default(svv.get("current_tool", 0))|int %}
+	{% set offset_key = 'tool' ~ current_tool ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	{% if offsets != None %}
+	_SET_GCODE_OFFSET X={offsets.x} Y={offsets.y} Z={offsets.z - offsets.probe_z|float}
+	{% else %}
+	
+	{% set cfg_z = printer["configfile"].config["probe"].get("z_offset", 0.0)|float %}
+	{% set ns = namespace(offsets={'x': 0.0, 'y': 0.0, 'z': 0.0, 'probe_z': cfg_z}) %}
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{ns.offsets}"
+	{% endif %}
+	
+	{% if params.VERBOSE|default(0)|int == 1 %}
+	{action_respond_info("restore gcode offset: %s = %s" % (offset_key, offsets|pprint))}
+	{% endif %}
+	SET_GCODE_VARIABLE MACRO=SAVE_PROBE_OFFSET VARIABLE=save_probe VALUE=0
+
+[gcode_macro DETECT_BED_HEIGHT]
+variable_safe_z = 20
+gcode = 
+	G28
+	G1 Z{safe_z} F6000
+	PROBE
+	
+	SET_PROBE_ZERO
+
+[gcode_macro SET_PROBE_ZERO]
+gcode = 
+	
+	
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	{% if offsets != None %}
+	
+	SET_GCODE_OFFSET Z={printer.probe.last_z_result - offsets.probe_z}
+	
+	G1 Z0
+	{% endif %}
+
+[gcode_macro _SET_NOZZLE_ZERO]
+gcode = 
+	
+	{% set svv = printer.save_variables.variables %}
+	{% set offset_key = 'tool' ~ svv.get("current_tool", 0) ~ '_offsets' %}
+	{% set offsets = svv.get(offset_key, None) %}
+	
+	
+	{% set z_diff = printer.gcode_move.position.z - offsets.z %}
+	{% set null = offsets.update({'probe_z': -z_diff|float|round(5)}) %}
+	
+	SAVE_VARIABLE VARIABLE={offset_key} VALUE="{offsets | pprint | replace("\n", "") | replace("\"", "\\\"")}"
+
+[gcode_macro UNLOAD_FILAMENT]
+gcode = 
+	{% if printer.print_stats.state == "Printing" %}
+	M118 // Must pause printing before unloading
+	{% else %}
+	G28
+	M118 // Caution: Begin nozzle heating
+	M109 S230
+	G91
+	G92 E0.0
+	G1 E10 F100
+	M104 S0
+	M118 // Retracting filament from nozzle
+	G1 E10 F200
+	G1 E-10 F100
+	G1 E-10 F200
+	G92 E0.0
+	G1 E-50 F500
+	G1 E-50 F1000
+	G1 E-50
+	G1 E-50
+	G1 E-50
+	G90
+	M18
+	M118 // Filament unloaded
+	{% endif %}
+
+[printer]
+kinematics = delta
+max_velocity = 200
+max_accel = 2500
+max_z_velocity = 100
+minimum_z_position = -20
+square_corner_velocity = 5.0
+print_radius = 240.0
+delta_radius = 277.246
+
+[endstop_phase]
+
+[delta_calibrate]
+radius = 220
+
+[input_shaper]
+=======================
+Delta max build height 540.00mm (radius tapered above 460.82mm)
+Delta max build radius 240.00mm (moves slowed past 220.82mm and 240.62mm)
+Extruder max_extrude_ratio=0.415752
+Extruder max_extrude_ratio=0.415752
+mcu 'mcu': Starting serial connect
+webhooks client 548303508816: New connection
+webhooks client 548303508816: Client info {'program': 'Moonraker', 'version': 'v0.9.3-110-g00170f3'}
+Loaded MCU 'mcu' 132 commands (v0.5.0-5158-g9ce3ae74 / gcc: (15:8-2019-q3-1+b1) 8.3.1 20190703 (release) [gcc-8-branch revision 273027] binutils: (2.35.2-2+14+b2) 2.35.2)
+MCU 'mcu' config: ADC_MAX=4095 BUS_PINS_i2c1_PA9_PA10=PA9,PA10 BUS_PINS_i2c1_PB6_PB7=PB6,PB7 BUS_PINS_i2c1_PB8_PB9=PB8,PB9 BUS_PINS_i2c2_PA7_PA6=PA7,PA6 BUS_PINS_i2c2_PB10_PB11=PB10,PB11 BUS_PINS_i2c2_PB13_PB14=PB13,PB14 BUS_PINS_i2c3_PA7_PA6=PA7,PA6 BUS_PINS_i2c3_PB3_PB4=PB3,PB4 BUS_PINS_i2c3_PC0_PC1=PC0,PC1 BUS_PINS_spi1=PA6,PA7,PA5 BUS_PINS_spi1a=PB4,PB5,PB3 BUS_PINS_spi2=PB14,PB15,PB13 BUS_PINS_spi2_PB2_PB11_PB10=PB2,PB11,PB10 BUS_PINS_spi2a=PC2,PC3,PB10 BUS_PINS_spi3=PB4,PB5,PB3 CLOCK_FREQ=64000000 MCU=stm32g0b1xx PWM_MAX=257 RESERVE_PINS_USB=PA11,PA12 RESERVE_PINS_crystal=PF0,PF1 STATS_SUMSQ_BASE=256 STEPPER_OPTIMIZED_EDGE=8 STEPPER_STEP_BOTH_EDGE=1
+mcu 'rpi': Starting connect
+Loaded MCU 'rpi' 119 commands (v0.5.0-4608-g3d50af74 / gcc: (Debian 10.2.1-6) 10.2.1 20210110 binutils: (GNU Binutils for Debian) 2.35.2)
+MCU 'rpi' config: ADC_MAX=4095 CLOCK_FREQ=50000000 MCU=linux PCA9685_MAX=4096 PWM_MAX=32768 STATS_SUMSQ_BASE=256
+Sending MCU 'mcu' printer configuration...
+Configured MCU 'mcu' (1024 moves)
+Sending MCU 'rpi' printer configuration...
+Configured MCU 'rpi' (1024 moves)
+Starting heater checks for extruder
+Starting heater checks for extruder1
+bed_mesh: generated points
+Index |  Tool Adjusted  |   Probe
+  0   | (0.0, -230.0)   | (0.0, -230.0)
+  1   | (115.0, -115.0) | (115.0, -115.0)
+  2   | (0.0, -115.0)   | (0.0, -115.0)
+  3   | (-115.0, -115.0)| (-115.0, -115.0)
+  4   | (-230.0, 0.0)   | (-230.0, 0.0)
+  5   | (-115.0, 0.0)   | (-115.0, 0.0)
+  6   | (0.0, 0.0)      | (0.0, 0.0)
+  7   | (115.0, 0.0)    | (115.0, 0.0)
+  8   | (230.0, 0.0)    | (230.0, 0.0)
+  9   | (115.0, 115.0)  | (115.0, 115.0)
+  10  | (0.0, 115.0)    | (0.0, 115.0)
+  11  | (-115.0, 115.0) | (-115.0, 115.0)
+  12  | (0.0, 230.0)    | (0.0, 230.0)
+bed_mesh: Unknown profile [default]
+Script running error
+Traceback (most recent call last):
+  File "/home/pi/klipper/klippy/extras/delayed_gcode.py", line 34, in _gcode_timer_event
+    self.gcode.run_script(self.timer_gcode.render())
+  File "/home/pi/klipper/klippy/gcode.py", line 230, in run_script
+    self._process_commands(script.split('\n'), need_ack=False)
+  File "/home/pi/klipper/klippy/gcode.py", line 212, in _process_commands
+    handler(gcmd)
+  File "/home/pi/klipper/klippy/gcode.py", line 140, in <lambda>
+    func = lambda params: origfunc(self._get_extended_params(params))
+  File "/home/pi/klipper/klippy/extras/bed_mesh.py", line 1760, in cmd_BED_MESH_PROFILE
+    options[key](name)
+  File "/home/pi/klipper/klippy/extras/bed_mesh.py", line 1716, in load_profile
+    raise self.gcode.error(
+gcode.CommandError: bed_mesh: Unknown profile [default]
+restore gcode offset: tool0_offsets = {'probe_z': 1.762, 'x': 0.0, 'y': 0.0, 'z': -3.0471}
+webhooks: registering remote method 'shutdown_machine' for connection id: 548303508816
+webhooks: registering remote method 'reboot_machine' for connection id: 548303508816
+webhooks: registering remote method 'pause_job_queue' for connection id: 548303508816
+webhooks: registering remote method 'start_job_queue' for connection id: 548303508816
+Read from remote host deltamaker-0410.local: Connection reset by peer
+Connection to deltamaker-0410.local closed.
