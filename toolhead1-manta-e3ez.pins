@@ -31,7 +31,7 @@ switch_pin: PB1
 
 [tmc2209 extruder1]
 uart_pin: PB5
-run_current: 0.800
+run_current: 0.70
 
 
 ##### EXTRUDER FAN #####

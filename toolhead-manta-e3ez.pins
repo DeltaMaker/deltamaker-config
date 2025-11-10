@@ -30,7 +30,7 @@ sensor_type: EPCOS 100K B57560G104F
 
 [tmc2209 extruder]
 uart_pin: PD1
-run_current: 0.800
+run_current: 0.70
 
 ##### EXTRUDER FAN #####
 [heater_fan extruder_fan]
